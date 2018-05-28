@@ -41,7 +41,7 @@ __________________________ */
 	$restoreEnable  = true; 
 	$restoredMsg 	= "OK snapshot restored successfully.";	// 'Okay' message from shift-snapshot	
 	$apiHost        = "http://127.0.0.1:9305";		// Used to calculate $publicKey by $secret for consensus check and to check syncing. Use http://127.0.0.1:netPort 
-	$explorer	= "https://explorer.shiftnrg.org"; 	// Used to check syncing	
+	$explorer	= "https://explorer.shiftnrg.org"; 	// Used to check blockchain's height	
 	$snapThreshold  = 3200;                 		// Threshold in blocks. Use 3200 for daily snapshots and 133 for hourly
 
 // Snapshot settings
@@ -56,7 +56,7 @@ __________________________ */
 
 // Telegram Bot
 	$telegramAll	= false;				// Change to false to disable all messages exept syncing messages from Telegram bot
-	$SyncingMessage = true;					// Change to true if you want recieve messagese of your height status
+	$SyncingMessage = true;					// Change to true if you want recieve messagese of your syncing status
 	$telegramId 	= ""; 					// Your Telegram ID
 	$telegramApiKey = ""; 					// Your Telegram API key 
 ?>
