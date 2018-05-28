@@ -1,5 +1,8 @@
 <?php
   /**
+   * @version 2.1
+   * @author Mx
+   * @link https://github.com/MxShift/shift-checker
    * @author Jan
    * @link https://github.com/lepetitjan/shift-checker
    * @license https://github.com/lepetitjan/shift-checker/blob/master/LICENSE
@@ -28,6 +31,10 @@ ____________________ */
 /* CHECK CONSENSUS
 ____________________ */
   include dirname(__FILE__).'/includes/consensus.php';
+
+/* CHECK SYNCING
+____________________ */
+  include dirname(__FILE__).'/includes/syncing.php';
 
 /* CLEANUP LOG FILES
 ____________________ */

@@ -2,298 +2,312 @@
 
 echo "[ CONSENSUS ]\n";
 
-  echo "\t\t\tChecking if you enabled the consensus check...";
+  echo "\t\t\tConsensus: ";
   if($consensusEnable === true && !empty($secret)){
-    echo "yes!\n";
+    echo "enabled\n\n";
+    // Check height, consensus and syncing on Blockhain
+    $heightExplorer = @file_get_contents($explorer."/api/statistics/getLastBlock");
+    if($heightExplorer === FALSE){
+      $heightExplorer = 0;
+    }else{
+      $heightExplorer = json_decode($heightExplorer, true);
+      $heightExplorer = $heightExplorer['block']['height'];
+    }
+    // Check height, consensus and syncing on Master node
+    $statusMaster = @file_get_contents($masternode.":".$masterport."/api/loader/status/sync");
+    if($statusMaster === FALSE){
+      $consensusMaster = 0;
+      $heightMaster = 0;
+      $syncingMaster = FALSE;
+    }else{
+      $statusMaster = json_decode($statusMaster, true);
+      if(isset($statusMaster['height']) === false){
+        $heightMaster = "error";
+      }else{
+        $heightMaster = $statusMaster['height'];
+      }
+      $syncingMaster = $statusMaster['syncing'];
+      $consensusMaster = $statusMaster['consensus'];
+    }
+    // Check height, consensus and syncing on Slave node
+    $statusSlave = @file_get_contents($slavenode.":".$slaveport."/api/loader/status/sync");
+    if($statusSlave === FALSE){
+      $consensusSlave = 0;
+      $heightSlave = 0;
+      $syncingSlave = FALSE;
+    }else{ 
+      $statusSlave = json_decode($statusSlave, true);
+      if(isset($statusSlave['height']) === false){
+        $heightSlave = "error";
+      }else{
+        $heightSlave = $statusSlave['height'];    
+      } 
+      $syncingSlave = $statusSlave['syncing'];
+      $consensusSlave = $statusSlave['consensus'];
+    }
 
-    // Get publicKey of the first secret to use in forging checks
-    $public = checkPublic($apiHost, $secret[0]);
+    // Get publicKey of the secret to use in forging checks
+    $public = checkPublic($apiHost, $secret);
+    // Secret to array
+    $sec_array = explode(" ", $secret);
+
+    $forgingSlave = checkForging($slavenode.":".$slaveport, $public);
+    $forgingMaster = checkForging($masternode.":".$masterport, $public);
+
+    echo "\t\t\tHeight Explorer: $heightExplorer\n\n";
+
+    echo "\t\t\tConsensus Master: ".$consensusMaster."%";
+    echo "\t\tConsensus Slave: ".$consensusSlave."%\n";
+
+    echo "\t\t\tHeight Master: $heightMaster";
+    echo "\t\tHeight Slave: $heightSlave \n";
+
+    echo "\t\t\tSyncing Master: ".json_encode($syncingMaster); // Boolean to string
+    echo "\t\tSyncing Slave: ".json_encode($syncingSlave)."\n";
+
+    echo "\t\t\tForging Master: ".$forgingMaster;
+    echo ("\t\tForging Slave: ".$forgingSlave."\n\n");    
 
     // Check if we are the master node
     if($master === false){
       // If we land here, we are the slave
-      echo "\t\t\tWe are a slave\n";
-      
-      // Check if the master is online
-      echo "\t\t\tChecking if master is online...";
-      
+      echo "\t\t\tSlave: true\n";
+
+      echo "\t\t\tMaster online: ";
+      // Check if the master is online   
       $find = array("http://","https://");
       $up = ping(str_replace($find,"",$masternode), $masterport);
       if($up){
         // Master is online. Do nothing..
-        echo "yes!\n";
+        echo "true\n";
 
         // Check if we are forging
-        echo "\t\t\tChecking if we (slave) are forging...";
+        echo "\t\t\tSlave forging: ";
         $forging = checkForging($slavenode.":".$slaveport, $public);
         
         // If we are forging..
         if($forging == "true"){
-          echo "yes!\n";
+          echo "true!\n\n\t\t\tEverything seems okay.\n\n";
         }else{
-          echo "no!\n";
-        }
+          if($forging == "error"){
+            echo "error\n";
+          }else{
+            echo "false\n";
+          }
+          // Check if the master is synced
+          echo "\t\t\tMaster syncing: ";
 
+          // COMPARE HEIGHT on master node and slave node
+          if($heightMaster < ($heightSlave - 10)){
+            // Enable forging on slave
+              echo "true\n";              
+              echo "\t\t\tEnabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n";
+              enableForging($slavenode.":".$slaveport, $secret);
+          }else{
+            // Master is synced. Do nothing..
+              echo "false\n\n\t\t\tEverything will be okay.\n\n";
+          }
+        }
       }else{
         // Master is offline. Let's check if we are forging, if not; enable it. 
-        echo "no!\n";
+        echo "false!\n";
 
-        echo "\t\t\tLet's check if we (slave) are forging...";
+        echo "\t\t\tSlave forging: ";
         $forging = checkForging($slavenode.":".$slaveport, $public);
         
         // If we are forging..
         if($forging == "true"){
-          echo "yes!\n";
-          
-          // If Telegram is enabled, send a message that the master seems offline
-          if($telegramEnable === true){
-              $Tmsg = gethostname().": Master node seems offline. Slave is forging though..";
-              passthru("curl -s -d 'chat_id=$telegramId&text=$Tmsg' $telegramSendMessage >/dev/null");
-          }
+          echo "true!\n\n";
 
-          echo "\t\t\tChecking our consensus..\n";
-
-          // Perform a consensus check..
-          // Check consensus on slave node
-          $consensusSlave = @file_get_contents($slavenode.":".$slaveport."/api/loader/status/sync");
-          if($consensusSlave === FALSE){
-            $consensusSlave = 0;
-          }else{
-            $consensusSlave = json_decode($consensusSlave, true);
-            $consensusSlave = $consensusSlave['consensus'];
-          }
-          echo "\t\t\tConsensus slave: $consensusSlave %\n";
+          // Send Telegram ANNOYING!!! Slave is forging!
+          // $Tmsg = gethostname().": Master node seems offline. Slave is forging though..";
+          // sendMessage($Tmsg);
           
-          // If consensus on the slave is below threshold as well, send a telegram message and restart Shift!
-          if($consensusSlave <= $threshold){
-            echo "\t\t\tThreshold on slave node reached! Telegram: No healthy server online. Going to restart Shift for you..\n";
-            
-            // Send Telegram
-            if($telegramEnable === true){
-              $Tmsg = gethostname().": No healthy server online. Going to restart SHIFT for you..";
-              passthru("curl -s -d 'chat_id=$telegramId&text=$Tmsg' $telegramSendMessage >/dev/null");
+          // If consensus on the slave is below threshold divided by two (becouse of Master is offline) as well, restart Shift!
+          if($consensusSlave <= ($threshold / 2) && $syncingSlave === false){   
+            $Tmsg = gethostname().": Threshold on slave node reached! No healthy server online.";
+            echo "\t\t\t".$Tmsg."\n";
+            sendMessage($Tmsg);
+
+            // Restart Shift on Slave if restoring is disabled
+            if(!$restoreEnable){
+              echo "\t\t\tRestarting Shift on Master\n\n";
+              system("cd $pathtoapp && ./shift_manager.bash reload");
             }
-
-            // Restart Shift
-            echo "\t\t\tStopping all forever processes...\n";
-              passthru("forever stopall");
-            echo "\t\t\tStarting Shift forever proces...\n";
-              passthru("cd $pathtoapp && forever start app.js");
-              
           }else{
-            // All is fine. Do nothing..
-            echo "\t\t\tConsensus is fine!\n";
+            if($syncingSlave === true){
+              $Tmsg = gethostname().": Slave node is forging and syncing. Looks like a bug! Enabling forging on master node.";
+              echo "\t\t".$Tmsg."\n";
+              sendMessage($Tmsg);
+
+              echo "\t\t\tDisabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n";
+              disableForging($slavenode.":".$slaveport, $secret);
+
+              echo "\t\t\tRestarting Shift on Slave\n\n";
+              system("cd $pathtoapp && ./shift_manager.bash reload");
+            }else{
+              // All is fine. Do nothing..
+              echo "\t\t\tConsensus is fine!\n\n";              
+            }
           }
         }else{
-          // Enable forging for each secret on the slave
-          echo "\t\t\tWe are not forging! Let's enable it..\n";
-          
+          if($forging == "error"){
+            echo "error\n";
+          }else{
+            echo "false!\n\n\t\t\tWe are not forging! Let's enable it..\n";            
+          }
+          // Enable forging on the slave
           // If Telegram is enabled, send a message that the master seems offline
-          if($telegramEnable === true){
-              $Tmsg = gethostname().": Master node seems offline. Slave will enable forging now..";
-              passthru("curl -s -d 'chat_id=$telegramId&text=$Tmsg' $telegramSendMessage >/dev/null");
-          }
+          $Tmsg = gethostname().": Master node seems offline. Slave will enable forging now..";
+          sendMessage($Tmsg);
 
-          foreach($secret as $sec){
-            echo "\t\t\tEnabling forging on slave for secret: $sec\n";
-            enableForging($slavenode.":".$slaveport, $sec);
-          }
+          echo "\t\t\tEnabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
+          enableForging($slavenode.":".$slaveport, $secret);
         }
       }
     }else{
       // If we land here, we are the master
-      echo "\t\t\tWe are the master\n";
+      echo "\t\t\tMaster: true\n";
         
       // Check if we are forging
       $forging = checkForging($masternode.":".$masterport, $public);
 
       // If we are forging..
       if($forging == "true"){
-        echo "\t\t\tMaster node is forging.\n";
+        echo "\t\t\tMaster forging: true\n\n";
 
-        // Forging on the slave should be/stay disabled for every secret until we perform a consensus check.
+        // Forging on the slave should be/stay disabled for secret until we perform a consensus check.
         // This way we ensure that forging is only disabled on nodes the master chooses.
-        foreach($secret as $sec){
-          echo "\t\t\tDisabling forging on slave for secret: $sec\n";
-          disableForging($slavenode.":".$slaveport, $sec);
-        }
+          echo "\t\t\tDisabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n";
+          disableForging($slavenode.":".$slaveport, $secret);
 
-        // Check consensus on master node
-        $consensusMaster = @file_get_contents($masternode.":".$masterport."/api/loader/status/sync");
-        if($consensusMaster === FALSE){
-          $consensusMaster = 0;
-        }else{
-          $consensusMaster = json_decode($consensusMaster, true);
-          $consensusMaster = $consensusMaster['consensus'];
-        }
-        echo "\t\t\tConsensus master: $consensusMaster %\n";
-        
-        // If consensus is the same as or lower than the set threshold..
-        if($consensusMaster <= $threshold){
-          echo "\t\t\tThreshold on master node reached! Going to check the slave node..\n";
+        // Check consensus on master node      
+        // If consensus is the same as or lower than the set threshold. Going to restart Shift on Master
+        if($consensusMaster <= $threshold && $syncingMaster === false){
+          echo "\t\t\t".$Tmsg."\n";
 
-          // If Telegram is enabled, send a message that the master seems offline and we are going to take over forging (is possible)
-          if($telegramEnable === true){
-              $Tmsg = gethostname().": Threshold reached on master node. Going to enable forging on the slave.";
-              passthru("curl -s -d 'chat_id=$telegramId&text=$Tmsg' $telegramSendMessage >/dev/null");
-          }
+          $Tmsg = gethostname().": Threshold on master node reached! Going to check the slave node and restart Shift on Master.";
+          sendMessage($Tmsg);
         
           // Check consensus on slave node
-          $consensusSlave = @file_get_contents($slavenode.":".$slaveport."/api/loader/status/sync");
-          if($consensusSlave === FALSE){
-            $consensusSlave = 0;
-          }else{
-            $consensusSlave = json_decode($consensusSlave, true);
-            $consensusSlave = $consensusSlave['consensus'];
-          }
-          echo "\t\t\tConsensus slave: $consensusSlave %\n";
-          
           // If consensus on the slave is below threshold as well, send a telegram message and restart Shift!
-          if($consensusSlave <= $threshold){
-            echo "\t\t\tThreshold on slave node reached! Telegram: No healthy server online. Going to restart Shift for you..\n";
-            
-            // Send Telegram
-            if($telegramEnable === true){
-              $Tmsg = gethostname().": No healthy server online. Going to restart SHIFT for you..";
-              passthru("curl -s -d 'chat_id=$telegramId&text=$Tmsg' $telegramSendMessage >/dev/null");
-            }
-
-            // Restart Shift
-            echo "\t\t\tStopping all forever processes...\n";
-              passthru("forever stopall");
-            echo "\t\t\tStarting Shift forever proces...\n";
-              passthru("cd $pathtoapp && forever start app.js");
+          if($consensusSlave <= $threshold && $syncingSlave === false){
+            $Tmsg = gethostname().": Threshold on slave node reached! No healthy server online.";
+            echo "\t\t\t".$Tmsg."\n";
+            sendMessage($Tmsg);
           }else{
-            echo "\t\t\tConsensus on slave is sufficient enough to switch to..\n";
-            
-            echo "\t\t\tEnabling forging on slave..\n";
-            foreach($secret as $sec){
-              echo "\t\t\tEnabling forging on slave for secret: $sec\n";
-              enableForging($slavenode.":".$slaveport, $sec);
-            }
+            if($syncingSlave === true){
+              $Tmsg = gethostname().": Threshold reached on master node, but slave is syncing. No healthy server online.";
+              echo "\t\t\t".$Tmsg."\n\n";
+              sendMessage($Tmsg);
+            }else{
+              echo "\t\t\tConsensus on slave is sufficient enough to switch to..\n";
+              
+              echo "\t\t\tEnabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n";
+              enableForging($slavenode.":".$slaveport, $secret);
 
-            echo "\t\t\tDisabling forging on master..\n";
-            foreach($secret as $sec){
-              echo "\t\t\tDisabling forging on master for secret: $sec\n";
-              disableForging($masternode.":".$masterport, $sec);
+              echo "\t\t\tDisabling forging on master for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
+              disableForging($masternode.":".$masterport, $secret);              
             }
+          }
+          if(!$restoreEnable){
+            echo "\t\t\tRestarting Shift on Master\n";
+            system("cd $pathtoapp && ./shift_manager.bash reload");
           }
         }else{
-          // Master consensus is high enough to continue forging
-          echo "\t\t\tThreshold on master node not reached. Everything is okay.\n";
+          if($syncingMaster === true){
+            $Tmsg = gethostname().": Master node is forging and syncing. Looks like a bug! Enabling forging on slave node";
+            echo "\t\t\t".$Tmsg."\n";
+            sendMessage($Tmsg);
+
+            echo "\t\t\tEnabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n";
+            enableForging($slavenode.":".$slaveport, $secret);
+
+            echo "\t\t\tDisabling forging on master for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
+            disableForging($masternode.":".$masterport, $secret);
+
+            echo "\t\t\tRestarting Shift on Master\n";
+            passthru("cd $pathtoapp && ./shift_manager.bash reload");                         
+          }else{
+            // Master consensus is high enough to continue forging
+            echo "\t\t\tThreshold on master node not reached.\n\n\t\t\tEverything is okay.\n\n";            
+          }
         }
-
-      // If we are not forging..
+        // If we are Master and not forging..
       }else{
-        echo "\t\t\tMaster node is not forging. Checking if slave is forging..\n";
-
+        if($forging == "error"){
+          echo "\t\t\tMaster forging: error!\n";
+        }else{        
+          echo "\t\t\tMaster forging: false!\n";
+        }
         // Check if the slave is forging
         $forging = checkForging($slavenode.":".$slaveport, $public);
         // If slave is forging..
         if($forging == "true"){
-          echo "\t\t\tSlave is forging. Going to check it's consensus..\n";
-
-          // Check consensus on slave node
-          $consensusSlave = @file_get_contents($slavenode.":".$slaveport."/api/loader/status/sync");
-          if($consensusSlave === FALSE){
-            $consensusSlave = 0;
-          }else{
-            $consensusSlave = json_decode($consensusSlave, true);
-            $consensusSlave = $consensusSlave['consensus'];
-          }
-          echo "\t\t\tConsensus slave: $consensusSlave %\n";
+          echo "\t\t\tSlave forging: true\n\n";
 
           // If consensus is the same as or lower than the set threshold..
           if($consensusSlave <= $threshold){
-            echo "\t\t\tConsensus slave reached the threshold. Checking consensus master node..\n";
-
-            // Check consensus on master node
-            $consensusMaster = @file_get_contents($masternode.":".$masterport."/api/loader/status/sync");
-            if($consensusMaster === FALSE){
-              $consensusMaster = 0;
-            }else{
-              $consensusMaster = json_decode($consensusMaster, true);
-              $consensusMaster = $consensusMaster['consensus'];
-            }
-            echo "\t\t\tConsensus master: $consensusMaster %\n";
+            echo "\t\t\tConsensus slave reached the threshold.\n";
+            echo "\t\t\tChecking consensus, height and syncing on master node..\n";            
             
             // If consensus is the same as or lower than the set threshold..
-            if($consensusMaster <= $threshold){
+            if($consensusMaster <= $threshold && $syncingMaster === false){
               echo "\t\t\tThreshold on master node reached as well! Restarting Shift..\n";
 
-              // Restart Shift
-              echo "\t\t\tStopping all forever processes...\n";
-                passthru("forever stopall");
-              echo "\t\t\tStarting Shift forever proces...\n";
-                passthru("cd $pathtoapp && forever start app.js");
+              if(!$restoreEnable){
+                echo "\t\t\tRestarting Shift on Master\n";
+                system("cd $pathtoapp && ./shift_manager.bash reload");
+              }
 
             }else{
-              // Consensus is sufficient on master. Enabling forging to master
-              echo "\t\t\tConsensus on master is sufficient. Enabling forging on master..\n";
+              if($syncingMaster === true){
+                echo "\t\t\tMaster node is syncing. Doing nothing..\n";    
+                
+                $Tmsg = gethostname().": Warning! Consensus slave reached the threshold, but master node is syncing. No healthy servers online!";
+                echo "\t\t\t".$Tmsg."\n";
+                sendMessage($Tmsg);               
+              }else{
+                // Consensus is sufficient on master. Going to check syncing of masternode with 100% consensus
+                echo "\t\t\tConsensus on master is sufficient.\n";
 
-              // Enable forging on master
-              echo "\t\t\tEnabling forging on master..\n";
-              foreach($secret as $sec){
-                echo "\t\t\tEnabling forging on master for secret: $sec\n";
-                enableForging($masternode.":".$masterport, $sec);
-              }
+                if($heightMaster < ($heightExplorer - 101)){
+                  echo "\t\t\tBut seems master node is syncing. Doing nothing..\n";    
 
-              // Disable forging on slave
-              echo "\t\t\tDisabling forging on slave..\n";
-              foreach($secret as $sec){
-                echo "\t\t\tDisabling forging on slave for secret: $sec\n";
-                disableForging($slavenode.":".$slaveport, $sec);
-              }
+                  $Tmsg = gethostname().": Warning! Consensus slave reached the threshold, but seems master node is syncing. No healthy servers online!";
+                  echo "\t\t\t".$Tmsg."\n";
+                  sendMessage($Tmsg);           
+                }else {
+                  echo "\t\t\tMaster node is synced!\n";
+                  echo "\t\t\tEnabling forging on master for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
+                  enableForging($masternode.":".$masterport, $secret);
 
+                  echo "\t\t\tDisabling forging on slave..\n";
+                  echo "\t\t\tDisabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
+                  disableForging($slavenode.":".$slaveport, $secret);
+                }                 
+              } 
             }
-
           }else{
-            // Consensus slave is sufficient. Doing nothing..
-            echo "\t\t\tConsensus on slave is sufficient. Doing nothing..\n";
+            echo "\t\t\tConsensus on slave is sufficient. Doing nothing..\n\n";
           }
         }else{
-          // Slave is also not forging! Compare consensus on both nodes and enable forging on node with highest consensus..
-          echo "\t\t\tSlave is not forging as well! Going to compare consensus and enable forging on best node..\n";
+          if($forging == "error"){
+            echo "\t\t\tChecking of Slave's forging got an error!\n";
+          }else{ 
+            echo "\t\t\tSlave is not forging as well!\n";            
+          }        
+          // Slave is also not forging! Compare consensus on both nodes and enable forging on node with highest consensus an height..
+          $Tmsg = gethostname().": Master and Slave are both not forging! Going to enable forging on the best node.";
+          sendMessage($Tmsg);
 
-          // If Telegram is enabled, send a message that master and slave are both not forging and we're going to enable it on the best node
-          if($telegramEnable === true){
-              $Tmsg = gethostname().": Master and Slave are both not forging! Going to enable forging on the best node.";
-              passthru("curl -s -d 'chat_id=$telegramId&text=$Tmsg' $telegramSendMessage >/dev/null");
-          }
-
-          // Check consensus on master node
-          $consensusMaster = @file_get_contents($masternode.":".$masterport."/api/loader/status/sync");
-          if($consensusMaster === FALSE){
-            $consensusMaster = 0;
+          echo "\t\t\tLet's compare consensus and enable forging on best node..\n";
+          if($consensusMaster > $consensusSlave && $heightMaster > ($heightSlave - 10)){
+              echo "\t\t\tEnabling forging on master for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
+              enableForging($masternode.":".$masterport, $secret);
           }else{
-            $consensusMaster = json_decode($consensusMaster, true);
-            $consensusMaster = $consensusMaster['consensus'];
-          }
-          echo "\t\t\tConsensus master: $consensusMaster %\n";
-
-          // Check consensus on slave node
-          $consensusSlave = @file_get_contents($slavenode.":".$slaveport."/api/loader/status/sync");
-          if($consensusSlave === FALSE){
-            $consensusSlave = 0;
-          }else{
-            $consensusSlave = json_decode($consensusSlave, true);
-            $consensusSlave = $consensusSlave['consensus'];
-          }
-          echo "\t\t\tConsensus slave: $consensusSlave %\n";
-
-          // COMPARE CONSENSUS
-          if($consensusMaster > $consensusSlave){
-            // Enable forging on master
-            foreach($secret as $sec){
-              echo "\t\t\tEnabling forging on master for secret: $sec\n";
-              enableForging($masternode.":".$masterport, $sec);
-            }
-          }else{
-            // Enabling forging on slave
-            foreach($secret as $sec){
-              echo "\t\t\tEnabling forging on slave for secret: $sec\n";
-              enableForging($slavenode.":".$slaveport, $sec);
-            }
+              echo "\t\t\tEnabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
+              enableForging($slavenode.":".$slaveport, $secret);
           } // END: COMPARE CONSENSUS
 
         } // END: SLAVE FORGING IS FALSE
@@ -303,5 +317,5 @@ echo "[ CONSENSUS ]\n";
     } // END: WE ARE THE MASTER
 
   }else{
-    echo "no! (or no secret)\n";
+    echo "disabled (or no secret)\n\n";
   } // END: ENABLED CONSENSUS CHECK?

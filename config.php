@@ -1,5 +1,8 @@
 <?php
 	/**
+	 * @version 2.1
+	 * @author Mx
+	 * @link https://github.com/MxShift/shift-checker
 	 * @author Jan
 	 * @link https://github.com/lepetitjan/shift-checker
 	 * @license https://github.com/lepetitjan/shift-checker/blob/master/LICENSE
@@ -21,20 +24,25 @@ __________________________ */
 	$table 		= "forks";				// Table name to use
 	$msg 		= "\"cause\":3";			// Message that is printed when forked
 	$shiftlog 	= $pathtoapp."logs/shift.log";		// Needs to be a FULL path, so not ~/shift
-	$linestoread	= 30;					// How many lines to read from the end of $shiftlog
+	$linestoread= 30;					// How many lines to read from the end of $shiftlog
 	$max_count 	= 3;					// How may times $msg may occur
 	$okayMsg 	= "√";					// 'Okay' message from shift_manager.bash
 
 // Consensus settings
-	$consensusEnable= false;                                // Enable consensus check? Be sure to check $nodes first..
+	$consensusEnable= true;                                // Enable consensus check? Be sure to check $nodes first..
 	$master         = true;                                 // Is this your master node? True/False
 	$masternode     = "http://127.0.0.1";                   // Master node
 	$masterport     = 9305;                                 // Master port
-	$slavenode      = "http://testnode1.shiftnrg.org";      // Slave node
+	$slavenode      = "http://";      // Slave node
 	$slaveport      = 9305;                                 // Slave port
-	$threshold      = 50;                                   // Percentage of consensus threshold
-	$apiHost        = "https://wallet.shiftnrg.org";	// Used to calculate $publicKey by $secret. Use $masternode or $slavenode
-	$secret         = array("");                            // Add your secrets here. If you want to forge multiple, add extra to the array. 
+	$threshold      = 20;                                   // Percentage of consensus threshold
+	$secret         = ""; // Required for consensus check
+// Syncing settings
+	$restoreEnable  = true; 
+	$restoredMsg 	= "OK snapshot restored successfully.";	 // 'Okay' message from shift-snapshot	
+	$apiHost        = "http://127.0.0.1:9305";	// Used to calculate $publicKey by $secret for consensus check and to check syncing. Use http://127.0.0.1:netPort 
+	$explorer		= "https://explorer.shiftnrg.org"; // Used to check syncing	
+	$snapThreshold  = 3200;                 // Threshold in blocks. Use 3200 for daily snapshots and 133 for hourly
 
 // Snapshot settings
 	$snapshotDir	= $homeDir."shift-snapshot/";		// Base folder of shift-snapshot
@@ -43,12 +51,12 @@ __________________________ */
 
 // Log file rotation
 	$logfile 	= $baseDir."logs/checkdelegate.log";	// The location of your log file (see section crontab on Github)
-	$max_logfiles	= 3;					// How many log files to preserve? (in days)  
+	$max_logfiles	= 1;					// How many log files to preserve? (in days)  
 	$logsize 	= 5242880;				// Max file size, default is 5 MB
 
 // Telegram Bot
+	$telegramAll	= false;		// Change to false to disable all messages exept syncing messages from Telegram bot
+	$SyncingMessage = true;						// Change to true if you want recieve messagese of your height status
 	$telegramId 	= ""; 					// Your Telegram ID
 	$telegramApiKey = ""; 					// Your Telegram API key 
-	$telegramEnable = false;				// Change to true to enable Telegram Bot
-	$telegramSendMessage 	= "https://api.telegram.org/bot".$telegramApiKey."/sendMessage"; // Full URL to post message
 ?>

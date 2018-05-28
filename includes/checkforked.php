@@ -44,16 +44,16 @@ echo "\t\t\tGoing to check for forked status now...\n";
 
         // If shift-snapshot directory exists..
         if(file_exists($snapshotDir)){
-          echo "\t\t\tHit max_count. I am going to restore from a snapshot.\n";
-          if($telegramEnable === true){
-            $Tmsg = "Hit max_count on ".gethostname().". I am going to restore from a snapshot.";
-            passthru("curl -s -d 'chat_id=$telegramId&text=$Tmsg' $telegramSendMessage >/dev/null");
-          }
+          
+          $Tmsg = "Hit max_count on ".gethostname().". I am going to restore from a snapshot.";
+          echo "\t\t\t".$Tmsg."\n";
+          sendMessage($Tmsg);
 
           // Perform snapshot restore
-          passthru("cd $pathtoapp && forever stop app.js");
-          passthru("cd $snapshotDir && echo y | ./shift-snapshot.sh restore");
-          passthru("cd $pathtoapp && forever start app.js");
+          system("cd $pathtoapp && ./shift_manager.bash stop");
+          sleep(3);
+          system("cd $snapshotDir && echo y | ./shift-snapshot.sh restore");
+          system("cd $pathtoapp && ./shift_manager.bash reload");
 
           // Reset counters
           echo "\t\t\tFinally, I will reset the counter for you...\n";
@@ -71,7 +71,7 @@ echo "\t\t\tGoing to check for forked status now...\n";
 	    $query = "UPDATE $table SET counter=counter+$count, time=time()";
     	$db->exec($query) or die("[ FORKING ] Unable to plus the counter!");
 
-    	echo "\t\t\tCounter ($counter) + current count ($count) is not sufficient to restore from snapshot. Need: $max_count \n";
+    	echo "\t\t\t".($counter + $count)." is fine. Restoring starts at: $max_count \n";
 
     	// Check snapshot setting
     	if($createsnapshot === false){
@@ -81,17 +81,16 @@ echo "\t\t\tGoing to check for forked status now...\n";
     	// If counter + current count are smaller than $max_count AND option $createsnapshot is true, create a new snapshot
     	if(($counter + $count) < $max_count && $createsnapshot === true){
     		
-    		echo "\t\t\tIt's safe to create a daily snapshot and the setting is enabled.\n";
-    		echo "\t\t\tLet's check if a snapshot was already created today...\n";
-    		
+    		echo "\t\t\tDo we have a new snapshot for today?.. ";
+        // It's safe to create a daily snapshot and the setting is enabled.
+    		// Let's check if a snapshot was already created today...
     		// Check if path to shift-snapshot exists..
         if(file_exists($snapshotDir)){
           
           $snapshots = glob($snapshotDir.'snapshot/shift_db'.date("d-m-Y").'*.snapshot.tar');
           if (!empty($snapshots)) {
         
-            echo "\t\t\tA snapshot for today already exists:\n";
-              echo "\t\t\t".$snapshots[0]."\n";
+            echo "YES!\n";
             
             echo "\t\t\tGoing to remove snapshots older than $max_snapshots days...\n";
               $files = glob($snapshotDir.'snapshot/shift_db*.snapshot.tar');
@@ -105,11 +104,10 @@ echo "\t\t\tGoing to check for forked status now...\n";
                 }
               }
 
-            echo "\t\t\tDone!\n";
-        
+            echo "\t\t\tDone!\n\n";
+            
           }else{
-
-            echo "\t\t\tNo snapshot exists for today, I will create one for you now!\n";
+            echo "\t\t\tNo snapshot exists for today, I'll create one for you now!\n";
               
             ob_start();
             $create = passthru("cd $snapshotDir && ./shift-snapshot.sh create");
@@ -119,22 +117,17 @@ echo "\t\t\tGoing to check for forked status now...\n";
             // If buffer contains "OK snapshot created successfully"
             if(strpos($check_createoutput, 'OK snapshot created successfully') !== false){
             
-                echo "\t\t\tDone!\n";
-              
-              if($telegramEnable === true){
-                  $Tmsg = "Created daily snapshot on ".gethostname().".";
-                  passthru("curl -s -d 'chat_id=$telegramId&text=$Tmsg' $telegramSendMessage >/dev/null");
-              }
+              echo "\t\t\tDone!\n";
 
+              $Tmsg = "Created daily snapshot on ".gethostname().".";
+              echo "\t\t\t".$Tmsg."\n";
+              sendMessage($Tmsg);
             }
-
           }
         }else{
           // Path to shift-snapshot does not exist..
           echo "\t\t\tYou have shift-snapshot enabled, but the path to shift-snapshot does not seem to exist.\n
                 \t\t\tDid you install shift-snapshot?\n";
         }
-
     	}
-
     }
