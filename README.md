@@ -38,6 +38,15 @@
 * Ryver: [Mx](https://shiftnrg.ryver.com)
       
 ---  
+### How to update to v 2.1
+
+The better way is: 
+* to save data from your old **config.php** file;
+* then delete old folder `cd && sudo rm -rf shift-checker`;
+* and download the new one `git clone https://github.com/MxShift/shift-checker.git`;
+* then change settings inside new **config.php**;
+
+--- 
 
 This script checks the status of your Shiftnrg Delegate by using PHP.<br>
 Feel free to rewrite in Python or Bash. 
