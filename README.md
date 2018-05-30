@@ -83,7 +83,7 @@ sudo apt install php php-cli php-mbstring php-sqlite3
 ## Installation
 You can clone this into every directory of your choosing. I usually just clone it into my home folder.
 ```
-git clone https://github.com/lepetitjan/shift-checker.git
+git clone https://github.com/MxShift/shift-checker.git
 ```
 * Change settings inside config.php to match your needs
 * Edit your crontab with the example below
