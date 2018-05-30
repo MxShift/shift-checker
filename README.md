@@ -124,8 +124,7 @@ BTC: 1GbAWBiGyuybXJcjtyTvtH6hB5iezXNVdP
 
 ## Contributors
 Seatrips (create snapshot when status is okay)
-* Twitter: [@seatrips<br>](https://twitter.com/seatrips)
+* Twitter: [@seatrips](https://twitter.com/seatrips)
 
 Mrgr (Shift snapshots)
-* Shiftnrg Slack: https://shiftnrg.slack.com/team/mrgr
 * Github: https://github.com/mrgrshift
