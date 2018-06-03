@@ -228,6 +228,9 @@ echo "[ SYNCING ]\n";
           // Set counter for next good message
           $query = "UPDATE $table SET counter=($counter + 1), time=time()";
           $db->exec($query) or die("\n\t\t\tUnable to plus the rebuild counter!");
+          // Set pause for waiting node online
+          echo "\t\t\tPause: 10 sec.\n\n";
+          sleep(10);
         }else{
           echo "\n\t\t\tRestored: NO!\n\n";
           // Going to rebuild
