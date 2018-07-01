@@ -1,5 +1,5 @@
 # shift-checker
-*Current version: 2.1*
+*Current version: 2.1.1*
 
 ### Changelog:
 
@@ -38,17 +38,6 @@
 * Ryver: [Mx](https://shiftnrg.ryver.com)
       
 ---  
-### How to update to v 2.1
-
-The better way is: 
-* to save data from your old **config.php** file;
-* then delete old folder `cd && sudo rm -rf shift-checker`;
-* and download the new one `git clone https://github.com/MxShift/shift-checker.git`;
-* then change settings inside new **config.php**;
-
-For **testnet** explorer can be used `https://testnet.shiftnrg.com.mx`
-
---- 
 
 This script checks the status of your Shiftnrg Delegate by using PHP.<br>
 Feel free to rewrite in Python or Bash. 
@@ -96,7 +85,7 @@ You can clone this into every directory of your choosing. I usually just clone i
 ```
 git clone https://github.com/MxShift/shift-checker.git
 ```
-* Change settings inside config.php to match your needs
+* Rename `config.example.php` file to `config.php` and change settings inside it to match your needs
 * Edit your crontab with the example below
 
 ## Example crontab
