@@ -1,6 +1,6 @@
 <?php
 	/**
-	 * @version 2.1
+	 * @version 2.1.1
 	 * @author Mx
 	 * @link https://github.com/MxShift/shift-checker
 	 * @author Jan
