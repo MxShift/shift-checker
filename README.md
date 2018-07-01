@@ -36,6 +36,16 @@
 ## Contacts
 * Telegram: [Mx](https://t.me/voteformx)
 * Ryver: [Mx](https://shiftnrg.ryver.com)
+
+### How to update to v 2.1.1
+
+The better way is: 
+* to save data from your old **config.php** file;
+* then delete old folder `cd && sudo rm -rf shift-checker`;
+* and download the new one `git clone https://github.com/MxShift/shift-checker.git`;
+* then change settings inside new **config.php**;
+
+For **testnet** explorer can be used `https://www.shiftproject.io/testexplorer/`
       
 ---  
 
