@@ -107,7 +107,7 @@ echo "\t\t\tGoing to check for forked status now...\n";
             echo "\t\t\tDone!\n\n";
             
           }else{
-            echo "\t\t\tNo snapshot exists for today, I'll create one for you now!\n";
+            echo "\n\t\t\tNo snapshot exists for today, I'll create one for you now!\n";
               
             ob_start();
             $create = passthru("cd $snapshotDir && ./shift-snapshot.sh create");
@@ -116,12 +116,9 @@ echo "\t\t\tGoing to check for forked status now...\n";
 
             // If buffer contains "OK snapshot created successfully"
             if(strpos($check_createoutput, 'OK snapshot created successfully') !== false){
-            
-              echo "\t\t\tDone!\n";
-
               $Tmsg = "Created daily snapshot on ".gethostname().".";
               echo "\t\t\t".$Tmsg."\n";
-              sendMessage($Tmsg);
+              sendMessage($Tmsg, $restoreEnable);
             }
           }
         }else{

@@ -184,7 +184,7 @@ function enableForging($server, $secret){
 }
 
 // Send Telegram message
-function sendMessage($message, $sync = false){
+function sendMessage($message, $sync=false){
 	global $telegramAll, $SyncingMessage, $telegramApiKey, $telegramId;
 	if($telegramAll === true && $sync === false){
 		$telegramUrl = "https://api.telegram.org/bot".($telegramApiKey)."/sendMessage";
