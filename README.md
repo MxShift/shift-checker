@@ -45,7 +45,7 @@ The better way is:
 * and download the new one `git clone https://github.com/MxShift/shift-checker.git`;
 * then change settings inside new **config.php**;
 
-For **testnet** explorer can be used `https://explorer.testnet.shiftnrg.org/`
+For **testnet** explorer can be used `https://explorer.testnet.shiftnrg.org`
       
 ---  
 
