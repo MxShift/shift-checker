@@ -29,7 +29,7 @@ __________________________ */
 	$okayMsg 	= "√";					// 'Okay' message from shift_manager.bash
 
 // Consensus settings
-	$consensusEnable= true;                                	// Enable consensus check? Be sure to check $nodes first..
+	$consensusEnable= false;                                // Enable consensus check? Be sure to check $nodes first..
 	$master         = true;                                 // Is this your master node? True/False
 	$masternode     = "http://127.0.0.1";                   // Master node
 	$masterport     = 9305;                                 // Master port
