@@ -9,7 +9,7 @@
 echo "[ SYNCING ]\n";
   // Start to check syncing
   echo "\t\t\tSyncing: ";
-  if($restoreEnable === true && !empty($secret)){
+  if($restoreEnable === true){
     echo "enabled\n";
     // Let's define and show variables
     if($consensusEnable === false){
