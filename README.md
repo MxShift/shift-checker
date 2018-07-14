@@ -29,6 +29,17 @@
 
 ### Forked and updated by [Mx](https://www.shiftproject.com/explorer/delegate/4446910057799968777S)
 
+### Donations
+
+- [x] Please consider voting for [Mx](https://explorer.shiftnrg.org/delegate/4446910057799968777S)
+
+I'll also be happy to recieve some tips.
+
+* **SHIFT: 4446910057799968777S**
+* ETH: 0x6d5ebaddaa116e01d9c29c695b9ad8c9f634fa04
+
+Thank you :tada:
+
 ### In the next updates:
 - [ ] Requesting status of nodes from Telegram bot;
 - [ ] Merge with [shift-monitor](https://github.com/MxShift/shift-monitor);
