@@ -1,3 +1,5 @@
 **/logs
 *.sqlite3
 config.php
+config.example.php
+checkdelegate.lock

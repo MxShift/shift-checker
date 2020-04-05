@@ -241,7 +241,9 @@ echo "[ SYNCING ]\n";
           system("cd $pathtoapp && ./shift_manager.bash rebuild");
           // Set counter for next good message
           $query = "UPDATE $table SET counter=($counter + 1), time=time()";
-          $db->exec($query) or die("\n\t\t\tUnable to plus the rebuild counter!");          
+          $db->exec($query) or die("\n\t\t\tUnable to plus the rebuild counter!");
+          echo "\t\t\tPause: 120 sec.\n\n";
+          sleep(120);          
         }
       }
     }else{
