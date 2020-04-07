@@ -9,17 +9,20 @@ echo "\t\t\tLet's check if our delegate is still running... ";
   $check_output = ob_get_contents();
   ob_end_clean();
 
+// Somewhere here we need to add a check for manual rebuild by the user
+
 // If status is not OK...
-  if(strpos($check_output, $okayMsg) === false){
+  if (strpos($check_output, $okayMsg) === false) {
       
     // Echo something to our log file
-    $Tmsg = "Delegate ".gethostname()." not running/healthy. Restarting Shift..";
-    sendMessage($Tmsg);
+      $Tmsg = "Delegate ".gethostname()." not running/healthy. Restarting Shift..";
+      sendMessage($Tmsg);
 
-    echo "\n\t\t\t".$Tmsg."\n";
-    //Restarting Shift
-    passthru("cd $pathtoapp && bash shift_manager.bash reload");
+      echo "\n\t\t\t".$Tmsg."\n";
+      //Restarting Shift
+      passthru("cd $pathtoapp && bash shift_manager.bash reload");
    
-  }else{
-    echo "YES!\n\n";
+  // If status is OK
+  } else {
+      echo "YES!\n\n";
   }

@@ -18,21 +18,20 @@ echo "\t\t\tGoing to check for forked status now...\n";
     $numExists    = $row_exists['count'];
 
     // If no rows exist in our table, add one
-    	if($numExists < 1){
-        	
-        	// Echo something to our log file
-        	echo "\t\t\tNo rows exist in our table to update the counter...Adding a row for you.\n";
-        	
-        	$insert = "INSERT INTO $table (counter, time) VALUES ('0', time())";
-        	$db->exec($insert) or die("[ FORKING ] Failed to add row!");
-      	
-      	}
+        if ($numExists < 1) {
+            
+            // Echo something to our log file
+            echo "\t\t\tNo rows exist in our table to update the counter...Adding a row for you.\n";
+            
+            $insert = "INSERT INTO $table (counter, time) VALUES ('0', time())";
+            $db->exec($insert) or die("[ FORKING ] Failed to add row!");
+        }
 
 // Tail shift.log
-	$last = tailCustom($shiftlog, $linestoread);
+    $last = tailCustom($shiftlog, $linestoread);
 
 // Count how many times the fork message appears in the tail
-	$count = substr_count($last, $msg);
+    $count = substr_count($last, $msg);
 
 // Get counter value from our database
     $check_count 	  = $db->query("SELECT * FROM $table LIMIT 1");
@@ -43,88 +42,82 @@ echo "\t\t\tGoing to check for forked status now...\n";
     if (($counter + $count) >= $max_count) {
 
         // If shift-snapshot directory exists..
-        if(file_exists($snapshotDir)){
-          
-          $Tmsg = "Hit max_count on ".gethostname().". I am going to restore from a snapshot.";
-          echo "\t\t\t".$Tmsg."\n";
-          sendMessage($Tmsg);
+        if (file_exists($snapshotDir)) {
+            $Tmsg = "Hit max_count on ".gethostname().". I am going to restore from a snapshot.";
+            echo "\t\t\t".$Tmsg."\n";
+            sendMessage($Tmsg);
 
-          // Perform snapshot restore
-          system("cd $pathtoapp && ./shift_manager.bash stop");
-          sleep(3);
-          system("cd $snapshotDir && echo y | ./shift-snapshot.sh restore");
-          system("cd $pathtoapp && ./shift_manager.bash reload");
+            // Perform snapshot restore
+            system("cd $pathtoapp && ./shift_manager.bash stop");
+            sleep(3);
+            system("cd $snapshotDir && echo y | ./shift-snapshot.sh restore");
+            system("cd $pathtoapp && ./shift_manager.bash reload");
 
-          // Reset counters
-          echo "\t\t\tFinally, I will reset the counter for you...\n";
-          $query = "UPDATE $table SET counter='0', time=time()";
-          $db->exec($query) or die("[ FORKING ] Unable to set counter to 0!");
-        }else{
-          echo "\t\t\tWe hit max_count and want to restore from snapshot.\n
+            // Reset counters
+            echo "\t\t\tFinally, I will reset the counter for you...\n";
+            $query = "UPDATE $table SET counter='0', time=time()";
+            $db->exec($query) or die("[ FORKING ] Unable to set counter to 0!");
+        } else {
+            echo "\t\t\tWe hit max_count and want to restore from snapshot.\n
                 \t\t\tHowever, path to snapshot directory ($snapshotDir) does not seem to exist.\n
                 \t\t\tDid you install shift-snapshot?\n";
         }
 
-// If counter + current count is not greater than $max_count, add current count to our database...
+        // If counter + current count is not greater than $max_count, add current count to our database...
     } else {
+        $query = "UPDATE $table SET counter=counter+$count, time=time()";
+        $db->exec($query) or die("[ FORKING ] Unable to plus the counter!");
 
-	    $query = "UPDATE $table SET counter=counter+$count, time=time()";
-    	$db->exec($query) or die("[ FORKING ] Unable to plus the counter!");
+        echo "\t\t\t".($counter + $count)." is fine. Restoring starts at: $max_count \n";
 
-    	echo "\t\t\t".($counter + $count)." is fine. Restoring starts at: $max_count \n";
+        // Check snapshot setting
+        if ($createsnapshot === false) {
+            echo "\t\t\tSnapshot setting is disabled.\n";
+        }
 
-    	// Check snapshot setting
-    	if($createsnapshot === false){
-    		echo "\t\t\tSnapshot setting is disabled.\n";
-    	}
-
-    	// If counter + current count are smaller than $max_count AND option $createsnapshot is true, create a new snapshot
-    	if(($counter + $count) < $max_count && $createsnapshot === true){
-    		
-    		echo "\t\t\tDo we have a new snapshot for today?.. ";
-        // It's safe to create a daily snapshot and the setting is enabled.
-    		// Let's check if a snapshot was already created today...
-    		// Check if path to shift-snapshot exists..
-        if(file_exists($snapshotDir)){
-          
-          $snapshots = glob($snapshotDir.'snapshot/shift_db'.date("d-m-Y").'*.snapshot.tar');
-          if (!empty($snapshots)) {
-        
-            echo "YES!\n";
+        // If counter + current count are smaller than $max_count AND option $createsnapshot is true, create a new snapshot
+        if (($counter + $count) < $max_count && $createsnapshot === true) {
+            echo "\t\t\tDo we have a new snapshot for today?.. ";
+            // It's safe to create a daily snapshot and the setting is enabled.
+            // Let's check if a snapshot was already created today...
+            // Check if path to shift-snapshot exists..
+            if (file_exists($snapshotDir)) {
+                $snapshots = glob($snapshotDir.'snapshot/shift_db'.date("d-m-Y").'*.snapshot.tar');
+                if (!empty($snapshots)) {
+                    echo "YES!\n";
             
-            echo "\t\t\tGoing to remove snapshots older than $max_snapshots days...\n";
-              $files = glob($snapshotDir.'snapshot/shift_db*.snapshot.tar');
-              foreach($files as $file){
-                if(is_file($file)){
-                    if(time() - filemtime($file) >= 60 * 60 * 24 * $max_snapshots){
-                      if(unlink($file)){
-                        echo "\t\t\tDeleted snapshot $file\n";
-                      }
+                    echo "\t\t\tGoing to remove snapshots older than $max_snapshots days...\n";
+                    $files = glob($snapshotDir.'snapshot/shift_db*.snapshot.tar');
+                    foreach ($files as $file) {
+                        if (is_file($file)) {
+                            if (time() - filemtime($file) >= 60 * 60 * 24 * $max_snapshots) {
+                                if (unlink($file)) {
+                                    echo "\t\t\tDeleted snapshot $file\n";
+                                }
+                            }
+                        }
+                    }
+
+                    echo "\t\t\tDone!\n\n";
+                } else {
+                    echo "\n\t\t\tNo snapshot exists for today, I'll create one for you now!\n";
+              
+                    ob_start();
+                    $create = passthru("cd $snapshotDir && ./shift-snapshot.sh create");
+                    $check_createoutput = ob_get_contents();
+                    ob_end_clean();
+
+                    // If buffer contains "OK snapshot created successfully"
+                    if (strpos($check_createoutput, 'OK snapshot created successfully') !== false) {
+                        $Tmsg = "Created daily snapshot on ".gethostname().".";
+                        echo "\t\t\t".$Tmsg."\n";
+                        sendMessage($Tmsg, $restoreEnable);
                     }
                 }
-              }
-
-            echo "\t\t\tDone!\n\n";
-            
-          }else{
-            echo "\n\t\t\tNo snapshot exists for today, I'll create one for you now!\n";
-              
-            ob_start();
-            $create = passthru("cd $snapshotDir && ./shift-snapshot.sh create");
-            $check_createoutput = ob_get_contents();
-            ob_end_clean();
-
-            // If buffer contains "OK snapshot created successfully"
-            if(strpos($check_createoutput, 'OK snapshot created successfully') !== false){
-              $Tmsg = "Created daily snapshot on ".gethostname().".";
-              echo "\t\t\t".$Tmsg."\n";
-              sendMessage($Tmsg, $restoreEnable);
-            }
-          }
-        }else{
-          // Path to shift-snapshot does not exist..
-          echo "\t\t\tYou have shift-snapshot enabled, but the path to shift-snapshot does not seem to exist.\n
+            } else {
+                // Path to shift-snapshot does not exist..
+                echo "\t\t\tYou have shift-snapshot enabled, but the path to shift-snapshot does not seem to exist.\n
                 \t\t\tDid you install shift-snapshot?\n";
+            }
         }
-    	}
     }
