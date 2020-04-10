@@ -69,20 +69,6 @@ if (($fork_counter + $counted_now) >= $max_count) {
 
             if (!empty($snapshots)) {
                 echo "YES!\n";
-        
-                echo "\t\t\tGoing to remove snapshots older than $max_snapshots days...\n";
-                $files = glob($snapshotDir.'snapshot/shift_db*.snapshot.tar');
-                foreach ($files as $file) {
-                    if (is_file($file)) {
-                        if (time() - filemtime($file) >= 60 * 60 * 24 * $max_snapshots) {
-                            if (unlink($file)) {
-                                echo "\t\t\tDeleted snapshot $file\n";
-                            }
-                        }
-                    }
-                }
-
-                echo "\t\t\tDone!\n\n";
                 
             } else {
                 echo "\n\t\t\tNo snapshot exists for today, I'll create one for you now!\n";
@@ -98,6 +84,22 @@ if (($fork_counter + $counted_now) >= $max_count) {
                     echo "\t\t\t".$Tmsg."\n";
                     sendMessage($Tmsg, $restoreEnable);
                 }
+
+                echo "\t\t\tGoing to remove snapshots older than $max_snapshots days...\n";
+
+                $files = glob($snapshotDir.'snapshot/shift_db*.snapshot.tar');
+                
+                foreach ($files as $file) {
+                    if (is_file($file)) {
+                        if (time() - filemtime($file) >= 60 * 60 * 24 * $max_snapshots) {
+                            if (unlink($file)) {
+                                echo "\t\t\tDeleted snapshot $file\n";
+                            }
+                        }
+                    }
+                }
+
+                echo "\t\t\tDone!\n\n";
             }
         } else {
             // Path to shift-snapshot does not exist..
