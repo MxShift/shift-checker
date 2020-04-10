@@ -1,6 +1,6 @@
 <?php
 
-echo "[ FORKING ]\n\n";
+echo "\n[ FORKING ]\n\n";
 echo "\t\t\tGoing to check for forked status now...\n";
 
 // Set the database to save our counts to
@@ -47,8 +47,10 @@ if (($fork_counter + $counted_now) >= $max_count) {
             \t\t\tpath to snapshot directory ($snapshotDir) does not seem to exist.\n";
     }
 
-// If fork_counter + current count is not greater than $max_count, add current count to our database
-} else {
+} 
+
+// else
+if (($fork_counter + $counted_now) <= $max_count) {
 
     $db_data["fork_counter"] = $fork_counter + $counted_now;
 
@@ -109,6 +111,7 @@ if (($fork_counter + $counted_now) >= $max_count) {
     }
 }
 
+// Save database to file
 $fh = fopen($database_j, 'w')
       or die("Error opening db.json file");
 fwrite($fh, json_encode($db_data, JSON_UNESCAPED_UNICODE));

@@ -6,7 +6,7 @@
    * @license https://github.com/lepetitjan/shift-checker/blob/master/LICENSE
    */
 
-echo "[ SYNCING ]\n";
+echo "\n[ SYNCING ]\n\n";
 
 // Start to check syncing
 echo "\t\t\tSyncing: ";
@@ -104,6 +104,9 @@ if ($restoreEnable === true) {
         ."\nSyncing Slave:    ".json_encode($syncingSlave).""
         ."\nForging Slave:    ".$forgingSlave."```";
     }
+
+    // START UPDATE HERE
+    // Switch from SQLite3 to JSON file
 
     //Going to use database for counting rebuilds and messages
     $database = $baseDir."check_rebuild.sqlite3";

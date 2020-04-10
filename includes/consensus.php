@@ -1,6 +1,6 @@
 <?php
 
-echo "[ CONSENSUS ]\n";
+echo "\n[ CONSENSUS ]\n\n";
 
   echo "\t\t\tConsensus: ";
 

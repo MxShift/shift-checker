@@ -1,6 +1,6 @@
 <?php
 
-echo "[ STATUS ]\n";
+echo "\n[ STATUS ]\n\n";
 echo "\t\t\tLet's check if our delegate is still running... ";
 
 // Check status with shift_manager.bash. Use PHP's ob_ function to create an output buffer
@@ -24,5 +24,5 @@ echo "\t\t\tLet's check if our delegate is still running... ";
    
   // If status is OK
   } else {
-      echo "YES!\n\n";
+      echo "YES!\n";
   }
