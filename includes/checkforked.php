@@ -41,6 +41,12 @@ if (($fork_counter + $counted_now) >= $max_count) {
 
         $db_data["fork_counter"] = 0;
 
+        // Save database to file
+        $fh = fopen($database_j, 'w')
+        or die("Error opening ".$database_j." file");
+        fwrite($fh, json_encode($db_data, JSON_UNESCAPED_UNICODE));
+        fclose($fh);
+
     } else {
         echo "\t\t\tWe hit max_count and want to restore from snapshot.\n
             \t\t\tHowever, restore from snapshot is not enabled or\n
@@ -55,6 +61,12 @@ if (($fork_counter + $counted_now) <= $max_count) {
     $db_data["fork_counter"] = $fork_counter + $counted_now;
 
     echo "\t\t\t".($fork_counter + $counted_now)." is fine. Restoring starts at: $max_count \n";
+
+    // Save database to file
+    $fh = fopen($database_j, 'w')
+    or die("Error opening ".$database_j." file");
+    fwrite($fh, json_encode($db_data, JSON_UNESCAPED_UNICODE));
+    fclose($fh);
 
     // Check snapshot setting
     if ($createsnapshot === false) {
@@ -113,7 +125,7 @@ if (($fork_counter + $counted_now) <= $max_count) {
 
 // Save database to file
 $fh = fopen($database_j, 'w')
-      or die("Error opening db.json file");
+      or die("Error opening ".$database_j." file");
 fwrite($fh, json_encode($db_data, JSON_UNESCAPED_UNICODE));
 fclose($fh);
 
