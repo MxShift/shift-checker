@@ -256,8 +256,8 @@ if ($restoreEnable === true) {
                 $query = "UPDATE $table SET counter=($counter + 1), time=time()";
                 $db->exec($query) or die("\n\t\t\tUnable to plus the rebuild counter!");
                 // Set pause for waiting node online
-                echo "\t\t\tPause: 10 sec.\n\n";
-                sleep(10);
+                echo "\t\t\tPause: 20 sec. for start node sync.\n\n";
+                sleep(20);
 
             } else {
                 echo "\n\t\t\tRestored: NO!\n\n";
