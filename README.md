@@ -1,5 +1,5 @@
 # shift-checker
-*Current version: 2.1.1*
+*Current version: 2.1.2*
 
 ### Changelog:
 
@@ -48,7 +48,7 @@ Thank you :tada:
 * Telegram: [Mx](https://t.me/voteformx)
 * Ryver: [Mx](https://shiftnrg.ryver.com)
 
-### How to update to v 2.1.1
+### How to update to v 2.1.2
 
 The better way is: 
 * to save data from your old **config.php** file;

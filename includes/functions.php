@@ -1,12 +1,4 @@
 <?php
-    /**
-     * @version 2.1
-     * @author Mx
-     * @link https://github.com/MxShift/shift-checker
-     * @author Jan
-     * @link https://github.com/lepetitjan/shift-checker
-     * @license https://github.com/lepetitjan/shift-checker/blob/master/LICENSE
-     */
 
 // PING function..
 function ping($host, $port=80, $timeout=3)

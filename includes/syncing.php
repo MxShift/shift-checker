@@ -1,10 +1,4 @@
 <?php
-  /**
-   * @version 2.1
-   * @author Mx
-   * @link https://github.com/MxShift/shift-checker
-   * @license https://github.com/lepetitjan/shift-checker/blob/master/LICENSE
-   */
 
 echo "\n[ SYNCING ]\n\n";
 
