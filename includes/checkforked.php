@@ -8,8 +8,14 @@ if (file_exists($database_j)) {
     $str_data = file_get_contents($database_j);
     $db_data = json_decode($str_data, true);
 } else {
-    file_put_contents($database_j, '');
-    $db_data = json_decode('', true);
+    file_put_contents($database_j, '{}');
+    $db_data = json_decode('{}', true);
+}
+
+// Checking if JSON has the necessary keys
+if (!array_key_exists("fork_counter", $db_data)) {
+
+    $db_data["fork_counter"] = 0;
 }
 
 // Tail shift.log
@@ -40,12 +46,7 @@ if (($fork_counter + $counted_now) >= $max_count) {
         echo "\t\t\tFinally, I will reset the counter for you...\n";
 
         $db_data["fork_counter"] = 0;
-
-        // Save database to file
-        $fh = fopen($database_j, 'w')
-        or die("Error opening ".$database_j." file");
-        fwrite($fh, json_encode($db_data, JSON_UNESCAPED_UNICODE));
-        fclose($fh);
+        saveToJSONFile($db_data, $database_j);
 
     } else {
         echo "\t\t\tWe hit max_count and want to restore from snapshot.\n
@@ -59,14 +60,9 @@ if (($fork_counter + $counted_now) >= $max_count) {
 if (($fork_counter + $counted_now) <= $max_count) {
 
     $db_data["fork_counter"] = $fork_counter + $counted_now;
+    saveToJSONFile($db_data, $database_j);
 
     echo "\t\t\t".($fork_counter + $counted_now)." is fine. Restoring starts at: $max_count \n";
-
-    // Save database to file
-    $fh = fopen($database_j, 'w')
-    or die("Error opening ".$database_j." file");
-    fwrite($fh, json_encode($db_data, JSON_UNESCAPED_UNICODE));
-    fclose($fh);
 
     // Check snapshot setting
     if ($createsnapshot === false) {
@@ -123,9 +119,6 @@ if (($fork_counter + $counted_now) <= $max_count) {
     }
 }
 
-// Save database to file
-$fh = fopen($database_j, 'w')
-      or die("Error opening ".$database_j." file");
-fwrite($fh, json_encode($db_data, JSON_UNESCAPED_UNICODE));
-fclose($fh);
+// Finally, make sure the data is saved to a file
+saveToJSONFile($db_data, $database_j);
 
