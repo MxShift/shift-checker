@@ -213,3 +213,13 @@ function sendMessage($message, $sync=false)
         passthru("curl -s -d 'chat_id=$telegramId&parse_mode=Markdown&text=$message' $telegramUrl >/dev/null");
     }
 }
+
+// Save an array to JSON file
+function saveToJSONFile($arr, $file_path)
+{
+    $fh = fopen($file_path, 'w')
+    or die("Error opening ".$file_path." file");
+    fwrite($fh, json_encode($arr, JSON_UNESCAPED_UNICODE));
+    fclose($fh);
+
+}
