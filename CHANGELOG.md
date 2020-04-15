@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.1.2 (2020-04-01)
+
+- Database switch from SQLite3 to a JSON file
+- Improve of 'syncing' module stability
+- Names of nodes variables. There are no masters no slaves anymore %)
+- 'syncing' module rename to 'recovery'
+- Config usability improvement
+- Changelog file added
+- Readme corrections
+
 ## 2.1.1 (2018-07-01)
 
 - Some stuff for update with git
