@@ -18,7 +18,7 @@ echo "\n[ CONSENSUS ]\n\n";
       }
 
       // Check height, consensus and syncing on Master node
-      $statusMaster = @file_get_contents($masternode.":".$masterport."/api/loader/status/sync");
+      $statusMaster = @file_get_contents($mainnode.":".$mainport."/api/loader/status/sync");
       
       if ($statusMaster === false) {
           $consensusMaster = 0;
@@ -38,7 +38,7 @@ echo "\n[ CONSENSUS ]\n\n";
       }
 
       // Check height, consensus and syncing on Slave node
-      $statusSlave = @file_get_contents($slavenode.":".$slaveport."/api/loader/status/sync");
+      $statusSlave = @file_get_contents($backupnode.":".$backupport."/api/loader/status/sync");
 
       if ($statusSlave === false) {
           $consensusSlave = 0;
@@ -63,8 +63,8 @@ echo "\n[ CONSENSUS ]\n\n";
       // Secret to array
       $sec_array = explode(" ", $secret);
 
-      $forgingSlave = checkForging($slavenode.":".$slaveport, $public);
-      $forgingMaster = checkForging($masternode.":".$masterport, $public);
+      $forgingSlave = checkForging($backupnode.":".$backupport, $public);
+      $forgingMaster = checkForging($mainnode.":".$mainport, $public);
 
       echo "\t\t\tHeight Explorer: $heightExplorer\n\n";
 
@@ -81,14 +81,14 @@ echo "\n[ CONSENSUS ]\n\n";
       echo("\t\tForging Slave: ".$forgingSlave."\n\n");
 
       // Check if we are the master node
-      if ($master === false) {
+      if ($main === false) {
           // If we land here, we are the slave
           echo "\t\t\tSlave: true\n";
 
           echo "\t\t\tMaster online: ";
           // Check if the master is online
           $find = array("http://","https://");
-          $up = ping(str_replace($find, "", $masternode), $masterport);
+          $up = ping(str_replace($find, "", $mainnode), $mainport);
 
           if ($up) {
               // Master is online. Do nothing..
@@ -96,7 +96,7 @@ echo "\n[ CONSENSUS ]\n\n";
 
               // Check if we are forging
               echo "\t\t\tSlave forging: ";
-              $forging = checkForging($slavenode.":".$slaveport, $public);
+              $forging = checkForging($backupnode.":".$backupport, $public);
         
               // If we are forging..
               if ($forging == "true") {
@@ -116,7 +116,7 @@ echo "\n[ CONSENSUS ]\n\n";
                       // Enable forging on slave
                       echo "true\n";
                       echo "\t\t\tEnabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n";
-                      enableForging($slavenode.":".$slaveport, $secret);
+                      enableForging($backupnode.":".$backupport, $secret);
                   } else {
                       // Master is synced. Do nothing..
                       echo "false\n\n\t\t\tEverything will be okay.\n\n";
@@ -127,7 +127,7 @@ echo "\n[ CONSENSUS ]\n\n";
               echo "false!\n";
 
               echo "\t\t\tSlave forging: ";
-              $forging = checkForging($slavenode.":".$slaveport, $public);
+              $forging = checkForging($backupnode.":".$backupport, $public);
         
               // If we are forging..
               if ($forging == "true") {
@@ -156,7 +156,7 @@ echo "\n[ CONSENSUS ]\n\n";
                           sendMessage($Tmsg);
 
                           echo "\t\t\tDisabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n";
-                          disableForging($slavenode.":".$slaveport, $secret);
+                          disableForging($backupnode.":".$backupport, $secret);
 
                           echo "\t\t\tRestarting Shift on Slave\n\n";
                           system("cd $pathtoapp && ./shift_manager.bash reload");
@@ -178,7 +178,7 @@ echo "\n[ CONSENSUS ]\n\n";
                   sendMessage($Tmsg);
 
                   echo "\t\t\tEnabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
-                  enableForging($slavenode.":".$slaveport, $secret);
+                  enableForging($backupnode.":".$backupport, $secret);
               }
           }
       } else {
@@ -186,7 +186,7 @@ echo "\n[ CONSENSUS ]\n\n";
           echo "\t\t\tMaster: true\n";
         
           // Check if we are forging
-          $forging = checkForging($masternode.":".$masterport, $public);
+          $forging = checkForging($mainnode.":".$mainport, $public);
 
           // If we are forging..
           if ($forging == "true") {
@@ -195,7 +195,7 @@ echo "\n[ CONSENSUS ]\n\n";
               // Forging on the slave should be/stay disabled for secret until we perform a consensus check.
               // This way we ensure that forging is only disabled on nodes the master chooses.
               echo "\t\t\tDisabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n";
-              disableForging($slavenode.":".$slaveport, $secret);
+              disableForging($backupnode.":".$backupport, $secret);
 
               // Check consensus on master node
               // If consensus is the same as or lower than the set threshold. Going to restart Shift on Master
@@ -222,10 +222,10 @@ echo "\n[ CONSENSUS ]\n\n";
                           echo "\t\t\tConsensus on slave is sufficient enough to switch to..\n";
               
                           echo "\t\t\tEnabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n";
-                          enableForging($slavenode.":".$slaveport, $secret);
+                          enableForging($backupnode.":".$backupport, $secret);
 
                           echo "\t\t\tDisabling forging on master for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
-                          disableForging($masternode.":".$masterport, $secret);
+                          disableForging($mainnode.":".$mainport, $secret);
                       }
                   }
 
@@ -242,10 +242,10 @@ echo "\n[ CONSENSUS ]\n\n";
                       sendMessage($Tmsg);
 
                       echo "\t\t\tEnabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n";
-                      enableForging($slavenode.":".$slaveport, $secret);
+                      enableForging($backupnode.":".$backupport, $secret);
 
                       echo "\t\t\tDisabling forging on master for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
-                      disableForging($masternode.":".$masterport, $secret);
+                      disableForging($mainnode.":".$mainport, $secret);
 
                       echo "\t\t\tRestarting Shift on Master\n";
                       passthru("cd $pathtoapp && ./shift_manager.bash reload");
@@ -265,7 +265,7 @@ echo "\n[ CONSENSUS ]\n\n";
                   echo "\t\t\tMaster forging: false!\n";
               }
               // Check if the slave is forging
-              $forging = checkForging($slavenode.":".$slaveport, $public);
+              $forging = checkForging($backupnode.":".$backupport, $public);
 
               // If slave is forging..
               if ($forging == "true") {
@@ -307,11 +307,11 @@ echo "\n[ CONSENSUS ]\n\n";
                               } else {
                                   echo "\t\t\tMaster node is synced!\n";
                                   echo "\t\t\tEnabling forging on master for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
-                                  enableForging($masternode.":".$masterport, $secret);
+                                  enableForging($mainnode.":".$mainport, $secret);
 
                                   echo "\t\t\tDisabling forging on slave..\n";
                                   echo "\t\t\tDisabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
-                                  disableForging($slavenode.":".$slaveport, $secret);
+                                  disableForging($backupnode.":".$backupport, $secret);
                               }
                           }
                       }
@@ -333,11 +333,11 @@ echo "\n[ CONSENSUS ]\n\n";
 
                   if ($consensusMaster > $consensusSlave && $heightMaster > ($heightSlave - 10)) {
                       echo "\t\t\tEnabling forging on master for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
-                      enableForging($masternode.":".$masterport, $secret);
+                      enableForging($mainnode.":".$mainport, $secret);
 
                   } else {
                       echo "\t\t\tEnabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
-                      enableForging($slavenode.":".$slaveport, $secret);
+                      enableForging($backupnode.":".$backupport, $secret);
 
                   } // END: COMPARE CONSENSUS
               } // END: SLAVE FORGING IS FALSE
