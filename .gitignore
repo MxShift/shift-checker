@@ -2,6 +2,5 @@
 *.sqlite3
 db.json
 config.php
-config.example.php
 checkdelegate.lock
 test.php
