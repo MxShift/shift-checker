@@ -13,20 +13,20 @@
 /*  USER CONFIG
 __________________________ */
 
-    $nodeName       = "Your Node Name".gethostname();    // Name of this node delegate for Telegram messages.
+    $nodeName       = "Your Node Name"." on ".gethostname();    // Name of this node delegate for Telegram messages.
 
 // Consensus settings
-    $consensusEnable= true;                                	// Enable consensus check? Be sure to check $nodes first..
-    $master         = false;                                 // Is this your master node? true/false
-    $masternode     = "http://NODE_IP";                   // Master node. Use node IP address or http://127.0.0.1 if it's a local node
-    $masterport     = 9405;                                 // Master port. 
-    $slavenode      = "http://NODE_IP";      			// Slave node. Use node IP address or http://127.0.0.1 if it's a local node
-    $slaveport      = 9405;                                 // Slave port
-    $secret         = "your twelve word passphrase is placed here"; 					// Required for consensus check
+    $consensusEnable    = true;                  // true is for enable consensus check. Be sure to add nodes addresses first
+    $main               = true;                  // Is this your main node? true/false
+    $mainnode           = "http://NODE_IP";      // Main node IP address. Use node IP address or http://127.0.0.1 if it's a local node
+    $mainport           = 9405;                  // Main node port
+    $backupnode         = "http://NODE_IP";      // Backup node IP address. Use node IP address or http://127.0.0.1 if it's a local node
+    $backupport         = 9405;                  // Backup node port
+    $secret             = "passphrase";          // Your twelve word passphrase is placed here. Required for consensus check
 
 // Recovery settings
     $restoreEnable  = true; 
-	$apiHost        = "http://127.0.0.1:9405";		// Used to calculate $publicKey by $secret for consensus check and to check syncing. Use http://127.0.0.1:netPort    
+	$apiHost        = "http://127.0.0.1:9405";		        // Used to calculate $publicKey by $secret for consensus check and to check syncing. Use http://127.0.0.1:netPort    
     $explorer	    = "https://testnet.shiftnrg.com.mx"; 	// Used to check blockchain height
 
 // Snapshot settings
@@ -36,8 +36,8 @@ __________________________ */
 // Telegram Bot
     $telegramAll	= false;				// Change to false to disable all messages exept recovery messages from Telegram bot
     $SyncingMessage = true;					// Change to true if you want recieve messagese of your recovery status
-    $telegramId 	= "between_double_quotation_marks"; 					// Your Telegram ID
-    $telegramApiKey = "between_double_quotation_marks"; 					// Your Telegram API key 
+    $telegramId 	= "here"; 				// Your Telegram ID
+    $telegramApiKey = "here"; 				// Your Telegram API key 
 
 
 /*  GENERAL CONFIG
@@ -49,30 +49,30 @@ __________________________ */
 
 // You may leave the settings below as they are
 
-	$date		= date("Y-m-d H:i:s");			// Current date
-	$pathtoapp	= $homeDir."shift/";			// Full path to your shift installation	
-	$baseDir	= dirname(__FILE__)."/";		// Folder which contains THIS file
+	$date		= date("Y-m-d H:i:s");			    // Current date
+	$pathtoapp	= $homeDir."shift/";			    // Full path to your shift installation	
+	$baseDir	= dirname(__FILE__)."/";		    // Folder which contains THIS file
 	$lockfile	= $baseDir."checkdelegate.lock";	// Name of our lock file
-    $database	= $baseDir."db.json";	// Database name to use
-	$msg 		= "\"cause\":3";			// Message that is printed when forked
+    $database	= $baseDir."db.json";	            // Database name to use
+	$msg 		= "\"cause\":3";			        // Message that is printed when forked
 	$shiftlog 	= $pathtoapp."logs/shift.log";		// Needs to be a FULL path, so not ~/shift
-	$linestoread	= 30;					// How many lines to read from the end of $shiftlog
-	$max_count 	= 3;					// How may times $msg may occur
-	$okayMsg 	= "√";					// 'Okay' message from shift_manager.bash
+	$linestoread	= 30;					        // How many lines to read from the end of $shiftlog
+	$max_count 	= 3;					            // How may times $msg may occur
+	$okayMsg 	= "√";					            // 'Okay' message from shift_manager.bash
 
 // Consensus settings
-	$threshold      = 20;                                   // Percentage of consensus threshold
+	$threshold      = 20;                           // Percentage of consensus threshold
 
 // Syncing settings
-	$restoredMsg 	= "OK snapshot restored successfully.";	// 'Okay' message from shift-snapshot	 	
-	$snapThreshold  = 3200;                 		// Threshold in blocks. Use 3200 for daily snapshots and 133 for hourly
+	$restoredMsg 	= "OK snapshot restored successfully.";	    // 'Okay' message from shift-snapshot	 	
+	$snapThreshold  = 3200;                 		            // Threshold in blocks. Use 3200 for daily snapshots and 133 for hourly
 
 // Snapshot settings
-	$snapshotDir	= $homeDir."shift-snapshot/";		// Base folder of shift-snapshot
+	$snapshotDir	= $homeDir."shift-snapshot/";	// Base folder of shift-snapshot
 
 // Log file rotation
-	$logfile 	= $baseDir."logs/checkdelegate.log";	// The location of your log file (see section crontab on Github)
-	$max_logfiles	= 3;					// How many log files to preserve? (in days)  
-	$logsize 	= 5242880;				// Max file size, default is 5 MB
+	$logfile 	= $baseDir."logs/checkdelegate.log";            // The location of your log file (see section crontab on Github)
+	$max_logfiles	= 3;					        // How many log files to preserve? (in days)  
+	$logsize 	= 5242880;				            // Max file size, default is 5 MB
 
 ?>
