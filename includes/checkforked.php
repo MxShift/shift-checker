@@ -4,11 +4,11 @@ echo "\n[ FORKING ]\n\n";
 echo "\t\t\tGoing to check for forked status now...\n";
 
 // Set the database to save our counts to
-if (file_exists($database_j)) {
-    $str_data = file_get_contents($database_j);
+if (file_exists($database)) {
+    $str_data = file_get_contents($database);
     $db_data = json_decode($str_data, true);
 } else {
-    file_put_contents($database_j, '{}');
+    file_put_contents($database, '{}');
     $db_data = json_decode('{}', true);
 }
 
@@ -32,7 +32,7 @@ if (($fork_counter + $counted_now) >= $max_count) {
 
     // If shift-snapshot directory exists and restore from snapshot is enabled
     if (file_exists($snapshotDir) && $createsnapshot) {
-        $Tmsg = "Hit max_count on ".gethostname().". I am going to restore from a snapshot.";
+        $Tmsg = "Hit max_count on ".$nodeName.". I am going to restore from a snapshot.";
         echo "\t\t\t".$Tmsg."\n";
         sendMessage($Tmsg);
 
@@ -46,7 +46,7 @@ if (($fork_counter + $counted_now) >= $max_count) {
         echo "\t\t\tFinally, I will reset the counter for you...\n";
 
         $db_data["fork_counter"] = 0;
-        saveToJSONFile($db_data, $database_j);
+        saveToJSONFile($db_data, $database);
 
     } else {
         echo "\t\t\tWe hit max_count and want to restore from snapshot.\n
@@ -60,7 +60,7 @@ if (($fork_counter + $counted_now) >= $max_count) {
 if (($fork_counter + $counted_now) <= $max_count) {
 
     $db_data["fork_counter"] = $fork_counter + $counted_now;
-    saveToJSONFile($db_data, $database_j);
+    saveToJSONFile($db_data, $database);
 
     echo "\t\t\t".($fork_counter + $counted_now)." is fine. Restoring starts at: $max_count \n";
 
@@ -90,7 +90,7 @@ if (($fork_counter + $counted_now) <= $max_count) {
 
                 // If buffer contains "OK snapshot created successfully"
                 if (strpos($check_createoutput, 'OK snapshot created successfully') !== false) {
-                    $Tmsg = "Created daily snapshot on ".gethostname().".";
+                    $Tmsg = "Created daily snapshot on ".$nodeName.".";
                     echo "\t\t\t".$Tmsg."\n";
                     sendMessage($Tmsg, $restoreEnable);
                 }
@@ -120,5 +120,5 @@ if (($fork_counter + $counted_now) <= $max_count) {
 }
 
 // Finally, make sure the data is saved to a file
-saveToJSONFile($db_data, $database_j);
+saveToJSONFile($db_data, $database);
 
