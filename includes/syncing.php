@@ -1,9 +1,9 @@
 <?php
 
-echo "\n[ SYNCING ]\n\n";
+echo "\n[ RECOVERY ]\n\n";
 
 // Start to check syncing
-echo "\t\t\tSyncing: ";
+echo "\t\t\tRecovery: ";
 
 if ($restoreEnable === true) {
     echo "enabled\n";
@@ -48,7 +48,7 @@ if ($restoreEnable === true) {
         echo "\t\t\tHeight Local: $heightLocal \n";
         echo("\t\t\tSyncing Local: ".json_encode($syncingLocal)."\n\n");
 
-        $dataTmsg = "*".gethostname()."*:
+        $dataTmsg = "*".$nodeName."*:
         ```\n\nHeight Explorer: ".$heightBlockchain.""
         ."\nConsensus Node:  ".$consensusLocal."%"
         ."\nSyncing Node:    ".json_encode($syncingLocal).""
@@ -57,184 +57,158 @@ if ($restoreEnable === true) {
     } else {
 
         // Consensus is enabled, variables are defined and shown from the CONSENSUS block
-        if ($master === true) {
-            $heightLocal = $heightMaster;
-            $syncingLocal = $syncingMaster;
-            $consensusLocal = $consensusMaster;
+        if ($main === true) {
+            $heightLocal = $heightMain;
+            $syncingLocal = $syncingMain;
+            $consensusLocal = $consensusMain;
 
-            // If Explorer is down => Use Slave height
+            // If Explorer is down => Use Backup height
             if ($heightExplorer > 0) {
                 $heightBlockchain = $heightExplorer;
 
             } else {
-                $heightBlockchain = $heightSlave;
+                $heightBlockchain = $heightBackup;
 
             }
 
         } else {
-            // We are Slave here
-            $heightLocal = $heightSlave;
-            $syncingLocal = $syncingSlave;
-            $consensusLocal = $consensusSlave;
+            // We are Backup here
+            $heightLocal = $heightBackup;
+            $syncingLocal = $syncingBackup;
+            $consensusLocal = $consensusBackup;
 
-            // If Explorer is down => Use Master height
+            // If Explorer is down => Use Main height
             if ($heightExplorer > 0) {
                 $heightBlockchain = $heightExplorer;
 
             } else {
-                $heightBlockchain = $heightSlave;
+                $heightBlockchain = $heightBackup;
 
             }
         }
 
-        $dataTmsg = "*".gethostname()."*:
+        $dataTmsg = "*".$nodeName."*:
         ```\n\nHeight Explorer:  ".$heightExplorer.""
-        ."\n\nConsensus Master: ".$consensusMaster."%"
-        ."\nHeight Master:    ".$heightMaster.""
-        ."\nSyncing Master:   ".json_encode($syncingMaster).""
-        ."\nForging Master:   ".$forgingMaster.""
-        ."\n\nConsensus Slave:  ".$consensusSlave."%"
-        ."\nHeight Slave:     ".$heightSlave.""
-        ."\nSyncing Slave:    ".json_encode($syncingSlave).""
-        ."\nForging Slave:    ".$forgingSlave."```";
+        ."\n\nConsensus Main: ".$consensusMain."%"
+        ."\nHeight Main:    ".$heightMain.""
+        ."\nSyncing Main:   ".json_encode($syncingMain).""
+        ."\nForging Main:   ".$forgingMain.""
+        ."\n\nConsensus Backup:  ".$consensusBackup."%"
+        ."\nHeight Backup:     ".$heightBackup.""
+        ."\nSyncing Backup:    ".json_encode($syncingBackup).""
+        ."\nForging Backup:    ".$forgingBackup."```";
     }
-
-    // START UPDATE HERE
-    // Switch from SQLite3 to JSON file
 
     //Going to use database for counting rebuilds and messages
-    $database = $baseDir."check_rebuild.sqlite3";
-    $db = new SQLite3($database) or die("\n\t\t\tUnable to open database");
-    $table = "rebuilds";
-
-    // Create table if not exists
-    $db->exec("CREATE TABLE IF NOT EXISTS $table (
-                id INTEGER PRIMARY KEY,  
-                counter INTEGER,
-                time INTEGER)");
-
-    // Let's check if any rows exists in our table
-    $check_exists = $db->query("SELECT count(*) AS count FROM $table");
-    $row_exists   = $check_exists->fetchArray();
-    $numExists    = $row_exists['count'];
-
-    // If no rows exist in our table, add one
-    if ($numExists < 1) {
-        echo "\t\t\tNo rows... Adding a row for you.\n";
-
-        $insert = "INSERT INTO $table (counter, time) VALUES ('0', time())";
-        $db->exec($insert) or die("\n\t\t\tFailed to add a row!");
+    if (file_exists($database)) {
+        $str_data = file_get_contents($database);
+        $db_data = json_decode($str_data, true);
+    } else {
+        file_put_contents($database, '{}');
+        $db_data = json_decode('{}', true);
     }
 
-    // Get counter value from our database
-    $check_count    = $db->query("SELECT * FROM $table LIMIT 1");
-    $row            = $check_count->fetchArray();
-    $counter        = $row['counter'];
+    // Checking if JSON has the necessary keys
+    if (!array_key_exists("rebuild_message_counter", $db_data)) {
 
-    //echo "\n\t\t\tCounter: $counter\n\n"; //DELETE
+        $db_data["rebuild_message_counter"] = 0;
+        $db_data["recovery_from_snapshot"] = true;
+        $db_data["syncing_message_sent"] = false;
+    }
+
 
     // We are going to check a Local node => $apiHost = "http://127.0.0.1:netPort"
     if ($heightLocal < ($heightBlockchain - 10)) {
+
         // Going to check if it syncing
         if ($syncingLocal === true) {
-            // Local node is syncing. Everything going to be okay
+
+            // Local node is syncing. Let's check if we can much faster restore from a snapshot
             if ($heightLocal < ($heightBlockchain - $snapThreshold)) {
 
-                // Disabling double messaging
-                if ($counter < 2) {
-                    $Tmsg = "*".gethostname()."*: node is syncing, but reached a threshold.\n\t\t\tGoing to restore from snapshot.";
+                // Checking if we don't have failed recoveries from a local snapshot
+                if ($db_data["recovery_from_snapshot"]) {
+
+                    $Tmsg = "*".$nodeName."*: node is syncing, but reached a threshold.\n\t\t\tGoing to restore from snapshot.";
                     echo "\t\t\t".$Tmsg."\n";
-                    // Second parameter $restoreEnable = true; for syncing massages if enabled
-                    sendMessage($Tmsg, $restoreEnable);
-                    sendMessage($dataTmsg, $restoreEnable);
-                }
 
-                echo "\t\t\tRestore from the last snapshot: \n";
-                system("cd $pathtoapp && ./shift_manager.bash stop");
-                sleep(3);
-                $restored = system("cd $snapshotDir && echo y | ./shift-snapshot.sh restore");
-                system("cd $pathtoapp && ./shift_manager.bash reload");
-
-                echo "\n\n\t\t\tRestored: $restored";
-
-                if ($restored == $restoredMsg) {
-                    echo "\n\t\t\tRestored: true\n\n";
-
-                    // Lets reset counting in database
-                    $query = "UPDATE $table SET counter='0', time=time()";
-                    $db->exec($query) or die("\n\t\t\tUnable to set counter to 0!");
-
-                    $Tmsg = "*".gethostname()."*: blockchain is restored from the last snapshot!";
+                    // Second parameter $restoreEnable must be true for sending syncing messages to telegram
                     sendMessage($Tmsg, $restoreEnable);
                     sendMessage($dataTmsg, $restoreEnable);
 
-                } else {
-                    echo "\n\t\t\tRestored: NO!";
+                    echo "\t\t\tRestore from the last snapshot: \n";
+                    system("cd $pathtoapp && ./shift_manager.bash stop");
+                    sleep(3);
+                    $restored = system("cd $snapshotDir && echo y | ./shift-snapshot.sh restore");
+                    system("cd $pathtoapp && ./shift_manager.bash reload");
 
-                    // Disabling double messaging
-                    if ($counter < 1) {
-                        $Tmsg = "*".gethostname()."*: error! Going to rebuild with shift-manager.";
+                    echo "\n\n\t\t\tRestored: $restored";
+
+                    if ($restored == $restoredMsg) {
+
+                        // Set counter for next good message
+                        $db_data["rebuild_message_counter"] += 1;
+                        saveToJSONFile($db_data, $database);
+
+                        $Tmsg = "*".$nodeName."*: blockchain is restored from the last snapshot!";
+                        sendMessage($Tmsg, $restoreEnable);
+                        sendMessage($dataTmsg, $restoreEnable);
+
+                    // Restorind blockchain from a local snapshot is failed.
+                    // Try to rebuild from the last official snapshot
+                    } else {
+
+                        echo "\n\t\t\tRestored: NO!";
+
+                        $db_data["recovery_from_snapshot"] = false;
+                        $db_data["rebuild_message_counter"] += 1;
+                        saveToJSONFile($db_data, $database);
+
+                        $Tmsg = "*".$nodeName."*: error! Going to rebuild with shift-manager.";
                         sendMessage($Tmsg, $restoreEnable);
                         sendMessage($dataTmsg, $restoreEnable);
                         echo "\n\t\t\t".$Tmsg."\n\n";
-                    }
 
-                    if ($counter < 1) {
                         // Going to rebuild
                         system("cd $pathtoapp && ./shift_manager.bash rebuild");
-                        // Add 1 to database
-                        $query = "UPDATE $table SET counter='1', time=time()";
-                        $db->exec($query) or die("\n\t\t\tUnable to plus the rebuild counter!");
 
-                    } else {
+                        // Pause to wait for start node sync.
+                        echo "\t\t\tPause: 120 sec.\n\n";
+                        sleep(120);                        
 
-                        // Set to send message every 2 minutes
-                        if (($counter % 2) !== 0 && $counter < 6) {
-                            $Tmsg = "*".gethostname()."*: Restore from snapshot failed.\n\t\t\tNode is rebuilded and syncing now.";
-                            sendMessage($Tmsg, $restoreEnable);
-                            sendMessage($dataTmsg, $restoreEnable);
-                            echo "\n\t\t\t".$Tmsg."\n\n";
-                        }
-
-                        // Sending set for every 5 minutes
-                        if ($counter > 6 && ($counter % 5) === 0 && $counter < 16) {
-                            $Tmsg = "*".gethostname()."*: Restore from snapshot failed.\n\t\t\tNode is rebuilded and syncing now.";
-                            sendMessage($Tmsg, $restoreEnable);
-                            sendMessage($dataTmsg, $restoreEnable);
-                            echo "\n\t\t\t".$Tmsg."\n\n";
-                        }
-
-                        // Sending set for every 10 minutes
-                        if ($counter > 16 && ($counter % 10) === 0) {
-                            $Tmsg = "*".gethostname()."*: Restore from snapshot failed.\n\t\t\tNode is rebuilded and syncing now.";
-                            sendMessage($Tmsg, $restoreEnable);
-                            sendMessage($dataTmsg, $restoreEnable);
-                            echo "\n\t\t\t".$Tmsg."\n\n";
-                        }
-
-                        // Add +1 to counter
-                        $query = "UPDATE $table SET counter=($counter + 1), time=time()";
-                        $db->exec($query) or die("\n\t\t\tUnable to plus the rebuild counter!");
                     }
                 }
 
+            // Node is syncing. Last local snapshot blockchain height is lower than actual node's height.
+            // Just wait for full sync.
             } else {
 
-                if (($counter % 2) !== 0) {
-                    $Tmsg = "*".gethostname()."*: node is syncing.\n\t\t\tAll we need to do is wait... *(~‾▿‾)~*";
+                // Sending a message in the first time and then every 10 minutes
+                if (!$db_data["syncing_message_sent"] || $db_data["rebuild_message_counter"] % 10 === 0) {
+
+                    $Tmsg = "*".$nodeName."*: node is syncing.\n\t\t\tAll we need to do is wait... *(~‾▿‾)~*";
                     echo "\t\t\t".$Tmsg."\n\n";
                     sendMessage($Tmsg, $restoreEnable);
                     sendMessage($dataTmsg, $restoreEnable);
+
+                    $db_data["syncing_message_sent"] = true;
+                    saveToJSONFile($db_data, $database);
                 }
 
                 // Add +1 to counter
-                $query = "UPDATE $table SET counter=($counter + 1), time=time()";
-                $db->exec($query) or die("\n\t\t\tUnable to plus the rebuild counter!");
-            }
+                $db_data["rebuild_message_counter"] += 1;
+                saveToJSONFile($db_data, $database);
 
-        } else {
-            // Local node is probably stuck
-            $Tmsg = "*".gethostname()."*: height threshold is reached and not syncing.\n\t\t\tGoing to restore from snapshot.";
+            }
+        
+        } 
+        
+        // else    
+        // Node is not in synchronizing state. 
+        // The local node is probably stuck
+        if ($syncingLocal === false) {
+
+            $Tmsg = "*".$nodeName."*: height threshold is reached and not syncing.\n\t\t\tGoing to restore from snapshot.";
             echo "\t\t\t".$Tmsg."\n\n";
             sendMessage($Tmsg, $restoreEnable);
             sendMessage($dataTmsg, $restoreEnable);
@@ -247,26 +221,32 @@ if ($restoreEnable === true) {
 
             echo "\n\n\t\t\tRestored: $restored";
 
-            if ($restored == "OK snapshot restored successfully.") {
-                echo "\n\t\t\tRestored: true\n\n";
+            if ($restored == $restoredMsg) {
+
                 // Set counter for next good message
-                $query = "UPDATE $table SET counter=($counter + 1), time=time()";
-                $db->exec($query) or die("\n\t\t\tUnable to plus the rebuild counter!");
+                $db_data["rebuild_message_counter"] += 1;
+                saveToJSONFile($db_data, $database);
+
                 // Set pause for waiting node online
                 echo "\t\t\tPause: 20 sec. for start node sync.\n\n";
                 sleep(20);
 
             } else {
+
                 echo "\n\t\t\tRestored: NO!\n\n";
+
                 // Going to rebuild
-                $Tmsg = "*".gethostname()."*: Error! Going to rebuild with shift-manager.";
+                $Tmsg = "*".$nodeName."*: Error! Going to rebuild with shift-manager.";
                 sendMessage($Tmsg, $restoreEnable);
                 echo "\n\t\t\t".$Tmsg."\n\n";
 
                 system("cd $pathtoapp && ./shift_manager.bash rebuild");
+
                 // Set counter for next good message
-                $query = "UPDATE $table SET counter=($counter + 1), time=time()";
-                $db->exec($query) or die("\n\t\t\tUnable to plus the rebuild counter!");
+                $db_data["rebuild_message_counter"] += 1;
+                saveToJSONFile($db_data, $database);
+
+                // Pause to wait for start node sync.
                 echo "\t\t\tPause: 120 sec.\n\n";
                 sleep(120);
 
@@ -274,30 +254,30 @@ if ($restoreEnable === true) {
         }
 
     } else {
+
         echo "\t\t\tHeight on this node is fine.\n\n";
 
-        // If we have bad messsages send a Good one
-        if ($counter > 0) {
-            $Tmsg = "*".gethostname()."*: height is fine now.";
+        // If we have bad messages send a good one
+        if ($db_data["rebuild_message_counter"] > 0) {
+
+            $Tmsg = "*".$nodeName."*: height is fine now.";
+            sendMessage($dataTmsg, $restoreEnable);
             sendMessage($Tmsg, $restoreEnable);
 
         }
 
-        // Lets reset counting in database
-        $query = "UPDATE $table SET counter='0', time=time()";
-        $db->exec($query) or die("\n\t\t\tUnable to set counter to 0!");
+        // Lets reset counters in the database
+        $db_data["rebuild_message_counter"] = 0;
+        $db_data["recovery_from_snapshot"] = true;
+        $db_data["syncing_message_sent"] = false;
+        saveToJSONFile($db_data, $database);
+
     }
+
+    // Finally, make sure all the data is saved to a file
+    saveToJSONFile($db_data, $database);
     
 } else {
     // Syncing is disabled in config.php
     echo "disabled\n\n";
 }
-
-// Test messages here
-//echo "\t\t\t".$dataTmsg."\n\n";
-//sendMessage($dataTmsg, $restoreEnable);
-
-// Message all
-//$Tmsg = gethostname().": All is okay. Im working!";
-//echo "\t\t\t".$Tmsg."\n\n";
-//sendMessage($Tmsg);
