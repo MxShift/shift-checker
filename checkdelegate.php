@@ -36,7 +36,7 @@ ____________________ */
 
 /* CHECK SYNCING
 ____________________ */
-  include dirname(__FILE__).'/includes/syncing.php';
+  include dirname(__FILE__).'/includes/recovery.php';
 
 /* CLEANUP LOG FILES
 ____________________ */
