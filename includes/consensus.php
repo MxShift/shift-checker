@@ -75,10 +75,10 @@ echo "\n[ CONSENSUS ]\n\n";
       echo "\t\tHeight Backup: $heightBackup \n";
 
       echo "\t\t\tSyncing Main: ".json_encode($syncingMain); // Boolean to string
-      echo "\t\tSyncing Backup: ".json_encode($syncingBackup)."\n";
+      echo "\t\t\tSyncing Backup: ".json_encode($syncingBackup)."\n";
 
       echo "\t\t\tForging Main: ".$forgingMain;
-      echo("\t\tForging Backup: ".$forgingBackup."\n\n");
+      echo("\t\t\tForging Backup: ".$forgingBackup."\n\n");
 
       // Check if we are the Main node
       if ($main === false) {
