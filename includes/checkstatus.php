@@ -15,7 +15,7 @@ echo "\t\t\tLet's check if our delegate is still running... ";
   if (strpos($check_output, $okayMsg) === false) {
       
     // Echo something to our log file
-      $Tmsg = "Delegate ".gethostname()." not running/healthy. Restarting Shift..";
+      $Tmsg = "Delegate ".$nodeName." not running/healthy. Restarting Shift..";
       sendMessage($Tmsg);
 
       echo "\n\t\t\t".$Tmsg."\n";

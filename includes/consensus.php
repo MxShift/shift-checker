@@ -134,12 +134,12 @@ echo "\n[ CONSENSUS ]\n\n";
                   echo "true!\n\n";
 
                   // Send Telegram ANNOYING!!! Slave is forging!
-                  // $Tmsg = gethostname().": Master node seems offline. Slave is forging though..";
+                  // $Tmsg = $nodeName.": Master node seems offline. Slave is forging though..";
                   // sendMessage($Tmsg);
           
                   // If consensus on the slave is below threshold divided by two (becouse of Master is offline) as well, restart Shift!
                   if ($consensusSlave <= ($threshold / 2) && $syncingSlave === false) {
-                      $Tmsg = gethostname().": Threshold on slave node reached! No healthy server online.";
+                      $Tmsg = $nodeName.": Threshold on slave node reached! No healthy server online.";
                       echo "\t\t\t".$Tmsg."\n";
                       sendMessage($Tmsg);
 
@@ -151,7 +151,7 @@ echo "\n[ CONSENSUS ]\n\n";
                   } else {
 
                       if ($syncingSlave === true) {
-                          $Tmsg = gethostname().": Slave node is forging and syncing. Looks like a bug! Enabling forging on master node.";
+                          $Tmsg = $nodeName.": Slave node is forging and syncing. Looks like a bug! Enabling forging on master node.";
                           echo "\t\t".$Tmsg."\n";
                           sendMessage($Tmsg);
 
@@ -174,7 +174,7 @@ echo "\n[ CONSENSUS ]\n\n";
                   }
                   // Enable forging on the slave
                   // If Telegram is enabled, send a message that the master seems offline
-                  $Tmsg = gethostname().": Master node seems offline. Slave will enable forging now..";
+                  $Tmsg = $nodeName.": Master node seems offline. Slave will enable forging now..";
                   sendMessage($Tmsg);
 
                   echo "\t\t\tEnabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
@@ -202,20 +202,20 @@ echo "\n[ CONSENSUS ]\n\n";
               if ($consensusMaster <= $threshold && $syncingMaster === false) {
                   echo "\t\t\t".$Tmsg."\n";
 
-                  $Tmsg = gethostname().": Threshold on master node reached! Going to check the slave node and restart Shift on Master.";
+                  $Tmsg = $nodeName.": Threshold on master node reached! Going to check the slave node and restart Shift on Master.";
                   sendMessage($Tmsg);
         
                   // Check consensus on slave node
                   // If consensus on the slave is below threshold as well, send a telegram message and restart Shift!
                   if ($consensusSlave <= $threshold && $syncingSlave === false) {
-                      $Tmsg = gethostname().": Threshold on slave node reached! No healthy server online.";
+                      $Tmsg = $nodeName.": Threshold on slave node reached! No healthy server online.";
                       echo "\t\t\t".$Tmsg."\n";
                       sendMessage($Tmsg);
 
                   } else {
 
                       if ($syncingSlave === true) {
-                          $Tmsg = gethostname().": Threshold reached on master node, but slave is syncing. No healthy server online.";
+                          $Tmsg = $nodeName.": Threshold reached on master node, but slave is syncing. No healthy server online.";
                           echo "\t\t\t".$Tmsg."\n\n";
                           sendMessage($Tmsg);
                       } else {
@@ -237,7 +237,7 @@ echo "\n[ CONSENSUS ]\n\n";
               } else {
 
                   if ($syncingMaster === true) {
-                      $Tmsg = gethostname().": Master node is forging and syncing. Looks like a bug! Enabling forging on slave node";
+                      $Tmsg = $nodeName.": Master node is forging and syncing. Looks like a bug! Enabling forging on slave node";
                       echo "\t\t\t".$Tmsg."\n";
                       sendMessage($Tmsg);
 
@@ -289,7 +289,7 @@ echo "\n[ CONSENSUS ]\n\n";
                           if ($syncingMaster === true) {
                               echo "\t\t\tMaster node is syncing. Doing nothing..\n";
                 
-                              $Tmsg = gethostname().": Warning! Consensus slave reached the threshold, but master node is syncing. No healthy servers online!";
+                              $Tmsg = $nodeName.": Warning! Consensus slave reached the threshold, but master node is syncing. No healthy servers online!";
                               echo "\t\t\t".$Tmsg."\n";
                               sendMessage($Tmsg);
 
@@ -300,7 +300,7 @@ echo "\n[ CONSENSUS ]\n\n";
                               if ($heightMaster < ($heightExplorer - 101)) {
                                   echo "\t\t\tBut seems master node is syncing. Doing nothing..\n";
 
-                                  $Tmsg = gethostname().": Warning! Consensus slave reached the threshold, but seems master node is syncing. No healthy servers online!";
+                                  $Tmsg = $nodeName.": Warning! Consensus slave reached the threshold, but seems master node is syncing. No healthy servers online!";
                                   echo "\t\t\t".$Tmsg."\n";
                                   sendMessage($Tmsg);
 
@@ -326,7 +326,7 @@ echo "\n[ CONSENSUS ]\n\n";
                       echo "\t\t\tSlave is not forging as well!\n";
                   }
                   // Slave is also not forging! Compare consensus on both nodes and enable forging on node with highest consensus an height..
-                  $Tmsg = gethostname().": Master and Slave are both not forging! Going to enable forging on the best node.";
+                  $Tmsg = $nodeName.": Master and Slave are both not forging! Going to enable forging on the best node.";
                   sendMessage($Tmsg);
 
                   echo "\t\t\tLet's compare consensus and enable forging on best node..\n";
