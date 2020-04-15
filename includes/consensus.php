@@ -17,44 +17,44 @@ echo "\n[ CONSENSUS ]\n\n";
           $heightExplorer = $heightExplorer['block']['height'];
       }
 
-      // Check height, consensus and syncing on Master node
-      $statusMaster = @file_get_contents($mainnode.":".$mainport."/api/loader/status/sync");
+      // Check height, consensus and syncing on Main node
+      $statusMain = @file_get_contents($mainnode.":".$mainport."/api/loader/status/sync");
       
-      if ($statusMaster === false) {
-          $consensusMaster = 0;
-          $heightMaster = 0;
-          $syncingMaster = false;
+      if ($statusMain === false) {
+          $consensusMain = 0;
+          $heightMain = 0;
+          $syncingMain = false;
       } else {
-          $statusMaster = json_decode($statusMaster, true);
+          $statusMain = json_decode($statusMain, true);
 
-          if (isset($statusMaster['height']) === false) {
-              $heightMaster = "error";
+          if (isset($statusMain['height']) === false) {
+              $heightMain = "error";
           } else {
-              $heightMaster = $statusMaster['height'];
+              $heightMain = $statusMain['height'];
           }
 
-          $syncingMaster = $statusMaster['syncing'];
-          $consensusMaster = $statusMaster['consensus'];
+          $syncingMain = $statusMain['syncing'];
+          $consensusMain = $statusMain['consensus'];
       }
 
-      // Check height, consensus and syncing on Slave node
-      $statusSlave = @file_get_contents($backupnode.":".$backupport."/api/loader/status/sync");
+      // Check height, consensus and syncing on Backup node
+      $statusBackup = @file_get_contents($backupnode.":".$backupport."/api/loader/status/sync");
 
-      if ($statusSlave === false) {
-          $consensusSlave = 0;
-          $heightSlave = 0;
-          $syncingSlave = false;
+      if ($statusBackup === false) {
+          $consensusBackup = 0;
+          $heightBackup = 0;
+          $syncingBackup = false;
       } else {
-          $statusSlave = json_decode($statusSlave, true);
+          $statusBackup = json_decode($statusBackup, true);
 
-          if (isset($statusSlave['height']) === false) {
-              $heightSlave = "error";
+          if (isset($statusBackup['height']) === false) {
+              $heightBackup = "error";
           } else {
-              $heightSlave = $statusSlave['height'];
+              $heightBackup = $statusBackup['height'];
           }
 
-          $syncingSlave = $statusSlave['syncing'];
-          $consensusSlave = $statusSlave['consensus'];
+          $syncingBackup = $statusBackup['syncing'];
+          $consensusBackup = $statusBackup['consensus'];
       }
 
       // Get publicKey of the secret to use in forging checks
@@ -63,39 +63,39 @@ echo "\n[ CONSENSUS ]\n\n";
       // Secret to array
       $sec_array = explode(" ", $secret);
 
-      $forgingSlave = checkForging($backupnode.":".$backupport, $public);
-      $forgingMaster = checkForging($mainnode.":".$mainport, $public);
+      $forgingBackup = checkForging($backupnode.":".$backupport, $public);
+      $forgingMain = checkForging($mainnode.":".$mainport, $public);
 
       echo "\t\t\tHeight Explorer: $heightExplorer\n\n";
 
-      echo "\t\t\tConsensus Master: ".$consensusMaster."%";
-      echo "\t\tConsensus Slave: ".$consensusSlave."%\n";
+      echo "\t\t\tConsensus Main: ".$consensusMain."%";
+      echo "\t\tConsensus Backup: ".$consensusBackup."%\n";
 
-      echo "\t\t\tHeight Master: $heightMaster";
-      echo "\t\tHeight Slave: $heightSlave \n";
+      echo "\t\t\tHeight Main: $heightMain";
+      echo "\t\tHeight Backup: $heightBackup \n";
 
-      echo "\t\t\tSyncing Master: ".json_encode($syncingMaster); // Boolean to string
-      echo "\t\tSyncing Slave: ".json_encode($syncingSlave)."\n";
+      echo "\t\t\tSyncing Main: ".json_encode($syncingMain); // Boolean to string
+      echo "\t\tSyncing Backup: ".json_encode($syncingBackup)."\n";
 
-      echo "\t\t\tForging Master: ".$forgingMaster;
-      echo("\t\tForging Slave: ".$forgingSlave."\n\n");
+      echo "\t\t\tForging Main: ".$forgingMain;
+      echo("\t\tForging Backup: ".$forgingBackup."\n\n");
 
-      // Check if we are the master node
+      // Check if we are the Main node
       if ($main === false) {
-          // If we land here, we are the slave
-          echo "\t\t\tSlave: true\n";
+          // If we land here, we are the Backup
+          echo "\t\t\tBackup: true\n";
 
-          echo "\t\t\tMaster online: ";
-          // Check if the master is online
+          echo "\t\t\tMain online: ";
+          // Check if the Main is online
           $find = array("http://","https://");
           $up = ping(str_replace($find, "", $mainnode), $mainport);
 
           if ($up) {
-              // Master is online. Do nothing..
+              // Main is online. Do nothing..
               echo "true\n";
 
               // Check if we are forging
-              echo "\t\t\tSlave forging: ";
+              echo "\t\t\tBackup forging: ";
               $forging = checkForging($backupnode.":".$backupport, $public);
         
               // If we are forging..
@@ -108,57 +108,57 @@ echo "\n[ CONSENSUS ]\n\n";
                   } else {
                       echo "false\n";
                   }
-                  // Check if the master is synced
-                  echo "\t\t\tMaster syncing: ";
+                  // Check if the Main is synced
+                  echo "\t\t\tMain syncing: ";
 
-                  // COMPARE HEIGHT on master node and slave node
-                  if ($heightMaster < ($heightSlave - 10)) {
-                      // Enable forging on slave
+                  // COMPARE HEIGHT on Main node and Backup node
+                  if ($heightMain < ($heightBackup - 10)) {
+                      // Enable forging on Backup
                       echo "true\n";
-                      echo "\t\t\tEnabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n";
+                      echo "\t\t\tEnabling forging on Backup for secret: ".current($sec_array)." - ".end($sec_array)."\n";
                       enableForging($backupnode.":".$backupport, $secret);
                   } else {
-                      // Master is synced. Do nothing..
+                      // Main is synced. Do nothing..
                       echo "false\n\n\t\t\tEverything will be okay.\n\n";
                   }
               }
           } else {
-              // Master is offline. Let's check if we are forging, if not; enable it.
+              // Main is offline. Let's check if we are forging, if not; enable it.
               echo "false!\n";
 
-              echo "\t\t\tSlave forging: ";
+              echo "\t\t\tBackup forging: ";
               $forging = checkForging($backupnode.":".$backupport, $public);
         
               // If we are forging..
               if ($forging == "true") {
                   echo "true!\n\n";
 
-                  // Send Telegram ANNOYING!!! Slave is forging!
-                  // $Tmsg = $nodeName.": Master node seems offline. Slave is forging though..";
+                  // Send Telegram ANNOYING!!! Backup is forging!
+                  // $Tmsg = $nodeName.": Main node seems offline. Backup is forging though..";
                   // sendMessage($Tmsg);
           
-                  // If consensus on the slave is below threshold divided by two (becouse of Master is offline) as well, restart Shift!
-                  if ($consensusSlave <= ($threshold / 2) && $syncingSlave === false) {
-                      $Tmsg = $nodeName.": Threshold on slave node reached! No healthy server online.";
+                  // If consensus on the Backup is below threshold divided by two (becouse of Main is offline) as well, restart Shift!
+                  if ($consensusBackup <= ($threshold / 2) && $syncingBackup === false) {
+                      $Tmsg = $nodeName.": Threshold on Backup node reached! No healthy server online.";
                       echo "\t\t\t".$Tmsg."\n";
                       sendMessage($Tmsg);
 
-                      // Restart Shift on Slave if restoring is disabled
+                      // Restart Shift on Backup if restoring is disabled
                       if (!$restoreEnable) {
-                          echo "\t\t\tRestarting Shift on Master\n\n";
+                          echo "\t\t\tRestarting Shift on Main\n\n";
                           system("cd $pathtoapp && ./shift_manager.bash reload");
                       }
                   } else {
 
-                      if ($syncingSlave === true) {
-                          $Tmsg = $nodeName.": Slave node is forging and syncing. Looks like a bug! Enabling forging on master node.";
+                      if ($syncingBackup === true) {
+                          $Tmsg = $nodeName.": Backup node is forging and syncing. Looks like a bug! Enabling forging on Main node.";
                           echo "\t\t".$Tmsg."\n";
                           sendMessage($Tmsg);
 
-                          echo "\t\t\tDisabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n";
+                          echo "\t\t\tDisabling forging on Backup for secret: ".current($sec_array)." - ".end($sec_array)."\n";
                           disableForging($backupnode.":".$backupport, $secret);
 
-                          echo "\t\t\tRestarting Shift on Slave\n\n";
+                          echo "\t\t\tRestarting Shift on Backup\n\n";
                           system("cd $pathtoapp && ./shift_manager.bash reload");
                       } else {
                           // All is fine. Do nothing..
@@ -172,177 +172,177 @@ echo "\n[ CONSENSUS ]\n\n";
                   } else {
                       echo "false!\n\n\t\t\tWe are not forging! Let's enable it..\n";
                   }
-                  // Enable forging on the slave
-                  // If Telegram is enabled, send a message that the master seems offline
-                  $Tmsg = $nodeName.": Master node seems offline. Slave will enable forging now..";
+                  // Enable forging on the Backup
+                  // If Telegram is enabled, send a message that the Main seems offline
+                  $Tmsg = $nodeName.": Main node seems offline. Backup will enable forging now..";
                   sendMessage($Tmsg);
 
-                  echo "\t\t\tEnabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
+                  echo "\t\t\tEnabling forging on Backup for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
                   enableForging($backupnode.":".$backupport, $secret);
               }
           }
       } else {
-          // If we land here, we are the master
-          echo "\t\t\tMaster: true\n";
+          // If we land here, we are the Main
+          echo "\t\t\tMain: true\n";
         
           // Check if we are forging
           $forging = checkForging($mainnode.":".$mainport, $public);
 
           // If we are forging..
           if ($forging == "true") {
-              echo "\t\t\tMaster forging: true\n\n";
+              echo "\t\t\tMain forging: true\n\n";
 
-              // Forging on the slave should be/stay disabled for secret until we perform a consensus check.
-              // This way we ensure that forging is only disabled on nodes the master chooses.
-              echo "\t\t\tDisabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n";
+              // Forging on the Backup should be/stay disabled for secret until we perform a consensus check.
+              // This way we ensure that forging is only disabled on nodes the Main chooses.
+              echo "\t\t\tDisabling forging on Backup for secret: ".current($sec_array)." - ".end($sec_array)."\n";
               disableForging($backupnode.":".$backupport, $secret);
 
-              // Check consensus on master node
-              // If consensus is the same as or lower than the set threshold. Going to restart Shift on Master
-              if ($consensusMaster <= $threshold && $syncingMaster === false) {
+              // Check consensus on Main node
+              // If consensus is the same as or lower than the set threshold. Going to restart Shift on Main
+              if ($consensusMain <= $threshold && $syncingMain === false) {
                   echo "\t\t\t".$Tmsg."\n";
 
-                  $Tmsg = $nodeName.": Threshold on master node reached! Going to check the slave node and restart Shift on Master.";
+                  $Tmsg = $nodeName.": Threshold on Main node reached! Going to check the Backup node and restart Shift on Main.";
                   sendMessage($Tmsg);
         
-                  // Check consensus on slave node
-                  // If consensus on the slave is below threshold as well, send a telegram message and restart Shift!
-                  if ($consensusSlave <= $threshold && $syncingSlave === false) {
-                      $Tmsg = $nodeName.": Threshold on slave node reached! No healthy server online.";
+                  // Check consensus on Backup node
+                  // If consensus on the Backup is below threshold as well, send a telegram message and restart Shift!
+                  if ($consensusBackup <= $threshold && $syncingBackup === false) {
+                      $Tmsg = $nodeName.": Threshold on Backup node reached! No healthy server online.";
                       echo "\t\t\t".$Tmsg."\n";
                       sendMessage($Tmsg);
 
                   } else {
 
-                      if ($syncingSlave === true) {
-                          $Tmsg = $nodeName.": Threshold reached on master node, but slave is syncing. No healthy server online.";
+                      if ($syncingBackup === true) {
+                          $Tmsg = $nodeName.": Threshold reached on Main node, but Backup is syncing. No healthy server online.";
                           echo "\t\t\t".$Tmsg."\n\n";
                           sendMessage($Tmsg);
                       } else {
-                          echo "\t\t\tConsensus on slave is sufficient enough to switch to..\n";
+                          echo "\t\t\tConsensus on Backup is sufficient enough to switch to..\n";
               
-                          echo "\t\t\tEnabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n";
+                          echo "\t\t\tEnabling forging on Backup for secret: ".current($sec_array)." - ".end($sec_array)."\n";
                           enableForging($backupnode.":".$backupport, $secret);
 
-                          echo "\t\t\tDisabling forging on master for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
+                          echo "\t\t\tDisabling forging on Main for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
                           disableForging($mainnode.":".$mainport, $secret);
                       }
                   }
 
                   if (!$restoreEnable) {
-                      echo "\t\t\tRestarting Shift on Master\n";
+                      echo "\t\t\tRestarting Shift on Main\n";
                       system("cd $pathtoapp && ./shift_manager.bash reload");
                   }
 
               } else {
 
-                  if ($syncingMaster === true) {
-                      $Tmsg = $nodeName.": Master node is forging and syncing. Looks like a bug! Enabling forging on slave node";
+                  if ($syncingMain === true) {
+                      $Tmsg = $nodeName.": Main node is forging and syncing. Looks like a bug! Enabling forging on Backup node";
                       echo "\t\t\t".$Tmsg."\n";
                       sendMessage($Tmsg);
 
-                      echo "\t\t\tEnabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n";
+                      echo "\t\t\tEnabling forging on Backup for secret: ".current($sec_array)." - ".end($sec_array)."\n";
                       enableForging($backupnode.":".$backupport, $secret);
 
-                      echo "\t\t\tDisabling forging on master for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
+                      echo "\t\t\tDisabling forging on Main for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
                       disableForging($mainnode.":".$mainport, $secret);
 
-                      echo "\t\t\tRestarting Shift on Master\n";
+                      echo "\t\t\tRestarting Shift on Main\n";
                       passthru("cd $pathtoapp && ./shift_manager.bash reload");
 
                   } else {
-                      // Master consensus is high enough to continue forging
-                      echo "\t\t\tThreshold on master node not reached.\n\n\t\t\tEverything is okay.\n\n";
+                      // Main consensus is high enough to continue forging
+                      echo "\t\t\tThreshold on Main node not reached.\n\n\t\t\tEverything is okay.\n\n";
                   }
               }
 
-          // If we are Master and not forging..
+          // If we are Main and not forging..
           } else {
 
               if ($forging == "error") {
-                  echo "\t\t\tMaster forging: error!\n";
+                  echo "\t\t\tMain forging: error!\n";
               } else {
-                  echo "\t\t\tMaster forging: false!\n";
+                  echo "\t\t\tMain forging: false!\n";
               }
-              // Check if the slave is forging
+              // Check if the Backup is forging
               $forging = checkForging($backupnode.":".$backupport, $public);
 
-              // If slave is forging..
+              // If Backup is forging..
               if ($forging == "true") {
-                  echo "\t\t\tSlave forging: true\n\n";
+                  echo "\t\t\tBackup forging: true\n\n";
 
                   // If consensus is the same as or lower than the set threshold..
-                  if ($consensusSlave <= $threshold) {
-                      echo "\t\t\tConsensus slave reached the threshold.\n";
-                      echo "\t\t\tChecking consensus, height and syncing on master node..\n";
+                  if ($consensusBackup <= $threshold) {
+                      echo "\t\t\tConsensus Backup reached the threshold.\n";
+                      echo "\t\t\tChecking consensus, height and syncing on Main node..\n";
             
                       // If consensus is the same as or lower than the set threshold..
-                      if ($consensusMaster <= $threshold && $syncingMaster === false) {
-                          echo "\t\t\tThreshold on master node reached as well! Restarting Shift..\n";
+                      if ($consensusMain <= $threshold && $syncingMain === false) {
+                          echo "\t\t\tThreshold on Main node reached as well! Restarting Shift..\n";
 
                           if (!$restoreEnable) {
-                              echo "\t\t\tRestarting Shift on Master\n";
+                              echo "\t\t\tRestarting Shift on Main\n";
                               system("cd $pathtoapp && ./shift_manager.bash reload");
                           }
                       } else {
 
-                          if ($syncingMaster === true) {
-                              echo "\t\t\tMaster node is syncing. Doing nothing..\n";
+                          if ($syncingMain === true) {
+                              echo "\t\t\tMain node is syncing. Doing nothing..\n";
                 
-                              $Tmsg = $nodeName.": Warning! Consensus slave reached the threshold, but master node is syncing. No healthy servers online!";
+                              $Tmsg = $nodeName.": Warning! Consensus Backup reached the threshold, but Main node is syncing. No healthy servers online!";
                               echo "\t\t\t".$Tmsg."\n";
                               sendMessage($Tmsg);
 
                           } else {
-                              // Consensus is sufficient on master. Going to check syncing of masternode with 100% consensus
-                              echo "\t\t\tConsensus on master is sufficient.\n";
+                              // Consensus is sufficient on Main. Going to check syncing of Mainnode with 100% consensus
+                              echo "\t\t\tConsensus on Main is sufficient.\n";
 
-                              if ($heightMaster < ($heightExplorer - 101)) {
-                                  echo "\t\t\tBut seems master node is syncing. Doing nothing..\n";
+                              if ($heightMain < ($heightExplorer - 101)) {
+                                  echo "\t\t\tBut seems Main node is syncing. Doing nothing..\n";
 
-                                  $Tmsg = $nodeName.": Warning! Consensus slave reached the threshold, but seems master node is syncing. No healthy servers online!";
+                                  $Tmsg = $nodeName.": Warning! Consensus Backup reached the threshold, but seems Main node is syncing. No healthy servers online!";
                                   echo "\t\t\t".$Tmsg."\n";
                                   sendMessage($Tmsg);
 
                               } else {
-                                  echo "\t\t\tMaster node is synced!\n";
-                                  echo "\t\t\tEnabling forging on master for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
+                                  echo "\t\t\tMain node is synced!\n";
+                                  echo "\t\t\tEnabling forging on Main for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
                                   enableForging($mainnode.":".$mainport, $secret);
 
-                                  echo "\t\t\tDisabling forging on slave..\n";
-                                  echo "\t\t\tDisabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
+                                  echo "\t\t\tDisabling forging on Backup..\n";
+                                  echo "\t\t\tDisabling forging on Backup for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
                                   disableForging($backupnode.":".$backupport, $secret);
                               }
                           }
                       }
                   } else {
-                      echo "\t\t\tConsensus on slave is sufficient. Doing nothing..\n\n";
+                      echo "\t\t\tConsensus on Backup is sufficient. Doing nothing..\n\n";
                   }
               } else {
                   if ($forging == "error") {
-                      echo "\t\t\tChecking of Slave's forging got an error!\n";
+                      echo "\t\t\tChecking of Backup's forging got an error!\n";
 
                   } else {
-                      echo "\t\t\tSlave is not forging as well!\n";
+                      echo "\t\t\tBackup is not forging as well!\n";
                   }
-                  // Slave is also not forging! Compare consensus on both nodes and enable forging on node with highest consensus an height..
-                  $Tmsg = $nodeName.": Master and Slave are both not forging! Going to enable forging on the best node.";
+                  // Backup is also not forging! Compare consensus on both nodes and enable forging on node with highest consensus an height..
+                  $Tmsg = $nodeName.": Main and Backup are both not forging! Going to enable forging on the best node.";
                   sendMessage($Tmsg);
 
                   echo "\t\t\tLet's compare consensus and enable forging on best node..\n";
 
-                  if ($consensusMaster > $consensusSlave && $heightMaster > ($heightSlave - 10)) {
-                      echo "\t\t\tEnabling forging on master for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
+                  if ($consensusMain > $consensusBackup && $heightMain > ($heightBackup - 10)) {
+                      echo "\t\t\tEnabling forging on Main for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
                       enableForging($mainnode.":".$mainport, $secret);
 
                   } else {
-                      echo "\t\t\tEnabling forging on slave for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
+                      echo "\t\t\tEnabling forging on Backup for secret: ".current($sec_array)." - ".end($sec_array)."\n\n";
                       enableForging($backupnode.":".$backupport, $secret);
 
                   } // END: COMPARE CONSENSUS
-              } // END: SLAVE FORGING IS FALSE
-          } // END: MASTER FORGING IS FALSE
-      } // END: WE ARE THE MASTER
+              } // END: Backup FORGING IS FALSE
+          } // END: Main FORGING IS FALSE
+      } // END: WE ARE THE Main
   } else {
       echo "disabled (or no secret)\n\n";
       
