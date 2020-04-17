@@ -61,7 +61,7 @@ __________________________ */
 	$okayMsg 	= "√";					            // 'Okay' message from shift_manager.bash
 
 // Consensus settings
-	$threshold      = 20;                           // Percentage of consensus threshold
+	$threshold      = 20;                           // Percentage of consensus threshold.
 
 // Syncing settings
 	$restoredMsg 	= "OK snapshot restored successfully.";	    // 'Okay' message from shift-snapshot	 	
