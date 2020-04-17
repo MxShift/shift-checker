@@ -17,6 +17,7 @@ Or you could just open the **shift-checker** directory and run **git fetch**:
 ```
 cd shift-checker
 git fetch
+git reset --hard origin/master
 ```
 
 Then change settings inside **config.example.php** and rename it to **config.php**
