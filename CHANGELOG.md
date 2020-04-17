@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.1.2 (2020-04-01)
+## 2.1.2 (2020-04-17)
 
 - Database switch from SQLite3 to a JSON file
 - Improve of 'syncing' module stability
