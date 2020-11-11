@@ -257,35 +257,73 @@ echo "\n[ CONSENSUS ]\n\n";
         $up = ping(str_replace($find, "", $mainnode), $mainport);
 
         if ($up) {
-            // Main is online. Do nothing..
+            // Main is online.
             echo "true\n";
 
-            // Check if we are forging
+            // Check if we are forging.
             echo "\t\t\tBackup forging: ";
             $forging = checkForging($backupnode.":".$backupport, $public);
         
-            // If we are forging..
+            // If we are forging.
             if ($forging == "true") {
                 echo "true!\n\n\t\t\tEverything seems okay.\n\n";
             } else {
+            // Main node is online, backup node is not forging.
 
                 if ($forging == "error") {
                     echo "error\n";
                 } else {
                     echo "false\n";
                 }
-                // Check if the Main is synced
+
+                // Check if the Main is synced.
                 echo "\t\t\tMain syncing: ";
 
-                // COMPARE HEIGHT on Main node and Backup node
+                // Compare HEIGHT on Main node and Backup node.
                 if ($heightMain < ($heightBackup - 10)) {
                     // Enable forging on Backup
                     echo "true\n";
                     echo "\t\t\tEnabling forging on Backup for secret: ".current($sec_array)." - ".end($sec_array)."\n";
                     enableForging($backupnode.":".$backupport, $secret);
                 } else {
-                    // Main is synced. Do nothing..
-                    echo "false\n\n\t\t\tEverything will be okay.\n\n";
+                    // Main is synced. Let's check if shift-checker is working on main node.
+
+                    echo "false";
+
+                    // code here
+                    if ($forgingMain == "false"){
+                        echo "\n\n\t\t\tBoth nodes are not forging!";
+                        echo "\n\t\t\tLet's check if shift-checker is run on the main node.";
+
+                        if (!array_key_exists("script_disabled_counter", $db_data)) {
+
+                            $db_data["script_disabled_counter"] = 3;
+                        }
+
+                        $db_data["script_disabled_counter"] -= 1;
+                        saveToJSONFile($db_data, $database);
+
+                        if ($db_data["script_disabled_counter"] == 0) {
+
+                            $db_data["script_disabled_counter"] = 3;
+                            saveToJSONFile($db_data, $database);
+
+                            $Tmsg = $nodeName.": Looks like shift-checker is disabled on the main node.\n\t\t\tStart forging on the backup node.\n\n";
+                            echo "\n\t\t\t".$Tmsg."\n";
+                            sendMessage($Tmsg, true);
+                            
+                            echo "\t\t\tEnabling forging on Backup for secret: ".current($sec_array)." - ".end($sec_array)."\n";
+                            enableForging($backupnode.":".$backupport, $secret);
+
+                        } else {
+
+                            echo "\n\t\t\t".$db_data["script_disabled_counter"]." minutes to start forging on the backup node.";
+                        }
+                        
+                    }
+
+                    echo "\n\n\t\t\tEverything will be okay.\n\n";
+
                 }
             }
         } else {
