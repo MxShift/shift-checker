@@ -87,11 +87,8 @@ echo "\n[ CONSENSUS ]\n\n";
 
         echo "\t\t\tMain: true\n";
 
-        // Check if we are forging
-        $forging = checkForging($mainnode.":".$mainport, $public);
-
         // If we are forging..
-        if ($forging == "true") {
+        if ($forgingMain == "true") {
             echo "\t\t\tMain forging: true\n\n";
 
             // Forging on the Backup should be/stay disabled for secret until we perform a consensus check.
@@ -161,16 +158,15 @@ echo "\n[ CONSENSUS ]\n\n";
         // If we are Main and not forging..
         } else {
 
-            if ($forging == "error") {
+            if ($forgingMain == "error") {
                 echo "\t\t\tMain forging: error!\n";
             } else {
                 echo "\t\t\tMain forging: false!\n";
             }
-            // Check if the Backup is forging
-            $forging = checkForging($backupnode.":".$backupport, $public);
 
+            // Check if the Backup is forging
             // If Backup is forging..
-            if ($forging == "true") {
+            if ($forgingBackup == "true") {
                 echo "\t\t\tBackup forging: true\n\n";
 
                 // If consensus is the same as or lower than the set threshold..
@@ -221,12 +217,13 @@ echo "\n[ CONSENSUS ]\n\n";
                     echo "\t\t\tConsensus on Backup is sufficient. Doing nothing..\n\n";
                 }
             } else {
-                if ($forging == "error") {
+                if ($forgingBackup == "error") {
                     echo "\t\t\tChecking of Backup's forging got an error!\n";
 
                 } else {
                     echo "\t\t\tBackup is not forging as well!\n";
                 }
+
                 // Backup is also not forging! Compare consensus on both nodes and enable forging on node with highest consensus an height..
                 $Tmsg = $nodeName.": Main and Backup are both not forging! Going to enable forging on the best node.";
                 sendMessage($Tmsg);
@@ -259,18 +256,14 @@ echo "\n[ CONSENSUS ]\n\n";
         if ($up) {
             // Main is online.
             echo "true\n";
-
-            // Check if we are forging.
-            echo "\t\t\tBackup forging: ";
-            $forging = checkForging($backupnode.":".$backupport, $public);
-        
-            // If we are forging.
-            if ($forging == "true") {
+       
+            // If Backup is forging.
+            if ($forgingBackup == "true") {
                 echo "true!\n\n\t\t\tEverything seems okay.\n\n";
             } else {
             // Main node is online, backup node is not forging.
 
-                if ($forging == "error") {
+                if ($forgingBackup == "error") {
                     echo "error\n";
                 } else {
                     echo "false\n";
@@ -279,7 +272,7 @@ echo "\n[ CONSENSUS ]\n\n";
                 // Check if the Main is synced.
                 echo "\t\t\tMain syncing: ";
 
-                // Compare HEIGHT on Main node and Backup node.
+                // Compare height on Main node and Backup node.
                 if ($heightMain < ($heightBackup - 10)) {
                     // Enable forging on Backup
                     echo "true\n";
@@ -290,7 +283,6 @@ echo "\n[ CONSENSUS ]\n\n";
 
                     echo "false";
 
-                    // code here
                     if ($forgingMain == "false"){
                         echo "\n\n\t\t\tBoth nodes are not forging!";
                         echo "\n\t\t\tLet's check if shift-checker is run on the main node.";
@@ -331,10 +323,9 @@ echo "\n[ CONSENSUS ]\n\n";
             echo "false!\n";
 
             echo "\t\t\tBackup forging: ";
-            $forging = checkForging($backupnode.":".$backupport, $public);
         
             // If we are forging..
-            if ($forging == "true") {
+            if ($forgingBackup == "true") {
                 echo "true!\n\n";
 
                 // Send Telegram ANNOYING!!! Backup is forging!
@@ -371,7 +362,7 @@ echo "\n[ CONSENSUS ]\n\n";
                 }
             } else {
 
-                if ($forging == "error") {
+                if ($forgingBackup == "error") {
                     echo "error\n";
                 } else {
                     echo "false!\n\n\t\t\tWe are not forging! Let's enable it..\n";
