@@ -1,10 +1,10 @@
 # shift-checker
-*Current version: 2.1.3*
+*Current version: 2.1.4*
 
 ### Screenshot
 ![VPS logs](https://github.com/MxShift/shift-checker/blob/master/logs/screenshot.png)
 
-### How to update to v 2.1.3
+### How to update to v 2.1.4
 
 The better way is: 
 * save data from your old **config.php** file
@@ -20,7 +20,8 @@ git fetch
 git reset --hard origin/master
 ```
 
-Then change settings inside **config.example.php** and rename it to **config.php**
+Then change settings inside **config.example.php** and rename it to **config.php**.
+Also delete an old **db.json** file.
 
 ## Explorers
 
@@ -122,7 +123,7 @@ and add this lines to run script every minute:
 
 ## Logs
 
-There are some echo lines in file **checkdelegate.log**. You could view logs in real time using:
+You could view logs in real time using:
 
 ```
 tail -f ~/shift-checker/logs/checkdelegate.log
