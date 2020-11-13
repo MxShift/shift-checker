@@ -10,14 +10,20 @@ if (file_exists($database)) {
 } else {
     file_put_contents($database, '{}');
     $db_data = json_decode('{}', true);
+
+    $db_data["fork_counter"] = 0;
+    $db_data["corrupt_snapshot"] = false;
+    $db_data["synchronized_after_corrupt_snapshot"] = false;
+    $db_data["recovery_from_snapshot"] = true;
+    $db_data["rebuild_message_counter"] = 0;
+    $db_data["syncing_message_sent"] = false;
+
 }
 
 // Checking if JSON has the necessary keys
-if (!array_key_exists("fork_counter", $db_data)) {
-
-    $db_data["fork_counter"] = 0;
-    $db_data["recovery_from_snapshot"] = true;
-}
+// if (!array_key_exists("fork_counter", $db_data)) {
+//     $db_data["fork_counter"] = 0;
+// }
 
 // Tail shift.log
 $last = tailCustom($shiftlog, $linestoread);
@@ -87,7 +93,7 @@ if (($fork_counter + $counted_now) <= $max_count) {
             } 
 
             // if we don't have a snapshot for today of the last snapshot is corrupt
-            if (empty($snapshots) || $db_data["recovery_from_snapshot"] == false) {
+            if (empty($snapshots) || $db_data["corrupt_snapshot"] == true && $db_data["synchronized_after_corrupt_snapshot"] == true) {
 
                 echo "\n\t\t\tNo snapshot exists for today, I'll create one for you now!\n";
             
@@ -103,6 +109,9 @@ if (($fork_counter + $counted_now) <= $max_count) {
                     sendMessage($Tmsg, $restoreEnable);
 
                     $db_data["recovery_from_snapshot"] = true;
+                    $db_data["corrupt_snapshot"] = false;
+                    $db_data["recovery_from_snapshot"] = true;
+                    $db_data["synchronized_after_corrupt_snapshot"] = false;
                     saveToJSONFile($db_data, $database);
                 }
 
