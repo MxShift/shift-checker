@@ -112,7 +112,6 @@ if ($restoreEnable === true) {
     if (!array_key_exists("rebuild_message_counter", $db_data)) {
 
         $db_data["rebuild_message_counter"] = 0;
-        $db_data["recovery_from_snapshot"] = true;
         $db_data["syncing_message_sent"] = false;
     }
 
@@ -208,32 +207,45 @@ if ($restoreEnable === true) {
         // The local node is probably stuck
         if ($syncingLocal === false) {
 
-            $Tmsg = "*".$nodeName."*: height threshold is reached and not syncing.\n\t\t\tGoing to restore from snapshot.";
-            echo "\t\t\t".$Tmsg."\n\n";
-            sendMessage($Tmsg, $restoreEnable);
-            sendMessage($dataTmsg, $restoreEnable);
+            $restored = false;
 
-            echo "\t\t\tRestore from the last snapshot: \n";
-            system("cd $pathtoapp && ./shift_manager.bash stop");
-            sleep(3);
-            $restored = system("cd $snapshotDir && echo y | ./shift-snapshot.sh restore");
-            system("cd $pathtoapp && ./shift_manager.bash reload");
+            if ($db_data["recovery_from_snapshot"]) {
 
-            echo "\n\n\t\t\tRestored: $restored";
+                $Tmsg = "*".$nodeName."*: height threshold is reached and not syncing.\n\t\t\tGoing to restore from snapshot.";
+                echo "\t\t\t".$Tmsg."\n\n";
+                sendMessage($Tmsg, $restoreEnable);
+                sendMessage($dataTmsg, $restoreEnable);
+    
+                echo "\t\t\tRestore from the last snapshot: \n";
+                system("cd $pathtoapp && ./shift_manager.bash stop");
+                sleep(3);
+                $restored = system("cd $snapshotDir && echo y | ./shift-snapshot.sh restore");
+                system("cd $pathtoapp && ./shift_manager.bash reload");
+    
+                echo "\n\n\t\t\tRestored: $restored";
+                
+                if ($restored == $restoredMsg) {
 
-            if ($restored == $restoredMsg) {
+                    // Set counter for next good message
+                    $db_data["rebuild_message_counter"] += 1;
+                    saveToJSONFile($db_data, $database);
+    
+                    // Set pause for waiting node online
+                    echo "\t\t\tPause: 120 sec. for start node sync.\n\n";
+                    sleep(120);
+    
+                } else {
+                    $db_data["recovery_from_snapshot"] = false;
+                    saveToJSONFile($db_data, $database);
+                }
+            }
+            
+            if ($restored == false) {
 
-                // Set counter for next good message
-                $db_data["rebuild_message_counter"] += 1;
-                saveToJSONFile($db_data, $database);
+                echo "\n\t\t\tThe last snapshot is corrupt.\n\n";
 
-                // Set pause for waiting node online
-                echo "\t\t\tPause: 20 sec. for start node sync.\n\n";
-                sleep(20);
-
-            } else {
-
-                echo "\n\t\t\tRestored: NO!\n\n";
+                // Add checking for other sapshots
+                // HERE
 
                 // Going to rebuild
                 $Tmsg = "*".$nodeName."*: Error! Going to rebuild with shift-manager.";
@@ -242,11 +254,11 @@ if ($restoreEnable === true) {
 
                 system("cd $pathtoapp && ./shift_manager.bash rebuild");
 
-                // Set counter for next good message
+                // Set counter for a next good message
                 $db_data["rebuild_message_counter"] += 1;
                 saveToJSONFile($db_data, $database);
 
-                // Pause to wait for start node sync.
+                // Pause to wait for start node sync
                 echo "\t\t\tPause: 120 sec.\n\n";
                 sleep(120);
 
@@ -268,7 +280,8 @@ if ($restoreEnable === true) {
 
         // Lets reset counters in the database
         $db_data["rebuild_message_counter"] = 0;
-        $db_data["recovery_from_snapshot"] = true;
+        // Will be reset after creation a new snapshot
+        // $db_data["recovery_from_snapshot"] = true;
         $db_data["syncing_message_sent"] = false;
         saveToJSONFile($db_data, $database);
 
