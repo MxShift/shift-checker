@@ -16,6 +16,7 @@ if (file_exists($database)) {
 if (!array_key_exists("fork_counter", $db_data)) {
 
     $db_data["fork_counter"] = 0;
+    $db_data["recovery_from_snapshot"] = true;
 }
 
 // Tail shift.log
@@ -66,21 +67,28 @@ if (($fork_counter + $counted_now) <= $max_count) {
 
     // Check snapshot setting
     if ($createsnapshot === false) {
+
         echo "\t\t\tSnapshot setting is disabled.\n";
     }
 
     // Check if it's safe to create a daily snapshot and the setting is enabled
     if (($fork_counter + $counted_now) < $max_count && $createsnapshot === true) {
+
         echo "\t\t\tDo we have a new snapshot for today?.. ";
         // Let's check if a snapshot was already created today...
         // Check if path to shift-snapshot exists..
         if (file_exists($snapshotDir)) {
+
             $snapshots = glob($snapshotDir.'snapshot/shift_db'.date("d-m-Y").'*.snapshot.tar');
 
             if (!empty($snapshots)) {
+
                 echo "YES!\n";
-                
-            } else {
+            } 
+
+            // if we don't have a snapshot for today of the last snapshot is corrupt
+            if (empty($snapshots) || $db_data["recovery_from_snapshot"] == false) {
+
                 echo "\n\t\t\tNo snapshot exists for today, I'll create one for you now!\n";
             
                 ob_start();
@@ -93,6 +101,9 @@ if (($fork_counter + $counted_now) <= $max_count) {
                     $Tmsg = "Created daily snapshot on ".$nodeName.".";
                     echo "\t\t\t".$Tmsg."\n";
                     sendMessage($Tmsg, $restoreEnable);
+
+                    $db_data["recovery_from_snapshot"] = true;
+                    saveToJSONFile($db_data, $database);
                 }
 
                 echo "\t\t\tGoing to remove snapshots older than $max_snapshots days...\n";
