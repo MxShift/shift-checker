@@ -1,10 +1,10 @@
 # shift-checker
-*Current version: 2.1.2*
+*Current version: 2.1.3*
 
 ### Screenshot
 ![VPS logs](https://github.com/MxShift/shift-checker/blob/master/logs/screenshot.png)
 
-### How to update to v 2.1.2
+### How to update to v 2.1.3
 
 The better way is: 
 * save data from your old **config.php** file
@@ -24,9 +24,9 @@ Then change settings inside **config.example.php** and rename it to **config.php
 
 ## Explorers
 
-For **mainnet** explorer could be used: `https://explorer.shiftnrg.com.mx`
+For **mainnet** explorer could be used: `https://explorer.shiftnrg.org`
 
-For **testnet** explorer could be used: `https://testnet.shiftnrg.com.mx`
+For **testnet** explorer could be used: `https://explorer.testnet.shiftnrg.org`
 
 ### Forked and updated by [Mx](https://www.shiftproject.com/explorer/delegate/4446910057799968777S)
 
@@ -57,7 +57,6 @@ This script checks:
 3. Nodes consensus and switch forging to your backup node
     * When both nodes have a bad consensus, it will restart Shift and notify you by sending a Telegram message
 
-*Feel free to rewrite it in Python, Bash or something else.*
 
 **IMPORTANT TO MENTION**
 
@@ -85,6 +84,8 @@ sudo apt install php php-cli php-mbstring
 
 ```
 git clone https://github.com/MxShift/shift-snapshot
+cd shift-snapshot
+chmod +x shift-snapshot.sh
 ```
 
 Be sure that your **php.ini** allows *passthru()*. Usually this is allowed by default, but you could check it with this command:
@@ -102,21 +103,36 @@ Usually it's located simply in the home folder:
 git clone https://github.com/MxShift/shift-checker.git
 ```
 * Rename `config.example.php` file to `config.php` and change settings inside it to match your needs
-* Edit your crontab with the example below
+* Edit your cron jobs with the example below
+
+## Cron
+
+To start script running open your crontabs:
+
+```
+crontab -e
+```
+
+and add this lines to run script every minute:
+
+```
+# mainnet shift-checker 
+* * * * * php ~/shift-checker/checkdelegate.php >> ~/shift-checker/logs/checkdelegate.log 2>&1
+```
 
 ## Logs
 
-There are some echo lines in this file. When you redirect output to a log file in your crontab, these lines will show up.
+There are some echo lines in file **checkdelegate.log**. You could view logs in real time using:
 
-
-## Crontab
 ```
-* * * * * php ~/shift-checker/checkdelegate.php >> ~/shift-checker/logs/checkdelegate.log 2>&1
+tail -f ~/shift-checker/logs/checkdelegate.log
 ```
 
 ## Telegram bot
 **shift-checker** comes with Telegram functionality which will allow **shfit-checker** to send you a message if anything requires your attention. 
+
 It's very easy to set up: 
+
 * Open Telegram and start a conversation with: **[userinfobot](https://t.me/userinfobot)**
 * Put your ID inside variable $telegramId. 
 ```
@@ -134,16 +150,9 @@ $telegramApiKey   = "1122334455:AAEhBOweik6ad9r_QXMENQjcrGbqCr4K-bs";
 * Edit the telegram toggle to **true**
 * Start a conversation with your bot (username) to enable communication between you two
 
-## Donations to Jan
-[Jan](https://t.me/@jeeweevee): "Do you like/use my script(s)? Please consider donating the amount of a cup of coffee :-)"
-
-SHIFT: 7970982857025266480S
-
-BTC: 1GbAWBiGyuybXJcjtyTvtH6hB5iezXNVdP
-
 ## Contributors
-**Seatrips** (create snapshot when status is okay)
-* Twitter: [@seatrips](https://twitter.com/seatrips)
+[Jan](https://t.me/@jeeweevee) - first version of the script. For donations 1GbAWBiGyuybXJcjtyTvtH6hB5iezXNVdP
 
-**Mrgr** (shift-snapshot)
-* Github: https://github.com/mrgrshift
+[Mrgr](https://github.com/mrgrshift) - shift-snapshot creator
+
+[Seatrips](https://twitter.com/seatrips) - create snapshot when status is okay
