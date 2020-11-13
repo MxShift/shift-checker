@@ -17,7 +17,7 @@ __________________________ */
 // Recovery settings
     $restoreEnable      = true; 
     $apiHost            = "http://127.0.0.1:9405";                  // Used for calculating $publicKey by $secret for consensus check and to check syncing. Use http://127.0.0.1:netPort or https://127.0.0.1:netPort if you enabled SSL
-    $explorer           = "https://testnet.shiftnrg.com.mx";        // Used for checking blockchain height. Replace it to mainnet or testnet explorer
+    $explorer           = "https://explorer.shiftnrg.org";        // Used for checking blockchain height. Replace it to mainnet or testnet explorer
 
 // Snapshot settings
     $createsnapshot     = true;                    // Do you want to create snapshots with shift-snapshot?
