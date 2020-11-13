@@ -99,22 +99,6 @@ if ($restoreEnable === true) {
         ."\nForging Backup:    ".$forgingBackup."```";
     }
 
-    //Going to use database for counting rebuilds and messages
-    if (file_exists($database)) {
-        $str_data = file_get_contents($database);
-        $db_data = json_decode($str_data, true);
-    } else {
-        file_put_contents($database, '{}');
-        $db_data = json_decode('{}', true);
-    }
-
-    // Checking if JSON has the necessary keys
-    if (!array_key_exists("rebuild_message_counter", $db_data)) {
-
-        $db_data["rebuild_message_counter"] = 0;
-        $db_data["syncing_message_sent"] = false;
-    }
-
 
     // We are going to check a Local node => $apiHost = "http://127.0.0.1:netPort"
     if ($heightLocal < ($heightBlockchain - 10)) {
@@ -143,6 +127,10 @@ if ($restoreEnable === true) {
 
                     echo "\n\n\t\t\tRestored: $restored";
 
+                    // Wait for height synced then turn it true
+                    $db_data["recovery_from_snapshot"] = false;
+                    saveToJSONFile($db_data, $database);
+
                     if ($restored == $restoredMsg) {
 
                         // Set counter for next good message
@@ -160,6 +148,8 @@ if ($restoreEnable === true) {
                         echo "\n\t\t\tRestored: NO!";
 
                         $db_data["recovery_from_snapshot"] = false;
+                        $db_data["corrupt_snapshot"] = true;
+                        $db_data["synchronized_after_corrupt_snapshot"] = false;
                         $db_data["rebuild_message_counter"] += 1;
                         saveToJSONFile($db_data, $database);
 
@@ -177,34 +167,65 @@ if ($restoreEnable === true) {
 
                     }
                 }
-
+            } 
+            
             // Node is syncing. Last local snapshot blockchain height is lower than actual node's height.
-            // Just wait for full sync.
-            } else {
+            // Just wait for full sync
 
-                // Sending a message in the first time and then every 10 minutes
-                if (!$db_data["syncing_message_sent"] || $db_data["rebuild_message_counter"] % 10 === 0) {
+            // Sending a message in the first time and then every 10 minutes
+            if (!$db_data["syncing_message_sent"] || $db_data["rebuild_message_counter"] % 10 === 0) {
 
-                    $Tmsg = "*".$nodeName."*: node is syncing.\n\t\t\tAll we need to do is wait... *(~‾▿‾)~*";
-                    echo "\t\t\t".$Tmsg."\n\n";
-                    sendMessage($Tmsg, $restoreEnable);
-                    sendMessage($dataTmsg, $restoreEnable);
+                $Tmsg = "*".$nodeName."*: node is syncing.\n\t\t\tAll we need to do is wait... *(~‾▿‾)~*";
+                echo "\t\t\t".$Tmsg."\n\n";
+                sendMessage($Tmsg, $restoreEnable);
+                sendMessage($dataTmsg, $restoreEnable);
 
-                    $db_data["syncing_message_sent"] = true;
-                    saveToJSONFile($db_data, $database);
-                }
-
-                // Add +1 to counter
-                $db_data["rebuild_message_counter"] += 1;
+                $db_data["syncing_message_sent"] = true;
                 saveToJSONFile($db_data, $database);
-
             }
+
+            // Add +1 to counter
+            $db_data["rebuild_message_counter"] += 1;
+            saveToJSONFile($db_data, $database);
         
         } 
         
         // else    
         // Node is not in synchronizing state. 
         // The local node is probably stuck
+
+        // Let's wait for 20 sec for restore syncing status then turn rebuild
+        if ($syncingLocal === false && $db_data["corrupt_snapshot"] == true) {
+
+            echo "\t\t\tPause: 60 sec. to wait for syncing status\n\n";
+            sleep(60); 
+
+            // Check syncing status one more time
+            $statusLocal = @file_get_contents($apiHost."/api/loader/status/sync");
+
+            if ($statusLocal === false) {
+                $consensusLocal = 0;
+                $heightLocal = 0;
+                $syncingLocal = false;
+    
+            } else {
+                $statusLocal = json_decode($statusLocal, true);
+    
+                if (isset($statusLocal['height']) === false) {
+                    $heightLocal = "error";
+    
+                } else {
+                    $heightLocal = $statusLocal['height'];
+    
+                }
+    
+                $syncingLocal = $statusLocal['syncing'];
+                $consensusLocal = $statusLocal['consensus'];
+            }
+        }
+
+        // Node is not in synchronizing state
+        // The local node is stuck
         if ($syncingLocal === false) {
 
             $restored = false;
@@ -223,6 +244,10 @@ if ($restoreEnable === true) {
                 system("cd $pathtoapp && ./shift_manager.bash reload");
     
                 echo "\n\n\t\t\tRestored: $restored";
+
+                // Wait for height synced then turn it true
+                $db_data["recovery_from_snapshot"] = false;
+                saveToJSONFile($db_data, $database);
                 
                 if ($restored == $restoredMsg) {
 
@@ -236,19 +261,21 @@ if ($restoreEnable === true) {
     
                 } else {
                     $db_data["recovery_from_snapshot"] = false;
+                    $db_data["corrupt_snapshot"] = true;
+                    $db_data["synchronized_after_corrupt_snapshot"] = false;
                     saveToJSONFile($db_data, $database);
+
+                    $restored = false;
                 }
             }
             
             if ($restored == false) {
 
-                echo "\n\t\t\tThe last snapshot is corrupt.\n\n";
-
                 // Add checking for other sapshots
                 // HERE
 
                 // Going to rebuild
-                $Tmsg = "*".$nodeName."*: Error! Going to rebuild with shift-manager.";
+                $Tmsg = "*".$nodeName."*: height threshold is reached and not syncing. The last snapshot is corrupt! Going to rebuild with shift-manager.";
                 sendMessage($Tmsg, $restoreEnable);
                 echo "\n\t\t\t".$Tmsg."\n\n";
 
@@ -256,6 +283,7 @@ if ($restoreEnable === true) {
 
                 // Set counter for a next good message
                 $db_data["rebuild_message_counter"] += 1;
+                $db_data["corrupt_snapshot"] = true;
                 saveToJSONFile($db_data, $database);
 
                 // Pause to wait for start node sync
@@ -276,14 +304,24 @@ if ($restoreEnable === true) {
             sendMessage($dataTmsg, $restoreEnable);
             sendMessage($Tmsg, $restoreEnable);
 
-        }
+            // Lets reset counters in the database
+            // If snapshot is corrupt recovery from snapshot wiil be set true after creation of a new snapshot
+            if ($db_data["corrupt_snapshot"] == false) {
+                $db_data["recovery_from_snapshot"] = true;
+            }
 
-        // Lets reset counters in the database
-        $db_data["rebuild_message_counter"] = 0;
-        // Will be reset after creation a new snapshot
-        // $db_data["recovery_from_snapshot"] = true;
-        $db_data["syncing_message_sent"] = false;
-        saveToJSONFile($db_data, $database);
+            // Blockchain is syncronized from rebuild after finding a corrupt local snapshot
+            if ($db_data["corrupt_snapshot"] == true) {
+                $db_data["synchronized_after_corrupt_snapshot"] = true;
+            }
+
+            $db_data["rebuild_message_counter"] = 0;
+            $db_data["syncing_message_sent"] = false;
+
+
+            saveToJSONFile($db_data, $database);
+
+        }
 
     }
 
