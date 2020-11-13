@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.4 (2020-11-13)
+
+- Friday the 13th big fix 🎃
+
+
 ## 2.1.3 (2020-11-13)
 
 - Improvement of 'consensus' module stability. Add check if **shift-checker** script is disabled on a Main node
