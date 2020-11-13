@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.3 (2020-11-13)
+
+- Improvement of 'consensus' module stability. Add check if **shift-checker** script is disabled on a Main node
+- Improvement of 'recovery' module stability. Add check for a corrupt snapshot
+- Readme corrections
+
 ## 2.1.2 (2020-04-17)
 
 - Database switch from SQLite3 to a JSON file
