@@ -1,7 +1,10 @@
 <?php
 
-echo "\n[ FORKING ]\n\n";
-echo "\t\t\tGoing to check for forked status now...\n";
+// INITIALIZATION
+// next move it to a file
+
+$restoredMsg 	= "OK snapshot restored successfully.";	    // 'Okay' message from shift-snapshot
+$createdMsg 	= "OK snapshot created successfully";	    // 'Okay' message from shift-snapshot	
 
 // Set the database to save our counts to
 if (file_exists($database)) {
@@ -25,6 +28,12 @@ if (file_exists($database)) {
 //     $db_data["fork_counter"] = 0;
 // }
 
+// END INITIALIZATION
+
+echo "\n[ FORKING ]\n\n";
+echo "\t\t\tGoing to check for forked status now...\n";
+
+
 // Tail shift.log
 $last = tailCustom($shiftlog, $linestoread);
 
@@ -41,19 +50,23 @@ if (($fork_counter + $counted_now) >= $max_count) {
     if (file_exists($snapshotDir) && $createsnapshot) {
         $Tmsg = "Hit max_count on ".$nodeName.". I am going to restore from a snapshot.";
         echo "\t\t\t".$Tmsg."\n";
-        sendMessage($Tmsg);
+        sendMessage($Tmsg, $restoreEnable);
 
         // Perform snapshot restore
         system("cd $pathtoapp && ./shift_manager.bash stop");
         sleep(3);
-        system("cd $snapshotDir && echo y | ./shift-snapshot.sh restore");
-        system("cd $pathtoapp && ./shift_manager.bash reload");
+        system ("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash shift-snapshot.sh restore");
+        system("cd $pathtoapp && ./shift_manager.bash start"); 
 
         // Reset counters
         echo "\t\t\tFinally, I will reset the counter for you...\n";
 
         $db_data["fork_counter"] = 0;
         saveToJSONFile($db_data, $database);
+
+        // Pause to wait for start node sync.
+        echo "\t\t\tPause: 120 sec.\n\n";
+        sleep(120);  
 
     } else {
         echo "\t\t\tWe hit max_count and want to restore from snapshot.\n
@@ -64,7 +77,7 @@ if (($fork_counter + $counted_now) >= $max_count) {
 } 
 
 // else
-if (($fork_counter + $counted_now) <= $max_count) {
+if (($fork_counter + $counted_now) < $max_count) {
 
     $db_data["fork_counter"] = $fork_counter + $counted_now;
     saveToJSONFile($db_data, $database);
@@ -97,13 +110,14 @@ if (($fork_counter + $counted_now) <= $max_count) {
 
                 echo "\n\t\t\tNo snapshot exists for today, I'll create one for you now!\n";
             
+                // using passthru() for find occurrences of a string $createdMsg
                 ob_start();
-                $create = passthru("cd $snapshotDir && ./shift-snapshot.sh create");
+                $create = passthru("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash shift-snapshot.sh create");
                 $check_createoutput = ob_get_contents();
                 ob_end_clean();
 
                 // If buffer contains "OK snapshot created successfully"
-                if (strpos($check_createoutput, 'OK snapshot created successfully') !== false) {
+                if (strpos($check_createoutput, $createdMsg) !== false) {
                     $Tmsg = "Created daily snapshot on ".$nodeName.".";
                     echo "\t\t\t".$Tmsg."\n";
                     sendMessage($Tmsg, $restoreEnable);
