@@ -9,14 +9,14 @@ __________________________ */
     $consensusEnable    = true;                  // Set true for enable consensus check. Be sure to add nodes addresses first
     $main               = true;                  // Is this your main node? true/false
     $mainnode           = "http://NODE_IP";      // Main node IP address. Use node IP address or http://127.0.0.1 if it's a local node
-    $mainport           = 9405;                  // Main node port
+    $mainport           = 9305;                  // Main node port
     $backupnode         = "http://NODE_IP";      // Backup node IP address. Use node IP address or http://127.0.0.1 if it's a local node
-    $backupport         = 9405;                  // Backup node port
+    $backupport         = 9305;                  // Backup node port
     $secret             = "passphrase";          // Your twelve word passphrase is placed here. Required for consensus check
 
 // Recovery settings
     $restoreEnable      = true; 
-    $apiHost            = "http://127.0.0.1:9405";                  // Used for calculating $publicKey by $secret for consensus check and to check syncing. Use http://127.0.0.1:netPort or https://127.0.0.1:netPort if you enabled SSL
+    $apiHost            = "http://127.0.0.1:9305";                  // Used for calculating $publicKey by $secret for consensus check and to check syncing. Use http://127.0.0.1:netPort or https://127.0.0.1:netPort if you enabled SSL
     $explorer           = "https://explorer.shiftnrg.org";        // Used for checking blockchain height. Replace it to mainnet or testnet explorer
 
 // Snapshot settings
@@ -53,9 +53,8 @@ __________________________ */
 // Consensus settings
     $threshold          = 20;                            // Percentage of consensus threshold.
 
-// Syncing settings
-    $restoredMsg        = "OK snapshot restored successfully.";        // 'Okay' message from shift-snapshot         
-    $snapThreshold      = 3200;                                        // Threshold in blocks. Use 3200 for daily snapshots and 133 for hourly
+// Recovery settings       
+    $snapThreshold      = 3200;                                      // Threshold in blocks. Use 3200 for daily snapshots and 133 for hourly
 
 // Snapshot settings
     $snapshotDir        = $homeDir."shift-snapshot/";    // Base folder of shift-snapshot
