@@ -40,7 +40,7 @@ __________________________ */
 // You may leave the settings below as they are
 
     $date               = date("Y-m-d H:i:s");                // Current date
-    $pathtoapp          = $homeDir."shift/";                  // Full path to your shift installation    
+    $pathtoapp          = $homeDir."shift-lisk/";             // Full path to your shift installation    
     $baseDir            = dirname(__FILE__)."/";              // Folder which contains THIS file
     $lockfile           = $baseDir."checkdelegate.lock";      // Name of our lock file
     $database           = $baseDir."db.json";                 // Database name to use
@@ -57,7 +57,7 @@ __________________________ */
     $snapThreshold      = 3200;                                      // Threshold in blocks. Use 3200 for daily snapshots and 133 for hourly
 
 // Snapshot settings
-    $snapshotDir        = $homeDir."shift-snapshot/";    // Base folder of shift-snapshot
+    $snapshotDir        = $baseDir."shift-snapshot/";    // Base folder of shift-snapshot
 
 // Log file rotation
     $logfile            = $baseDir."logs/checkdelegate.log";         // The location of your log file (see section crontab on Github)
