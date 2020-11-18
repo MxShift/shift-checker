@@ -1,10 +1,10 @@
 # shift-checker
-*Current version: 2.1.4*
+*Current version: 2.1.5*
 
 ### Screenshot
 ![VPS logs](https://github.com/MxShift/shift-checker/blob/master/logs/screenshot.png)
 
-### How to update to v 2.1.4
+### How to update to v 2.1.5
 
 The better way is: 
 * save data from your old **config.php** file
@@ -21,6 +21,7 @@ git reset --hard origin/master
 ```
 
 Then change settings inside **config.example.php** and rename it to **config.php**.
+
 Also delete an old **db.json** file.
 
 ## Explorers
@@ -53,7 +54,7 @@ This script checks:
 1. The status of your Shift Project Delegate
 
 2. If your node is forked or not
-    * When forked, it will stop Shift then restore to the previous snapshot and start Shift again
+    * When forked, it will stop Shift then restore to the previous snapshot and start shift-lisk node again
 
 3. Nodes consensus and switch forging to your backup node
     * When both nodes have a bad consensus, it will restart Shift and notify you by sending a Telegram message
@@ -80,13 +81,6 @@ Also, you have to give access to the forging API calls for both nodes. Like this
 
 ```
 sudo apt install php php-cli php-mbstring
-```
-**shift-snapshot**:
-
-```
-git clone https://github.com/MxShift/shift-snapshot
-cd shift-snapshot
-chmod +x shift-snapshot.sh
 ```
 
 Be sure that your **php.ini** allows *passthru()*. Usually this is allowed by default, but you could check it with this command:
