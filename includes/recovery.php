@@ -122,7 +122,7 @@ if ($restoreEnable === true) {
                     echo "\t\t\tRestore from the last snapshot: \n";
                     system("cd $pathtoapp && ./shift_manager.bash stop");
                     sleep(3);
-                    $restored = system("cd $snapshotDir && echo y | ./shift-snapshot.sh restore");
+                    $restored = system ("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash shift-snapshot.sh restore");
                     system("cd $pathtoapp && ./shift_manager.bash reload");
 
                     echo "\n\n\t\t\tRestored: $restored";
@@ -194,7 +194,7 @@ if ($restoreEnable === true) {
         // Node is not in synchronizing state. 
         // The local node is probably stuck
 
-        // Let's wait for 20 sec for restore syncing status then turn rebuild
+        // Let's wait for 60 sec for restore syncing status then turn rebuild
         if ($syncingLocal === false && $db_data["corrupt_snapshot"] == true) {
 
             echo "\t\t\tPause: 60 sec. to wait for syncing status\n\n";
@@ -240,7 +240,7 @@ if ($restoreEnable === true) {
                 echo "\t\t\tRestore from the last snapshot: \n";
                 system("cd $pathtoapp && ./shift_manager.bash stop");
                 sleep(3);
-                $restored = system("cd $snapshotDir && echo y | ./shift-snapshot.sh restore");
+                $restored = system ("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash shift-snapshot.sh restore");
                 system("cd $pathtoapp && ./shift_manager.bash reload");
     
                 echo "\n\n\t\t\tRestored: $restored";
