@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.5 (2020-11-18)
+
+- Embed **shift-snapshot** script
+- Small fixes
+
+
 ## 2.1.4 (2020-11-13)
 
 - Friday the 13th big fix 🎃
