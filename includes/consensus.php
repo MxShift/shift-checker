@@ -80,7 +80,7 @@ if ($consensusEnable === true && !empty($secret)) {
 
                 if (!$restoreEnable) {
                     echo "\t\t\tRestarting Shift on Main\n";
-                    system("cd $pathtoapp && ./shift_manager.bash reload");
+                    shiftManager("reload");
                 }
             } else {
 
@@ -128,7 +128,7 @@ if ($consensusEnable === true && !empty($secret)) {
 
                         if (!$restoreEnable) {
                             echo "\t\t\tRestarting Shift on Main\n";
-                            system("cd $pathtoapp && ./shift_manager.bash reload");
+                            shiftManager("reload");
                         }
                     } else {
 
@@ -281,7 +281,7 @@ if ($consensusEnable === true && !empty($secret)) {
                     // Restart Shift on Backup if restoring is disabled
                     if (!$restoreEnable) {
                         echo "\t\t\tRestarting Shift on Main\n\n";
-                        system("cd $pathtoapp && ./shift_manager.bash reload");
+                        shiftManager("reload");
                     }
                 } else {
 
@@ -294,7 +294,7 @@ if ($consensusEnable === true && !empty($secret)) {
                         disableForging($backupnode, $secret);
 
                         echo "\t\t\tRestarting Shift on Backup\n\n";
-                        system("cd $pathtoapp && ./shift_manager.bash reload");
+                        shiftManager("reload");
                     } else {
                         // All is fine. Do nothing..
                         echo "\t\t\tConsensus is fine!\n\n";
