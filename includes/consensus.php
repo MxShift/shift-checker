@@ -8,78 +8,29 @@ echo "\t\t\tConsensus: ";
 if ($consensusEnable === true && !empty($secret)) {
     echo "enabled\n\n";
 
-    // Check height, consensus and syncing on Blockhain
-    $heightExplorer = @file_get_contents($explorer . "/api/statistics/getLastBlock");
-
-    if ($heightExplorer === false) {
-        $heightExplorer = 0;
-    } else {
-        $heightExplorer = json_decode($heightExplorer, true);
-        $heightExplorer = $heightExplorer['block']['height'];
-    }
+    // Check height on Trusted node
+    ['height' => $blockchain] = getNodeAPIData($trustedNode);
 
     // Check height, consensus and syncing on Main node
-    $statusMain = @file_get_contents($mainnode . ":" . $mainport . "/api/loader/status/sync");
-
-    if ($statusMain === false) {
-        $consensusMain = 0;
-        $heightMain = 0;
-        $syncingMain = false;
-    } else {
-        $statusMain = json_decode($statusMain, true);
-
-        if (isset($statusMain['height']) === false) {
-            $heightMain = "error";
-        } else {
-            $heightMain = $statusMain['height'];
-        }
-
-        $syncingMain = $statusMain['syncing'];
-        $consensusMain = $statusMain['consensus'];
-    }
+    ['height' => $heightMain,
+    'consensus' => $consensusMain,
+    'syncing' => $syncingMain] 
+    = getNodeAPIData($mainnode);
 
     // Check height, consensus and syncing on Backup node
-    $statusBackup = @file_get_contents($backupnode . ":" . $backupport . "/api/loader/status/sync");
+    ['height' => $heightBackup,
+    'consensus' => $consensusBackup,
+    'syncing' => $syncingBackup] 
+    = getNodeAPIData($backupnode);
 
-    if ($statusBackup === false) {
-        $consensusBackup = 0;
-        $heightBackup = 0;
-        $syncingBackup = false;
-    } else {
-        $statusBackup = json_decode($statusBackup, true);
+    $forgingBackup = checkForging($backupnode, $public);
+    $forgingMain = checkForging($mainnode, $public);
 
-        if (isset($statusBackup['height']) === false) {
-            $heightBackup = "error";
-        } else {
-            $heightBackup = $statusBackup['height'];
-        }
-
-        $syncingBackup = $statusBackup['syncing'];
-        $consensusBackup = $statusBackup['consensus'];
-    }
-
-    // Get publicKey of the secret to use in forging checks
-    $public = checkPublic($apiHost, $secret);
-
-    // Secret to array
-    $sec_array = explode(" ", $secret);
-
-    $forgingBackup = checkForging($backupnode . ":" . $backupport, $public);
-    $forgingMain = checkForging($mainnode . ":" . $mainport, $public);
-
-    echo "\t\t\tHeight Explorer: $heightExplorer\n\n";
-
-    echo "\t\t\tConsensus Main: " . $consensusMain . "%";
-    echo "\t\tConsensus Backup: " . $consensusBackup . "%\n";
-
-    echo "\t\t\tHeight Main: $heightMain";
-    echo "\t\tHeight Backup: $heightBackup \n";
-
-    echo "\t\t\tSyncing Main: " . json_encode($syncingMain); // Boolean to string
-    echo "\t\t\tSyncing Backup: " . json_encode($syncingBackup) . "\n";
-
-    echo "\t\t\tForging Main: " . $forgingMain;
-    echo ("\t\t\tForging Backup: " . $forgingBackup . "\n\n");
+    printTwoNodesData(
+        $blockchain, $heightMain, $heightBackup, 
+        $consensusMain, $consensusBackup,  $syncingMain, $syncingBackup,
+        $forgingMain, $forgingBackup
+    );
 
     // THE MAIN LOGIC STARTS HERE
     // LOGIC FOR MAIN NODE
@@ -368,4 +319,16 @@ if ($consensusEnable === true && !empty($secret)) {
     }
 } else {
     echo "disabled (or no secret)\n\n";
-} // END: ENABLED CONSENSUS CHECK?
+
+    // Check height on Trusted node
+    ['height' => $blockchain] = getNodeAPIData($trustedNode);
+
+    // Check height, consensus and syncing on Main node
+    ['height' => $heightMain,
+    'consensus' => $consensusMain,
+    'syncing' => $syncingMain] 
+    = getNodeAPIData($mainnode);
+
+    printNodeData("Local", $blockchain, $heightMain, $consensusMain, $syncingMain);
+
+} // END: ENABLED CONSENSUS CHECK
