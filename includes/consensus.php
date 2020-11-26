@@ -45,7 +45,7 @@ if ($consensusEnable === true && !empty($secret)) {
             // Forging on the Backup should be/stay disabled for secret until we perform a consensus check.
             // This way we ensure that forging is only disabled on nodes the Main chooses.
             echo "\t\t\tDisabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
-            disableForging($backupnode . ":" . $backupport, $secret);
+            disableForging($backupnode, $secret);
 
             // Check consensus on Main node
             // If consensus is the same as or lower than the set threshold. Going to restart Shift on Main
@@ -71,10 +71,10 @@ if ($consensusEnable === true && !empty($secret)) {
                         echo "\t\t\tConsensus on Backup is sufficient enough to switch to..\n";
 
                         echo "\t\t\tEnabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
-                        enableForging($backupnode . ":" . $backupport, $secret);
+                        enableForging($backupnode, $secret);
 
                         echo "\t\t\tDisabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
-                        disableForging($mainnode . ":" . $mainport, $secret);
+                        disableForging($backupnode, $secret);
                     }
                 }
 
@@ -90,10 +90,10 @@ if ($consensusEnable === true && !empty($secret)) {
                     sendMessage($Tmsg);
 
                     echo "\t\t\tEnabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
-                    enableForging($backupnode . ":" . $backupport, $secret);
+                    enableForging($backupnode, $secret);
 
                     echo "\t\t\tDisabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
-                    disableForging($mainnode . ":" . $mainport, $secret);
+                    disableForging($backupnode, $secret);
 
                     echo "\t\t\tRestarting Shift on Main\n";
                     passthru("cd $pathtoapp && ./shift_manager.bash reload");
@@ -151,11 +151,11 @@ if ($consensusEnable === true && !empty($secret)) {
                             } else {
                                 echo "\t\t\tMain node is synced!\n";
                                 echo "\t\t\tEnabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
-                                enableForging($mainnode . ":" . $mainport, $secret);
+                                enableForging($mainnode, $secret);
 
                                 echo "\t\t\tDisabling forging on Backup..\n";
                                 echo "\t\t\tDisabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
-                                disableForging($backupnode . ":" . $backupport, $secret);
+                                disableForging($backupnode, $secret);
                             }
                         }
                     }
@@ -177,10 +177,10 @@ if ($consensusEnable === true && !empty($secret)) {
 
                 if ($consensusMain > $consensusBackup && $heightMain > ($heightBackup - 10)) {
                     echo "\t\t\tEnabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
-                    enableForging($mainnode . ":" . $mainport, $secret);
+                    enableForging($mainnode, $secret);
                 } else {
                     echo "\t\t\tEnabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
-                    enableForging($backupnode . ":" . $backupport, $secret);
+                    enableForging($backupnode, $secret);
                 } // end: compare consensus
             } // end: backup forging is false
         } // end: main forging is false
@@ -220,7 +220,7 @@ if ($consensusEnable === true && !empty($secret)) {
                     // Enable forging on Backup
                     echo "true\n";
                     echo "\t\t\tEnabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
-                    enableForging($backupnode . ":" . $backupport, $secret);
+                    enableForging($backupnode, $secret);
                 } else {
                     // Main is synced. Let's check if shift-checker is working on main node.
 
@@ -248,7 +248,7 @@ if ($consensusEnable === true && !empty($secret)) {
                             sendMessage($Tmsg, true);
 
                             echo "\t\t\tEnabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
-                            enableForging($backupnode . ":" . $backupport, $secret);
+                            enableForging($backupnode, $secret);
                         } else {
 
                             echo "\n\t\t\t" . $db_data["script_disabled_counter"] . " minutes to start forging on the backup node.";
@@ -291,7 +291,7 @@ if ($consensusEnable === true && !empty($secret)) {
                         sendMessage($Tmsg);
 
                         echo "\t\t\tDisabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
-                        disableForging($backupnode . ":" . $backupport, $secret);
+                        disableForging($backupnode, $secret);
 
                         echo "\t\t\tRestarting Shift on Backup\n\n";
                         system("cd $pathtoapp && ./shift_manager.bash reload");
@@ -313,7 +313,7 @@ if ($consensusEnable === true && !empty($secret)) {
                 sendMessage($Tmsg);
 
                 echo "\t\t\tEnabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
-                enableForging($backupnode . ":" . $backupport, $secret);
+                enableForging($backupnode, $secret);
             }
         }
     }
