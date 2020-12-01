@@ -6,53 +6,33 @@ echo "\n[ RECOVERY ]\n\n";
 echo "\t\t\tRecovery: ";
 
 if ($restoreEnable === true) {
-    echo "enabled\n";
+    echo "enabled\n\n";
 
     // Let's define and show variables
     if ($consensusEnable === false) {
-        // Check height on Explorer
-        $heightBlockchain = @file_get_contents($explorer."/api/statistics/getLastBlock");
 
-        if ($heightBlockchain === false) {
-            $heightBlockchain = 0;
-        } else {
-            $heightBlockchain = json_decode($heightBlockchain, true);
-            $heightBlockchain = $heightBlockchain['block']['height'];
-        }
+        // Check height on Trusted node
+        ['height' => $blockchain] = getNodeAPIData($trustedNode);
 
-        // Check height, consensus and syncing on Local node
-        $statusLocal = @file_get_contents($apiHost."/api/loader/status/sync");
+        $heightBlockchain = $blockchain;
 
-        if ($statusLocal === false) {
-            $consensusLocal = 0;
-            $heightLocal = 0;
-            $syncingLocal = false;
+        // Check height, consensus and syncing on Main node
+        ['height' => $heightLocal,
+        'consensus' => $consensusLocal,
+        'syncing' => $syncingLocal] 
+        = getNodeAPIData($mainnode);
 
-        } else {
-            $statusLocal = json_decode($statusLocal, true);
+        $forgingLocal = checkForging($mainnode, $public);
 
-            if (isset($statusLocal['height']) === false) {
-                $heightLocal = "error";
+        printNodeData("Local", $blockchain, $heightLocal, $consensusLocal, $syncingLocal, $forgingLocal);
 
-            } else {
-                $heightLocal = $statusLocal['height'];
-
-            }
-
-            $syncingLocal = $statusLocal['syncing'];
-            $consensusLocal = $statusLocal['consensus'];
-        }
-
-        echo "\t\t\tHeight Blockchain: $heightBlockchain\n\n";
-        echo "\t\t\tConsensus Local: ".$consensusLocal."%\n";
-        echo "\t\t\tHeight Local: $heightLocal \n";
-        echo("\t\t\tSyncing Local: ".json_encode($syncingLocal)."\n\n");
-
+        // a message for Telegram notifications
         $dataTmsg = "*".$nodeName."*:
         ```\n\nHeight Explorer: ".$heightBlockchain.""
+        ."\nHeight Node:     ".$heightLocal."```"
         ."\nConsensus Node:  ".$consensusLocal."%"
         ."\nSyncing Node:    ".json_encode($syncingLocal).""
-        ."\nHeight Node:     ".$heightLocal."```";
+        ."\Forging Node:     ".$forgingLocal."```";
 
     } else {
 
@@ -63,8 +43,8 @@ if ($restoreEnable === true) {
             $consensusLocal = $consensusMain;
 
             // If Explorer is down => Use Backup height
-            if ($heightExplorer > 0) {
-                $heightBlockchain = $heightExplorer;
+            if ($blockchain > 0) {
+                $heightBlockchain = $blockchain;
 
             } else {
                 $heightBlockchain = $heightBackup;
@@ -78,8 +58,8 @@ if ($restoreEnable === true) {
             $consensusLocal = $consensusBackup;
 
             // If Explorer is down => Use Main height
-            if ($heightExplorer > 0) {
-                $heightBlockchain = $heightExplorer;
+            if ($blockchain > 0) {
+                $heightBlockchain = $blockchain;
 
             } else {
                 $heightBlockchain = $heightBackup;
@@ -87,8 +67,9 @@ if ($restoreEnable === true) {
             }
         }
 
+        // a message for Telegram notifications
         $dataTmsg = "*".$nodeName."*:
-        ```\n\nHeight Explorer:  ".$heightExplorer.""
+        ```\n\nHeight Blockhain:  ".$blockchain.""
         ."\n\nConsensus Main: ".$consensusMain."%"
         ."\nHeight Main:    ".$heightMain.""
         ."\nSyncing Main:   ".json_encode($syncingMain).""
@@ -295,7 +276,7 @@ if ($restoreEnable === true) {
 
     } else {
 
-        echo "\t\t\tHeight on this node is fine.\n\n";
+        echo "\n\t\t\tHeight on this node is fine.\n\n";
 
         // If we have bad messages send a good one
         if ($db_data["rebuild_message_counter"] > 0) {
