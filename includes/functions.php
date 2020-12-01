@@ -303,11 +303,11 @@ function printTwoNodesData(
 {
     echo "\t\t\tHeight Blockchain: $blockchain\n\n";
 
-    echo "\t\t\tConsensus Main: " . $consensusMain . "%";
-    echo "\t\tConsensus Backup: " . $consensusBackup . "%\n";
-
     echo "\t\t\tHeight Main: $heightMain";
     echo "\t\tHeight Backup: $heightBackup \n";
+
+    echo "\t\t\tConsensus Main: " . $consensusMain . "%";
+    echo "\t\tConsensus Backup: " . $consensusBackup . "%\n";
 
     echo "\t\t\tSyncing Main: " . json_encode($syncingMain); // Boolean to string
     echo "\t\t\tSyncing Backup: " . json_encode($syncingBackup) . "\n";
