@@ -330,6 +330,8 @@ if ($consensusEnable === true && !empty($secret)) {
         'syncing' => $syncingMain] 
         = getNodeAPIData($mainnode);
 
-        printNodeData("Local", $blockchain, $heightMain, $consensusMain, $syncingMain);
+        $forgingMain = checkForging($mainnode, $public);
+
+        printNodeData("Local", $blockchain, $heightMain, $consensusMain, $syncingMain, $forgingMain);
     }
 } // END: ENABLED CONSENSUS CHECK
