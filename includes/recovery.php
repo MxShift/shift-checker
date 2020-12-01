@@ -101,10 +101,10 @@ if ($recoveryEnabled === true) {
                     sendMessage($dataTmsg, $recoveryEnabled);
 
                     echo "\t\t\tRestore from the last snapshot: \n";
-                    system("cd $pathtoapp && ./shift_manager.bash stop");
+                    shiftManager("stop");
                     sleep(3);
                     $restored = system ("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash shift-snapshot.sh restore");
-                    system("cd $pathtoapp && ./shift_manager.bash reload");
+                    shiftManager("start");
 
                     echo "\n\n\t\t\tRestored: $restored";
 
@@ -140,7 +140,7 @@ if ($recoveryEnabled === true) {
                         echo "\n\t\t\t".$Tmsg."\n\n";
 
                         // Going to rebuild
-                        system("cd $pathtoapp && ./shift_manager.bash rebuild");
+                        shiftManager("rebuild");
 
                         // Pause to wait for start node sync.
                         echo "\t\t\tPause: 120 sec.\n\n";
@@ -219,10 +219,10 @@ if ($recoveryEnabled === true) {
                 sendMessage($dataTmsg, $recoveryEnabled);
     
                 echo "\t\t\tRestore from the last snapshot: \n";
-                system("cd $pathtoapp && ./shift_manager.bash stop");
+                shiftManager("stop");
                 sleep(3);
                 $restored = system ("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash shift-snapshot.sh restore");
-                system("cd $pathtoapp && ./shift_manager.bash reload");
+                shiftManager("start");
     
                 echo "\n\n\t\t\tRestored: $restored";
 
@@ -260,7 +260,7 @@ if ($recoveryEnabled === true) {
                 sendMessage($Tmsg, $recoveryEnabled);
                 echo "\n\t\t\t".$Tmsg."\n\n";
 
-                system("cd $pathtoapp && ./shift_manager.bash rebuild");
+                shiftManager("rebuild");
 
                 // Set counter for a next good message
                 $db_data["rebuild_message_counter"] += 1;
