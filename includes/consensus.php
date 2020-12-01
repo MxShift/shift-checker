@@ -199,6 +199,8 @@ if ($consensusEnable === true && !empty($secret)) {
             // Main is online.
             echo "true\n";
 
+            echo "\t\t\tBackup forging: ";
+
             // If Backup is forging.
             if ($forgingBackup == "true") {
                 echo "true!\n\n\t\t\tEverything seems okay.\n\n";
