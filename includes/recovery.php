@@ -28,7 +28,7 @@ if ($recoveryEnabled === true) {
 
         // a message for Telegram notifications
         $dataTmsg = "*".$nodeName."*:
-        ```\n\nHeight Explorer: ".$heightBlockchain.""
+        ```\n\nHeight Blockchain: ".$heightBlockchain.""
         ."\nHeight Node:     ".$heightLocal."```"
         ."\nConsensus Node:  ".$consensusLocal."%"
         ."\nSyncing Node:    ".json_encode($syncingLocal).""
@@ -42,7 +42,7 @@ if ($recoveryEnabled === true) {
             $syncingLocal = $syncingMain;
             $consensusLocal = $consensusMain;
 
-            // If Explorer is down => Use Backup height
+            // If trusted node is down => Use Backup height
             if ($blockchain > 0) {
                 $heightBlockchain = $blockchain;
 
@@ -57,7 +57,7 @@ if ($recoveryEnabled === true) {
             $syncingLocal = $syncingBackup;
             $consensusLocal = $consensusBackup;
 
-            // If Explorer is down => Use Main height
+            // If trusted node is down => Use Main height
             if ($blockchain > 0) {
                 $heightBlockchain = $blockchain;
 
