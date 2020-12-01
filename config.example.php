@@ -13,7 +13,7 @@ __________________________ */
     $secret             = "passphrase";               // Your twelve word passphrase is placed here. Required for consensus check
 
 // Recovery settings
-    $restoreEnable      = true; 
+    $recoveryEnabled    = true; 
     $apiHost            = "http://127.0.0.1:9305";                // Used for calculating $publicKey by $secret for consensus check and to check syncing. Use http://127.0.0.1:netPort or https://127.0.0.1:netPort if you enabled SSL
     $explorer           = "https://explorer.shiftnrg.org";        // Used for checking blockchain height. Replace it to mainnet or testnet explorer
 

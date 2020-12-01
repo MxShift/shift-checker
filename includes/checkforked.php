@@ -56,7 +56,7 @@ if (($fork_counter + $counted_now) >= $max_count) {
     if (file_exists($snapshotDir) && $createsnapshot) {
         $Tmsg = "Hit max_count on ".$nodeName.". I am going to restore from a snapshot.";
         echo "\t\t\t".$Tmsg."\n";
-        sendMessage($Tmsg, $restoreEnable);
+        sendMessage($Tmsg, $recoveryEnabled);
 
         // Perform snapshot restore
         system("cd $pathtoapp && ./shift_manager.bash stop");
@@ -126,7 +126,7 @@ if (($fork_counter + $counted_now) < $max_count) {
                 if (strpos($check_createoutput, $createdMsg) !== false) {
                     $Tmsg = "Created daily snapshot on ".$nodeName.".";
                     echo "\t\t\t".$Tmsg."\n";
-                    sendMessage($Tmsg, $restoreEnable);
+                    sendMessage($Tmsg, $recoveryEnabled);
 
                     $db_data["recovery_from_snapshot"] = true;
                     $db_data["corrupt_snapshot"] = false;

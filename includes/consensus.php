@@ -78,7 +78,7 @@ if ($consensusEnable === true && !empty($secret)) {
                     }
                 }
 
-                if (!$restoreEnable) {
+                if (!$recoveryEnabled) {
                     echo "\t\t\tRestarting Shift on Main\n";
                     shiftManager("reload");
                 }
@@ -126,7 +126,7 @@ if ($consensusEnable === true && !empty($secret)) {
                     if ($consensusMain <= $threshold && $syncingMain === false) {
                         echo "\t\t\tThreshold on Main node reached as well! Restarting Shift..\n";
 
-                        if (!$restoreEnable) {
+                        if (!$recoveryEnabled) {
                             echo "\t\t\tRestarting Shift on Main\n";
                             shiftManager("reload");
                         }
@@ -279,7 +279,7 @@ if ($consensusEnable === true && !empty($secret)) {
                     sendMessage($Tmsg);
 
                     // Restart Shift on Backup if restoring is disabled
-                    if (!$restoreEnable) {
+                    if (!$recoveryEnabled) {
                         echo "\t\t\tRestarting Shift on Main\n\n";
                         shiftManager("reload");
                     }
@@ -320,7 +320,7 @@ if ($consensusEnable === true && !empty($secret)) {
 } else {
     echo "disabled or no secret\n\n";
 
-    if ($restoreEnable === false) {
+    if ($recoveryEnabled === false) {
         // Check height on Trusted node
         ['height' => $blockchain] = getNodeAPIData($trustedNode);
 
