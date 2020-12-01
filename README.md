@@ -1,10 +1,10 @@
 # shift-checker
-*Current version: 2.1.5*
+*Current version: 2.1.6*
 
 ### Screenshot
 ![VPS logs](https://github.com/MxShift/shift-checker/blob/master/logs/screenshot.png)
 
-### How to update to v 2.1.5
+### How to update to v 2.1.6
 
 The better way is: 
 * save data from your old **config.php** file
@@ -58,6 +58,12 @@ This script checks:
 
 3. Nodes consensus and switch forging to your backup node
     * When both nodes have a bad consensus, it will restart Shift and notify you by sending a Telegram message
+
+<!--
+4. Здесь что-то про хейт
+
+5. Тут про шифт-чекер
+-->
 
 
 **IMPORTANT TO MENTION**
