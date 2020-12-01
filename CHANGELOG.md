@@ -3,9 +3,10 @@
 ## 2.1.6 (2020-12-01)
 
 - Fix restore at node restart, due to the inability to get data via API
-- Refactor of code. Add new functions
+- Fix rebuild with shift_manager
 - Change a template of a node address in the config
 - Raname "restoreEnable" to "recoveryEnabled" variable in the config
+- Refactor of code. Add new functions
 
 ## 2.1.5 (2020-11-18)
 
