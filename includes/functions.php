@@ -148,6 +148,14 @@ function checkPublic($server, $secret)
 // Check forging
 function checkForging($server, $publicKey)
 {
+    // check if secret passphrase is added to config
+    global $secret;
+    $sec_array = explode(" ", $secret);
+
+    if (count($sec_array) < 12) {
+        return "secret not set in config!";
+    }
+
     // check for an extra slash
     $server = rtrim($server, '/');
 
@@ -250,7 +258,15 @@ function pauseToWaitNodeAPI($seconds)
 function shiftManager($command)
 {
     global $pathtoapp;
-    system("cd $pathtoapp && bash shift_manager.bash $command");
+
+    if ($command == "rebuild") {
+
+        system("cd $pathtoapp && echo y | bash shift_manager.bash $command");
+
+    } else {
+        system("cd $pathtoapp && bash shift_manager.bash $command");
+    }
+
 
 }
 
