@@ -264,12 +264,13 @@ function getNodeAPIData($node)
 }
 
 // echo with node data
-function printNodeData($node, $blockchain, $height, $consensus, $syncing)
+function printNodeData($node, $blockchain, $height, $consensus, $syncing, $forging)
 {
     echo "\t\t\tHeight Blockchain: $blockchain\n\n";
     echo "\t\t\tHeight $node: $height\n";
-    echo "\t\t\tConsensus Main: ".$consensus."%\n";
-    echo "\t\t\tSyncing Main: ".json_encode($syncing)."\n"; // Boolean to string
+    echo "\t\t\tConsensus $node: ".$consensus."%\n";
+    echo "\t\t\tSyncing $node: ".json_encode($syncing)."\n"; // Boolean to string
+    echo "\t\t\tForging $node: $forging\n";
 }
 
 // echo with nodes data
