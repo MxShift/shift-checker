@@ -6,13 +6,11 @@ __________________________ */
     $nodeName           = "Your Node Name"." on ".gethostname();    // Name of this node delegate for Telegram messages.
 
 // Consensus settings
-    $consensusEnable    = true;                  // Set true for enable consensus check. Be sure to add nodes addresses first
-    $main               = true;                  // Is this your main node? true/false
-    $mainnode           = "http://NODE_IP";      // Main node IP address. Use node IP address or http://127.0.0.1 if it's a local node
-    $mainport           = 9305;                  // Main node port
-    $backupnode         = "http://NODE_IP";      // Backup node IP address. Use node IP address or http://127.0.0.1 if it's a local node
-    $backupport         = 9305;                  // Backup node port
-    $secret             = "passphrase";          // Your twelve word passphrase is placed here. Required for consensus check
+    $consensusEnable    = true;                       // Set true for enable consensus check. Be sure to add nodes addresses first
+    $main               = true;                       // Is this your main node? true/false
+    $mainnode           = "http://127.0.0.1:9305";    // Main node IP address. Use node IP address:port or http://127.0.0.1:9305 if it's a local node
+    $backupnode         = "http://NODE_IP:9305";      // Backup node IP address. Use node IP address:port or http://127.0.0.1:9305 if it's a local node
+    $secret             = "passphrase";               // Your twelve word passphrase is placed here. Required for consensus check
 
 // Recovery settings
     $restoreEnable      = true; 
