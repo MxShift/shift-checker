@@ -16,12 +16,12 @@ __________________________ */
 
 // Recovery settings
     $restoreEnable      = true; 
-    $apiHost            = "http://127.0.0.1:9305";                  // Used for calculating $publicKey by $secret for consensus check and to check syncing. Use http://127.0.0.1:netPort or https://127.0.0.1:netPort if you enabled SSL
+    $apiHost            = "http://127.0.0.1:9305";                // Used for calculating $publicKey by $secret for consensus check and to check syncing. Use http://127.0.0.1:netPort or https://127.0.0.1:netPort if you enabled SSL
     $explorer           = "https://explorer.shiftnrg.org";        // Used for checking blockchain height. Replace it to mainnet or testnet explorer
 
 // Snapshot settings
     $createsnapshot     = true;                    // Do you want to create snapshots with shift-snapshot?
-    $max_snapshots      = 2;                       // How many snapshots to preserve? (in days)
+    $max_snapshots      = 1;                       // How many snapshots to preserve? (in days)
 
 // Telegram Bot
     $telegramAll        = false;                   // Change it to false to disable all messages exept recovery messages from Telegram bot
@@ -61,7 +61,7 @@ __________________________ */
 
 // Log file rotation
     $logfile            = $baseDir."logs/checkdelegate.log";         // The location of your log file (see section crontab on Github)
-    $max_logfiles       = 3;                                         // How many log files to preserve? (in days)  
-    $logsize            = 5242880;                                   // Max file size, default is 5 MB
+    $max_logfiles       = 10;                                        // How many log files to preserve? (in days)  
+    $logsize            = 524288;                                    // Max file size, default is 0.5 MB
 
 ?>
