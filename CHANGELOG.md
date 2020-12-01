@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.6 (2020-12-02)
+
+- Add compressing for snapshots
+
 ## 2.1.6 (2020-12-01)
 
 - Fix restore at node restart, due to the inability to get data via API
@@ -122,5 +126,7 @@ reload, rebuild, stop, start, update_manager, update_client, update_wallet, crea
 - Add installation guide
 - Update readme
 - Update screenshots
+
+- В конфиге, вместо мейн и бекап, сделать локал и ремоут ноды, чтобы удобно было переключаться, да и вообще, меньше заморочек
 
 END TODO -->

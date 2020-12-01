@@ -1,8 +1,10 @@
 **/logs
-**/snapshot
 *.sqlite3
 *.json
+*gz
+*tar
 config.php
 checkdelegate.lock
 test.php
 .vscode/
+.init

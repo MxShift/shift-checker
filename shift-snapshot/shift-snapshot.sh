@@ -1,13 +1,12 @@
 #!/bin/bash
-VERSION="0.3.1"
+VERSION="0.3.2"
 
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 
 # CONFIG
-# SHIFT_DIRECTORY=~/shift-lisk
-
+SHIFT_DIRECTORY=~/shift-lisk
 
 #============================================================
 #= snapshot.sh v0.2 created by mrgr                         =
@@ -15,7 +14,7 @@ export LANGUAGE=en_US.UTF-8
 #============================================================
 
 #============================================================
-#= snapshot.sh v0.3.1 created by Mx                         =
+#= snapshot.sh v0.3.2 created by Mx                         =
 #= Please consider voting for delegate 'mx'                 =
 #============================================================
 
@@ -35,16 +34,17 @@ SHIFT_CONFIG=${SHIFT_DIRECTORY}/config.json
 DB_NAME="$(grep "database" $SHIFT_CONFIG | cut -f 4 -d '"')"
 DB_USER="$(grep "user" $SHIFT_CONFIG | cut -f 4 -d '"')"
 DB_PASS="$(grep "password" $SHIFT_CONFIG | cut -f 4 -d '"' | head -1)"
-SNAPSHOT_COUNTER=snapshot/counter.json
-SNAPSHOT_LOG=snapshot/snapshot.log
-if [ ! -f "snapshot/counter.json" ]; then
-  mkdir -p snapshot
-  sudo chmod +x shift-snapshot.sh
-  echo "0" > $SNAPSHOT_COUNTER
-  sudo chown postgres:${USER:=$(/usr/bin/id -run)} snapshot
-  sudo chmod -R 777 snapshot
+SNAPSHOT_INIT=.init
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+if [ ! -f $SNAPSHOT_INIT ]; then
+  sudo chmod +x snap.sh
+  echo "true" > $SNAPSHOT_INIT
+  sudo chown postgres:${USER:=$(/usr/bin/id -run)} "$DIR"
+  sudo chmod -R 777 $DIR
 fi
-SNAPSHOT_DIRECTORY=snapshot/
+SNAPSHOT_DIRECTORY=$DIR"/"
 
 
 NOW=$(date +"%d-%m-%Y - %T")
@@ -54,16 +54,18 @@ create_snapshot() {
   export PGPASSWORD=$DB_PASS
   echo " + Creating snapshot"
   echo "--------------------------------------------------"
-  echo "..."
-  sudo su postgres -c "pg_dump -Ft $DB_NAME > $SNAPSHOT_DIRECTORY'shift_db$NOW.snapshot.tar'"
+  snapshotName="shift_db_$NOW.sql.gz"
+  snapshotLocation="$SNAPSHOT_DIRECTORY'$snapshotName'"
+  sudo su postgres -c "pg_dump -Fp -Z 9 $DB_NAME > $snapshotLocation"
   blockHeight=`psql -d $DB_NAME -U $DB_USER -h localhost -p 5432 -t -c "select height from blocks order by height desc limit 1;"`
-  dbSize=`psql -d $DB_NAME -U $DB_USER -h localhost -p 5432 -t -c "select pg_size_pretty(pg_database_size('$DB_NAME'));"`
 
   if [ $? != 0 ]; then
-    echo "X Failed to create snapshot." | tee -a $SNAPSHOT_LOG
+    echo "X Failed to create snapshot."
+    sudo rm -f "$SNAPSHOT_DIRECTORY$snapshotName"
     exit 1
   else
-    echo "$NOW -- OK snapshot created successfully at block$blockHeight ($dbSize)." | tee -a $SNAPSHOT_LOG
+    fileSize=$(du -h "$SNAPSHOT_DIRECTORY$snapshotName" | cut -f1)
+    echo "$NOW -- OK snapshot created successfully at block$blockHeight ($fileSize)."
   fi
 
 }
@@ -71,7 +73,7 @@ create_snapshot() {
 restore_snapshot(){
   echo " + Restoring snapshot"
   echo "--------------------------------------------------"
-  SNAPSHOT_FILE=`ls -t snapshot/shift_db* | head  -1`
+  SNAPSHOT_FILE=`ls -t ${SNAPSHOT_DIRECTORY}_shift_db* | head  -1`
   if [ -z "$SNAPSHOT_FILE" ]; then
     echo "! No snapshot to restore, please consider create it first"
     echo " "
@@ -79,17 +81,22 @@ restore_snapshot(){
   fi
   echo "Snapshot to restore = $SNAPSHOT_FILE"
 
-#   read -p "Please stop node app.js first, are you ready (y/n)? " -n 1 -r
-#   if [[ ! $REPLY =~ ^[Yy]$ ]]
-#   then
-#      echo "! Please stop app.js first.. then execute restore again"
-#      echo " "
-#      exit 1
-#   fi
-
-#snapshot restoring..
+  #snapshot restoring
   export PGPASSWORD=$DB_PASS
-  pg_restore -d $DB_NAME "$SNAPSHOT_FILE" -U $DB_USER -h localhost -c -n public
+  # drop db
+  resp=$(sudo -u postgres dropdb --if-exists "$DB_NAME" 2> /dev/null)
+  resp=$(sudo -u postgres createdb -O "$DB_USER" "$DB_NAME" 2> /dev/null)
+  resp=$(sudo -u postgres psql -t -c "SELECT count(*) FROM pg_database where datname='$DB_NAME'" 2> /dev/null)
+
+  if [[ $resp -eq 1 ]]; then
+    echo "√ Database reset successfully."
+  else
+    echo "X Failed to create Postgresql database."
+    exit 1
+  fi
+
+  # restore dump
+  gunzip -fcq "$SNAPSHOT_FILE" | psql -d $DB_NAME -U $DB_USER -h localhost -q &> /dev/null
 
   if [ $? != 0 ]; then
     echo "X Failed to restore."
@@ -100,13 +107,6 @@ restore_snapshot(){
 
 }
 
-show_log(){
-  echo " + Snapshot Log"
-  echo "--------------------------------------------------"
-  cat snapshot/snapshot.log
-  echo "--------------------------------------------------END"
-}
-
 ################################################################################
 
 case $1 in
@@ -115,23 +115,5 @@ case $1 in
   ;;
 "restore")
   restore_snapshot
-  ;;
-"log")
-  show_log
-  ;;
-"hello")
-  echo "Hello my friend - $NOW"
-  ;;
-"help")
-  echo "Available commands are: "
-  echo "  create   - Create new snapshot"
-  echo "  restore  - Restore the last snapshot available in folder snapshot/"
-  echo "  log      - Display log"
-  ;;
-*)
-  echo "Error: Unrecognized command."
-  echo ""
-  echo "Available commands are: create, restore, log, help"
-  echo "Try: bash shift-snapshot.sh help"
   ;;
 esac
