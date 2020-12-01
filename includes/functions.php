@@ -215,3 +215,85 @@ function saveToJSONFile($arr, $file_path)
     fclose($fh);
 
 }
+
+// Pause
+function pauseToWaitNodeAPI($seconds)
+{
+    // Pause to wait for start node sync. Use 120
+    echo "\t\t\tPause: $seconds sec.\n\n";
+    sleep($seconds);
+
+}
+
+// Shift manager
+function shiftManager($command)
+{
+    global $pathtoapp;
+    system("cd $pathtoapp && bash shift_manager.bash $command");
+
+}
+
+// Check height, consensus and syncing on Main node
+function getNodeAPIData($node)
+{
+    // check for an extra slash
+    $node = rtrim($node, '/');
+
+    $statusNode = @file_get_contents($node."/api/loader/status/sync");
+
+    if ($statusNode === false) {
+        $heightNode = 0;
+        $consensusNode = 0;
+        $syncingNode = false;
+    } else {
+        $statusNode = json_decode($statusNode, true);
+    
+        if (isset($statusNode['height']) === false) {
+            $heightNode = "error";
+        } else {
+            $heightNode = $statusNode['height'];
+        }
+    
+        $syncingNode = $statusNode['syncing'];
+        $consensusNode = $statusNode['consensus'];
+    }
+
+    return ['height' => $heightNode, 'consensus' => $consensusNode, 'syncing' => $syncingNode];
+    // return array($heightNode, $consensusNode, $syncingNode);
+
+}
+
+// echo with node data
+function printNodeData($node, $blockchain, $height, $consensus, $syncing)
+{
+    echo "\t\t\tHeight Blockchain: $blockchain\n\n";
+    echo "\t\t\tHeight $node: $height\n";
+    echo "\t\t\tConsensus Main: ".$consensus."%\n";
+    echo "\t\t\tSyncing Main: ".json_encode($syncing)."\n"; // Boolean to string
+}
+
+// echo with nodes data
+function printTwoNodesData(
+    $blockchain, $heightMain, $heightBackup, 
+    $consensusMain, $consensusBackup,  $syncingMain, $syncingBackup,
+    $forgingMain, $forgingBackup
+    )
+{
+    echo "\t\t\tHeight Explorer: $blockchain\n\n";
+
+    echo "\t\t\tConsensus Main: " . $consensusMain . "%";
+    echo "\t\tConsensus Backup: " . $consensusBackup . "%\n";
+
+    echo "\t\t\tHeight Main: $heightMain";
+    echo "\t\tHeight Backup: $heightBackup \n";
+
+    echo "\t\t\tSyncing Main: " . json_encode($syncingMain); // Boolean to string
+    echo "\t\t\tSyncing Backup: " . json_encode($syncingBackup) . "\n";
+
+    echo "\t\t\tForging Main: " . $forgingMain;
+    echo ("\t\t\tForging Backup: " . $forgingBackup . "\n\n");
+
+}
+
+
+
