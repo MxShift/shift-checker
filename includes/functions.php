@@ -1,8 +1,16 @@
 <?php
 
 // PING function..
-function ping($host, $port=80, $timeout=3)
+function ping($node, $timeout=3)
 {
+    // check for an extra slash
+    $node = rtrim($node, '/');
+
+    $find = array("http://", "https://");
+    $node = explode(":", str_replace($find, "", $node));
+    $host = $node[0];
+    $port = $node[1];
+
     $fsock = @fsockopen($host, $port, $errno, $errstr, $timeout);
     if (!is_resource($fsock)) {
         return false;
@@ -10,6 +18,7 @@ function ping($host, $port=80, $timeout=3)
         return true;
     }
 }
+
     
 // Tail function
 function tailCustom($filepath, $lines = 1, $adaptive = true)
@@ -119,6 +128,9 @@ function rotateLog($logfile, $max_logfiles=3, $logsize=10485760)
 // Check publicKey
 function checkPublic($server, $secret)
 {
+    // check for an extra slash
+    $server = rtrim($server, '/');
+    
     ob_start();
     $check_public = passthru("curl -s --connect-timeout 10 -d 'secret=$secret' $server/api/accounts/open");
     $check_public = ob_get_contents();
@@ -136,6 +148,9 @@ function checkPublic($server, $secret)
 // Check forging
 function checkForging($server, $publicKey)
 {
+    // check for an extra slash
+    $server = rtrim($server, '/');
+
     ob_start();
     $check_forging = passthru("curl -s --connect-timeout 10 -XGET $server/api/delegates/forging/status?publicKey=$publicKey");
     $check_forging = ob_get_contents();
@@ -157,6 +172,9 @@ function checkForging($server, $publicKey)
 // Disable forging
 function disableForging($server, $secret)
 {
+    // check for an extra slash
+    $server = rtrim($server, '/');
+
     ob_start();
     $check_status = passthru("curl -s --connect-timeout 10 -d 'secret=$secret' $server/api/delegates/forging/disable");
     $check_output = ob_get_contents();
@@ -173,6 +191,9 @@ function disableForging($server, $secret)
 // Enable forging
 function enableForging($server, $secret)
 {
+    // check for an extra slash
+    $server = rtrim($server, '/');
+
     ob_start();
     $check_status = passthru("curl -s --connect-timeout 10 -d 'secret=$secret' $server/api/delegates/forging/enable > /dev/null");
     $check_output = ob_get_contents();
@@ -280,7 +301,7 @@ function printTwoNodesData(
     $forgingMain, $forgingBackup
     )
 {
-    echo "\t\t\tHeight Explorer: $blockchain\n\n";
+    echo "\t\t\tHeight Blockchain: $blockchain\n\n";
 
     echo "\t\t\tConsensus Main: " . $consensusMain . "%";
     echo "\t\tConsensus Backup: " . $consensusBackup . "%\n";
