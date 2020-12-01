@@ -6,6 +6,12 @@
 $restoredMsg 	= "OK snapshot restored successfully.";	    // 'Okay' message from shift-snapshot
 $createdMsg 	= "OK snapshot created successfully";	    // 'Okay' message from shift-snapshot	
 
+// Get publicKey of the secret to use it in forging checks
+$public = checkPublic($apiHost, $secret);
+
+// Secret to array
+$sec_array = explode(" ", $secret);
+
 // Set the database to save our counts to
 if (file_exists($database)) {
     $str_data = file_get_contents($database);
