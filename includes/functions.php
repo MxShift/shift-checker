@@ -141,7 +141,12 @@ function checkPublic($server, $secret)
         return "error";
     } else {
         $check = json_decode($check_public, true);
-        return $check['account']['publicKey'];
+
+        if ($check["success"] === false) {
+            return "bad secret";
+        } else {
+            return $check["account"]["publicKey"];
+        }
     }
 }
 
