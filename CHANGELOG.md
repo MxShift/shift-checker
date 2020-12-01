@@ -1,10 +1,11 @@
 # Changelog
 
-## 2.1.6 (2020-11-28)
+## 2.1.6 (2020-12-01)
 
 - Fix restore at node restart, due to the inability to get data via API
 - Refactor of code. Add new functions
 - Change a template of a node address in the config
+- Raname "restoreEnable" to "recoveryEnabled" variable in the config
 
 ## 2.1.5 (2020-11-18)
 
