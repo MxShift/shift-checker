@@ -318,17 +318,18 @@ if ($consensusEnable === true && !empty($secret)) {
         }
     }
 } else {
-    echo "disabled (or no secret)\n\n";
+    echo "disabled or no secret\n\n";
 
-    // Check height on Trusted node
-    ['height' => $blockchain] = getNodeAPIData($trustedNode);
+    if ($restoreEnable === false) {
+        // Check height on Trusted node
+        ['height' => $blockchain] = getNodeAPIData($trustedNode);
 
-    // Check height, consensus and syncing on Main node
-    ['height' => $heightMain,
-    'consensus' => $consensusMain,
-    'syncing' => $syncingMain] 
-    = getNodeAPIData($mainnode);
+        // Check height, consensus and syncing on Main node
+        ['height' => $heightMain,
+        'consensus' => $consensusMain,
+        'syncing' => $syncingMain] 
+        = getNodeAPIData($mainnode);
 
-    printNodeData("Local", $blockchain, $heightMain, $consensusMain, $syncingMain);
-
+        printNodeData("Local", $blockchain, $heightMain, $consensusMain, $syncingMain);
+    }
 } // END: ENABLED CONSENSUS CHECK
