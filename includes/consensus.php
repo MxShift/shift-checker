@@ -142,7 +142,7 @@ if ($consensusEnable === true && !empty($secret)) {
                             // Consensus is sufficient on Main. Going to check syncing of Mainnode with 100% consensus
                             echo "\t\t\tConsensus on Main is sufficient.\n";
 
-                            if ($heightMain < ($heightExplorer - 101)) {
+                            if ($heightMain < ($blockchain - 101)) {
                                 echo "\t\t\tBut seems Main node is syncing. Doing nothing..\n";
 
                                 $Tmsg = $nodeName . ": Warning! Consensus Backup reached the threshold, but seems Main node is syncing. No healthy servers online!";
@@ -193,8 +193,7 @@ if ($consensusEnable === true && !empty($secret)) {
 
         echo "\t\t\tMain online: ";
         // Check if the Main is online
-        $find = array("http://", "https://");
-        $up = ping(str_replace($find, "", $mainnode), $mainport);
+        $up = ping($mainnode);
 
         if ($up) {
             // Main is online.
