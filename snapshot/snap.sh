@@ -65,7 +65,7 @@ create_snapshot() {
     exit 1
   else
     fileSize=$(du -h "$SNAPSHOT_DIRECTORY$snapshotName" | cut -f1)
-    echo "$NOW -- OK snapshot created successfully at block$blockHeight ($fileSize)."
+    echo "$NOW -- OK snapshot created successfully at block$blockHeight ${fileSize}B"
   fi
 
 }
