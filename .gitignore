@@ -4,7 +4,7 @@
 *gz
 *tar
 config.php
-checkdelegate.lock
+run.lock
 test.php
 .vscode/
 .init

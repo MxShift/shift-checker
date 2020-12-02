@@ -40,7 +40,7 @@ __________________________ */
     $date               = date("Y-m-d H:i:s");                // Current date
     $pathtoapp          = $homeDir."shift-lisk/";             // Full path to your shift installation    
     $baseDir            = dirname(__FILE__)."/";              // Folder which contains THIS file
-    $lockfile           = $baseDir."checkdelegate.lock";      // Name of our lock file
+    $lockfile           = $baseDir."run.lock";                // Name of our lock file
     $database           = $baseDir."db.json";                 // Database name to use
     $msg                = "\"cause\":3";                      // Message that is printed when forked
     $shiftlog           = $pathtoapp."logs/shift.log";        // Needs to be a FULL path, so not ~/shift
