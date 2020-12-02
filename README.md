@@ -1,10 +1,10 @@
 # shift-checker
-*Current version: 2.1.6*
+*Current version: 2.1.7*
 
 ### Screenshot
 ![VPS logs](https://github.com/MxShift/shift-checker/blob/master/logs/screenshot.png)
 
-### How to update to v 2.1.6
+### How to update to v 2.1.7
 
 The better way is: 
 * save data from your old **config.php** file
@@ -118,7 +118,7 @@ and add this lines to run script every minute:
 
 ```
 # mainnet shift-checker 
-* * * * * php ~/shift-checker/checkdelegate.php >> ~/shift-checker/logs/checkdelegate.log 2>&1
+* * * * * php ~/shift-checker/run.php >> ~/shift-checker/logs/run.log 2>&1
 ```
 
 ## Logs
@@ -126,7 +126,7 @@ and add this lines to run script every minute:
 You could view logs in real time using:
 
 ```
-tail -f ~/shift-checker/logs/checkdelegate.log
+tail -f ~/shift-checker/logs/run.log
 ```
 
 ## Telegram bot
