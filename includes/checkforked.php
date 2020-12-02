@@ -29,11 +29,6 @@ if (file_exists($database)) {
 
 }
 
-// Checking if JSON has the necessary keys
-// if (!array_key_exists("fork_counter", $db_data)) {
-//     $db_data["fork_counter"] = 0;
-// }
-
 // END INITIALIZATION
 
 echo "\n[ FORKING ]\n\n";
@@ -59,10 +54,10 @@ if (($fork_counter + $counted_now) >= $max_count) {
         sendMessage($Tmsg, $recoveryEnabled);
 
         // Perform snapshot restore
-        system("cd $pathtoapp && ./shift_manager.bash stop");
+        shiftManager("stop");
         sleep(3);
         system ("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash shift-snapshot.sh restore");
-        system("cd $pathtoapp && ./shift_manager.bash start"); 
+        shiftManager("start");
 
         // Reset counters
         echo "\t\t\tFinally, I will reset the counter for you...\n";
