@@ -281,10 +281,15 @@ function shiftSnapshot($command)
     if ($command === "create") {
         ob_start();
         passthru("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash snap.sh $command");
-        $create_output = ob_get_contents();
+        $output = ob_get_contents();
         ob_end_clean();
 
-        return $create_output;
+        $output_array = explode(" ", $output);
+
+        $blockHeight = $output_array[14];
+        $fileSize = $output_array[15];
+
+        return ['output' => $output, 'size' => $fileSize, 'height' => $blockHeight];
     }
 
     system ("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash snap.sh $command");
