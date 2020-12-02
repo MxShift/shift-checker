@@ -56,7 +56,7 @@ if (($fork_counter + $counted_now) >= $max_count) {
         // Perform snapshot restore
         shiftManager("stop");
         sleep(3);
-        system ("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash shift-snapshot.sh restore");
+        shiftSnapshot("restore");
         shiftManager("start");
 
         // Reset counters
@@ -66,8 +66,7 @@ if (($fork_counter + $counted_now) >= $max_count) {
         saveToJSONFile($db_data, $database);
 
         // Pause to wait for start node sync.
-        echo "\t\t\tPause: 120 sec.\n\n";
-        sleep(120);  
+        pauseToWaitNodeAPI(20);
 
     } else {
         echo "\t\t\tWe hit max_count and want to restore from snapshot.\n
