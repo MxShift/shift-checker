@@ -1,8 +1,14 @@
 # Changelog
 
-## 2.1.6 (2020-12-02)
+## 2.1.7 (2020-12-02)
 
 - Add compressing for snapshots
+- Add node height check before snapshot creation
+- Beutify Telegram messages. Add info about blockchain height and snapshot file size
+- Change folder for snapshots
+- Rename checkdelegate.php to run.php
+- Rename shift-snapshot.sh to snap.sh
+- A lot of code refactor and dry
 
 ## 2.1.6 (2020-12-01)
 
