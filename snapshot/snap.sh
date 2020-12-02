@@ -73,7 +73,7 @@ create_snapshot() {
 restore_snapshot(){
   echo " + Restoring snapshot"
   echo "--------------------------------------------------"
-  SNAPSHOT_FILE=`ls -t ${SNAPSHOT_DIRECTORY}_shift_db* | head  -1`
+  SNAPSHOT_FILE=`ls -t ${SNAPSHOT_DIRECTORY}shift_db_* | head  -1`
   if [ -z "$SNAPSHOT_FILE" ]; then
     echo "! No snapshot to restore, please consider create it first"
     echo " "
