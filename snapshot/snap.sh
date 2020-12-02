@@ -6,7 +6,7 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 
 # CONFIG
-SHIFT_DIRECTORY=~/shift-lisk
+# SHIFT_DIRECTORY=~/shift-lisk
 
 #============================================================
 #= snapshot.sh v0.2 created by mrgr                         =
