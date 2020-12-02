@@ -58,7 +58,7 @@ __________________________ */
     $snapshotDir        = $baseDir."snapshot/";    // Base folder of shift-snapshot
 
 // Log file rotation
-    $logfile            = $baseDir."logs/checkdelegate.log";         // The location of your log file (see section crontab on Github)
+    $logfile            = $baseDir."logs/run.log";                   // The location of your log file (see section crontab on Github)
     $max_logfiles       = 10;                                        // How many log files to preserve? (in days)  
     $logsize            = 524288;                                    // Max file size, default is 0.5 MB
 
