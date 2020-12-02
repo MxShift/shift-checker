@@ -3,6 +3,11 @@
 // INITIALIZATION
 // next move it to a file
 
+$floppyEmoji = "%F0%9F%92%BE";
+$starEmoji = "%E2%AD%90%EF%B8%8F";
+$chainEmoji = "%E2%9B%93";
+$storageEmoji = "%F0%9F%97%84";
+
 $restoredMsg 	= "OK snapshot restored successfully.";	    // 'Okay' message from shift-snapshot
 $createdMsg 	= "OK snapshot created successfully";	    // 'Okay' message from shift-snapshot	
 
@@ -108,12 +113,14 @@ if (($fork_counter + $counted_now) < $max_count) {
 
                 echo "\n\t\t\tNo snapshot exists for today, I'll create one for you now!\n";
             
-                // using passthru() for find occurrences of a string $createdMsg
-                $create_output = shiftSnapshot("create");
+                ['output' => $create_output,
+                'size' => $fileSize,
+                'height' => $blockHeight] 
+                = shiftSnapshot("create");
 
                 // If buffer contains "OK snapshot created successfully"
                 if (strpos($create_output, $createdMsg) !== false) {
-                    $Tmsg = "Created daily snapshot on ".$nodeName.".";
+                    $Tmsg = $nodeName.":\n\n$floppyEmoji _created daily snapshot_\n\n$chainEmoji Block: *".$blockHeight."*\n$storageEmoji Size: *".$fileSize."*";
                     echo "\t\t\t".$Tmsg."\n";
                     sendMessage($Tmsg, $recoveryEnabled);
 
