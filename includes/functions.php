@@ -281,6 +281,16 @@ function shiftSnapshot($command)
     system ("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash snap.sh $command");
 }
 
+// Shift snapshot name
+function snapshotPath($date)
+{
+    global $snapshotDir;
+
+    $path = glob($snapshotDir.'shift_db_'.$date.'*.sql.gz');
+
+    return $path;
+}
+
 
 // Check height, consensus and syncing on Main node
 function getNodeAPIData($node)
