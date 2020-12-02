@@ -55,7 +55,7 @@ __________________________ */
     $snapThreshold      = 3200;                                      // Threshold in blocks. Use 3200 for daily snapshots and 133 for hourly
 
 // Snapshot settings
-    $snapshotDir        = $baseDir."shift-snapshot/";    // Base folder of shift-snapshot
+    $snapshotDir        = $baseDir."snapshot/";    // Base folder of shift-snapshot
 
 // Log file rotation
     $logfile            = $baseDir."logs/checkdelegate.log";         // The location of your log file (see section crontab on Github)
