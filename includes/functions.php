@@ -271,9 +271,16 @@ function shiftManager($command)
     } else {
         system("cd $pathtoapp && bash shift_manager.bash $command");
     }
-
-
 }
+
+// Shift snapshot
+function shiftSnapshot($command)
+{
+    global $pathtoapp, $snapshotDir;
+
+    system ("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash snap.sh $command");
+}
+
 
 // Check height, consensus and syncing on Main node
 function getNodeAPIData($node)
@@ -335,8 +342,4 @@ function printTwoNodesData(
 
     echo "\t\t\tForging Main: " . $forgingMain;
     echo ("\t\t\tForging Backup: " . $forgingBackup . "\n\n");
-
 }
-
-
-
