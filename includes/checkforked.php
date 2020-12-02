@@ -7,6 +7,8 @@ $floppyEmoji = "%F0%9F%92%BE";
 $starEmoji = "%E2%AD%90%EF%B8%8F";
 $chainEmoji = "%E2%9B%93";
 $storageEmoji = "%F0%9F%97%84";
+$forkEmoji = "%F0%9F%94%80";
+$recoveryEmoji = "%F0%9F%94%84";
 
 $restoredMsg 	= "OK snapshot restored successfully.";	    // 'Okay' message from shift-snapshot
 $createdMsg 	= "OK snapshot created successfully";	    // 'Okay' message from shift-snapshot	
@@ -48,12 +50,14 @@ $counted_now = substr_count($last, $msg);
 // Get counter value from our database
 $fork_counter = $db_data["fork_counter"];
 
+$nodeIsForking = ($fork_counter + $counted_now) >= $max_count;
+
 // If fork_counter + current count is greater than $max_count, take action
-if (($fork_counter + $counted_now) >= $max_count) {
+if ($nodeIsForking) {
 
     // If shift-snapshot directory exists and restore from snapshot is enabled
     if (file_exists($snapshotDir) && $createsnapshot) {
-        $Tmsg = "Hit max_count on ".$nodeName.". I am going to restore from a snapshot.";
+        $Tmsg = $nodeName.":\n\n$forkEmoji Node probably is *forking*.\n$recoveryEmoji Going to restore from a local snapshot.";
         echo "\t\t\t".$Tmsg."\n";
         sendMessage($Tmsg, $recoveryEnabled);
 
@@ -64,7 +68,7 @@ if (($fork_counter + $counted_now) >= $max_count) {
         shiftManager("start");
 
         // Reset counters
-        echo "\t\t\tFinally, I will reset the counter for you...\n";
+        echo "\t\t\tFinally, I will reset the counter for you\n";
 
         $db_data["fork_counter"] = 0;
         saveToJSONFile($db_data, $database);
@@ -80,78 +84,87 @@ if (($fork_counter + $counted_now) >= $max_count) {
 } 
 
 // else
-if (($fork_counter + $counted_now) < $max_count) {
+if ($nodeIsForking === false) {
 
     $db_data["fork_counter"] = $fork_counter + $counted_now;
     saveToJSONFile($db_data, $database);
 
     echo "\t\t\t".($fork_counter + $counted_now)." is fine. Restoring starts at: $max_count \n";
+}
 
-    // Check snapshot setting
-    if ($createsnapshot === false) {
+// SNAPSHOT CREATION LOGIC
+// Check snapshot setting
+if ($createsnapshot === false) {
 
-        echo "\t\t\tSnapshot setting is disabled.\n";
-    }
+    echo "\t\t\tSnapshot setting is disabled.\n";
+}
 
-    // Check if it's safe to create a daily snapshot and the setting is enabled
-    if (($fork_counter + $counted_now) < $max_count && $createsnapshot === true) {
+['height' => $heightBlockchain] = getNodeAPIData($trustedNode);
+['height' => $heightLocal]= getNodeAPIData($apiHost);
 
-        echo "\t\t\tDo we have a new snapshot for today?.. ";
-        // Let's check if a snapshot was already created today...
-        // Check if path to shift-snapshot exists..
-        if (file_exists($snapshotDir)) {
+$heightIsFine = ($heightLocal + 3) >= $heightBlockchain;
 
-            $snapshots = snapshotPath(date("d-m-Y"));
+// Check if it's safe to create a daily snapshot and the setting is enabled
+if (!$nodeIsForking && $heightIsFine && $createsnapshot === true) {
 
-            if (!empty($snapshots)) {
+    echo "\t\t\tDo we have a new snapshot for today?.. ";
+    // Let's check if a snapshot was already created today...
+    // Check if path to shift-snapshot exists..
+    if (file_exists($snapshotDir)) {
 
-                echo "YES!\n";
-            } 
+        $snapshots = snapshotPath(date("d-m-Y"));
 
-            // if we don't have a snapshot for today of the last snapshot is corrupt
-            if (empty($snapshots) || $db_data["corrupt_snapshot"] == true && $db_data["synchronized_after_corrupt_snapshot"] == true) {
+        if (!empty($snapshots)) {
 
-                echo "\n\t\t\tNo snapshot exists for today, I'll create one for you now!\n";
+            echo "YES!\n";
+        } 
+
+        $bad_snapshot = $db_data["corrupt_snapshot"] === true && 
+                        $db_data["synchronized_after_corrupt_snapshot"] === true;
+
+        // if we don't have a snapshot for today of the last snapshot is corrupt
+        if (empty($snapshots) || $bad_snapshot) {
+
+            echo "\n\t\t\tNo good snapshot exists for today, I'll create one for you now!\n";
+        
+            ['output' => $create_output,
+            'size' => $fileSize,
+            'height' => $blockHeight] 
+            = shiftSnapshot("create");
+
+            // If buffer contains "OK snapshot created successfully"
+            if (strpos($create_output, $createdMsg) !== false) {
+                $Tmsg = $nodeName.":\n\n$floppyEmoji _created daily snapshot_\n\n$chainEmoji Block: *".$blockHeight."*\n$storageEmoji Size: *".$fileSize."*";
+                echo "\t\t\t".$Tmsg."\n";
+                sendMessage($Tmsg, $recoveryEnabled);
+
+                $db_data["recovery_from_snapshot"] = true;
+                $db_data["corrupt_snapshot"] = false;
+                $db_data["recovery_from_snapshot"] = true;
+                $db_data["synchronized_after_corrupt_snapshot"] = false;
+                saveToJSONFile($db_data, $database);
+            }
+
+            echo "\t\t\tGoing to remove snapshots older than $max_snapshots days...\n";
+
+            $files = glob($snapshotDir.'snapshot/shift_db*.snapshot.tar');
             
-                ['output' => $create_output,
-                'size' => $fileSize,
-                'height' => $blockHeight] 
-                = shiftSnapshot("create");
-
-                // If buffer contains "OK snapshot created successfully"
-                if (strpos($create_output, $createdMsg) !== false) {
-                    $Tmsg = $nodeName.":\n\n$floppyEmoji _created daily snapshot_\n\n$chainEmoji Block: *".$blockHeight."*\n$storageEmoji Size: *".$fileSize."*";
-                    echo "\t\t\t".$Tmsg."\n";
-                    sendMessage($Tmsg, $recoveryEnabled);
-
-                    $db_data["recovery_from_snapshot"] = true;
-                    $db_data["corrupt_snapshot"] = false;
-                    $db_data["recovery_from_snapshot"] = true;
-                    $db_data["synchronized_after_corrupt_snapshot"] = false;
-                    saveToJSONFile($db_data, $database);
-                }
-
-                echo "\t\t\tGoing to remove snapshots older than $max_snapshots days...\n";
-
-                $files = glob($snapshotDir.'snapshot/shift_db*.snapshot.tar');
-                
-                foreach ($files as $file) {
-                    if (is_file($file)) {
-                        if (time() - filemtime($file) >= 60 * 60 * 24 * $max_snapshots) {
-                            if (unlink($file)) {
-                                echo "\t\t\tDeleted snapshot $file\n";
-                            }
+            foreach ($files as $file) {
+                if (is_file($file)) {
+                    if (time() - filemtime($file) >= 60 * 60 * 24 * $max_snapshots) {
+                        if (unlink($file)) {
+                            echo "\t\t\tDeleted snapshot $file\n";
                         }
                     }
                 }
-
-                echo "\t\t\tDone!\n\n";
             }
-        } else {
-            // Path to shift-snapshot does not exist..
-            echo "\t\t\tYou have shift-snapshot enabled, but the path to shift-snapshot does not seem to exist.\n
-            \t\t\tDid you install shift-snapshot?\n";
+
+            echo "\t\t\tDone!\n\n";
         }
+    } else {
+        // Path to shift-snapshot does not exist..
+        echo "\t\t\tYou have shift-snapshot enabled, but the path to shift-snapshot does not seem to exist.\n
+        \t\t\tDid you install shift-snapshot?\n";
     }
 }
 
