@@ -98,7 +98,7 @@ if (($fork_counter + $counted_now) < $max_count) {
         // Check if path to shift-snapshot exists..
         if (file_exists($snapshotDir)) {
 
-            $snapshots = glob($snapshotDir.'snapshot/shift_db'.date("d-m-Y").'*.snapshot.tar');
+            $snapshots = snapshotName(date("d-m-Y"));
 
             if (!empty($snapshots)) {
 
