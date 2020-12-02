@@ -26,7 +26,6 @@ if (file_exists($database)) {
     $db_data["recovery_from_snapshot"] = true;
     $db_data["rebuild_message_counter"] = 0;
     $db_data["syncing_message_sent"] = false;
-
 }
 
 // END INITIALIZATION
@@ -73,7 +72,6 @@ if (($fork_counter + $counted_now) >= $max_count) {
             \t\t\tHowever, restore from snapshot is not enabled or\n
             \t\t\tpath to snapshot directory ($snapshotDir) does not seem to exist.\n";
     }
-
 } 
 
 // else
@@ -98,7 +96,7 @@ if (($fork_counter + $counted_now) < $max_count) {
         // Check if path to shift-snapshot exists..
         if (file_exists($snapshotDir)) {
 
-            $snapshots = snapshotName(date("d-m-Y"));
+            $snapshots = snapshotPath(date("d-m-Y"));
 
             if (!empty($snapshots)) {
 
@@ -111,13 +109,10 @@ if (($fork_counter + $counted_now) < $max_count) {
                 echo "\n\t\t\tNo snapshot exists for today, I'll create one for you now!\n";
             
                 // using passthru() for find occurrences of a string $createdMsg
-                ob_start();
-                $create = passthru("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash shift-snapshot.sh create");
-                $check_createoutput = ob_get_contents();
-                ob_end_clean();
+                $create_output = shiftSnapshot("create");
 
                 // If buffer contains "OK snapshot created successfully"
-                if (strpos($check_createoutput, $createdMsg) !== false) {
+                if (strpos($create_output, $createdMsg) !== false) {
                     $Tmsg = "Created daily snapshot on ".$nodeName.".";
                     echo "\t\t\t".$Tmsg."\n";
                     sendMessage($Tmsg, $recoveryEnabled);
