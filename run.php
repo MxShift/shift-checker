@@ -1,14 +1,4 @@
 <?php
-  /**
-   * @version 2.1.2
-   * @author Mx
-   * @link https://github.com/MxShift/shift-checker
-   * @license https://github.com/MxShift/shift-checker/blob/master/LICENSE
-   * @version 2.0
-   * @author Jan
-   * @link https://github.com/lepetitjan/shift-checker
-   * @license https://github.com/lepetitjan/shift-checker/blob/master/LICENSE
-   */
 
 /* PREREQUISITES
 ____________________ */
