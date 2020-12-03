@@ -10,7 +10,7 @@ ____________________ */
 
 /* INITIALIZATION
 ____________________ */
-// include dirname(__FILE__).'/includes/init.php';
+  include dirname(__FILE__).'/includes/init.php';
 
 /* LOCK FILE
 ____________________ */
