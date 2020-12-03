@@ -1,8 +1,9 @@
 # Changelog
 
-## 2.1.8 (2020-12-03)
+## 2.1.8 (2020-12-04)
 
 - Fix removing of old snapshots
+- Rename "main" and "backup" nodes to "local" and "remote"
 
 ## 2.1.7 (2020-12-02)
 
