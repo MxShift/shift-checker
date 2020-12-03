@@ -81,7 +81,7 @@ if ($recoveryEnabled === true) {
     }
 
 
-    // We are going to check a Local node => $apiHost = "http://127.0.0.1:netPort"
+    // We are going to check a Local node => $localNode = "http://127.0.0.1:netPort"
     if ($heightLocal < ($heightBlockchain - 10)) {
 
         // Going to check if it syncing
@@ -182,7 +182,7 @@ if ($recoveryEnabled === true) {
             sleep(60); 
 
             // Check syncing status one more time
-            $statusLocal = @file_get_contents($apiHost."/api/loader/status/sync");
+            $statusLocal = @file_get_contents($localNode."/api/loader/status/sync");
 
             if ($statusLocal === false) {
                 $consensusLocal = 0;
