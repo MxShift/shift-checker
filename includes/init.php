@@ -38,7 +38,7 @@ $logsize            = 524288;                                    // Max file siz
 
 
 // Get publicKey of the secret to use it in forging checks
-$public = checkPublic($apiHost, $secret);
+$public = checkPublic($localNode, $secret);
 
 // Secret to array
 $sec_array = explode(" ", $secret);

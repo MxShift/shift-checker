@@ -63,7 +63,7 @@ if ($createsnapshot === false) {
 }
 
 ['height' => $heightBlockchain] = getNodeAPIData($trustedNode);
-['height' => $heightLocal]= getNodeAPIData($apiHost);
+['height' => $heightLocal]= getNodeAPIData($localNode);
 
 $heightIsFine = ($heightLocal + 3) >= $heightBlockchain;
 
