@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.8 (2020-12-03)
+
+- Fix removing of old snapshots
+
 ## 2.1.7 (2020-12-02)
 
 - Add compressing for snapshots
