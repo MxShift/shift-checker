@@ -8,6 +8,14 @@ echo "\t\t\tConsensus: ";
 if ($consensusEnable === true && !empty($secret)) {
     echo "enabled\n\n";
 
+    if ($main === true) {
+        $mainnode = $localNode;
+        $backupnode = $remoteNode;
+    } else {
+        $mainnode = $remoteNode;
+        $backupnode = $localNode;
+    }
+
     // Check height on Trusted node
     ['height' => $blockchain] = getNodeAPIData($trustedNode);
 
