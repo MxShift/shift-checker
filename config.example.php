@@ -31,35 +31,12 @@ __________________________ */
 /*  GENERAL CONFIG
 __________________________ */
 
-// You should have installed shift-checker as a normal user, so the line below should work by default.
-// However, if you installed as root (please don't..) change the path below to $homeDir = "/root/";
-    $homeDir            = "/home/".get_current_user()."/";
-
 // You may leave the settings below as they are
 
-    $date               = date("Y-m-d H:i:s");                // Current date
-    $pathtoapp          = $homeDir."shift-lisk/";             // Full path to your shift installation    
-    $baseDir            = dirname(__FILE__)."/";              // Folder which contains THIS file
-    $lockfile           = $baseDir."run.lock";                // Name of our lock file
-    $database           = $baseDir."db.json";                 // Database name to use
-    $msg                = "\"cause\":3";                      // Message that is printed when forked
-    $shiftlog           = $pathtoapp."logs/shift.log";        // Needs to be a FULL path, so not ~/shift
-    $linestoread        = 30;                                 // How many lines to read from the end of $shiftlog
-    $max_count          = 3;                                  // How may times $msg may occur
-    $okayMsg            = "√";                                // 'Okay' message from shift_manager.bash
-
-// Consensus settings
-    $threshold          = 20;                            // Percentage of consensus threshold.
-
-// Recovery settings       
-    $snapThreshold      = 3200;                                      // Threshold in blocks. Use 3200 for daily snapshots and 133 for hourly
-
-// Snapshot settings
-    $snapshotDir        = $baseDir."snapshot/";    // Base folder of shift-snapshot
-
-// Log file rotation
-    $logfile            = $baseDir."logs/run.log";                   // The location of your log file (see section crontab on Github)
-    $max_logfiles       = 10;                                        // How many log files to preserve? (in days)  
-    $logsize            = 524288;                                    // Max file size, default is 0.5 MB
+// You should have installed shift-checker as a normal user, so the line below should work by default.
+// However, if you installed as root (please don't..) change the path below to $homeDir = "/root/";
+$homeDir            = "/home/".get_current_user()."/";
+$pathtoapp          = $homeDir."shift-lisk/";             // Full path to your shift installation    
+$baseDir            = dirname(__FILE__)."/";              // Folder which contains THIS file
 
 ?>
