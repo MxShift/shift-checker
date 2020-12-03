@@ -307,6 +307,24 @@ function snapshotPath($date)
     return $path;
 }
 
+// Shift remove old snapshot files
+function removeOldSnapshots()
+{
+    global $snapshotDir, $max_snapshots;
+
+    $files = glob($snapshotDir.'shift_db_*.sql.gz');
+            
+    foreach ($files as $file) {
+        if (is_file($file)) {
+            if (time() - filemtime($file) >= 60 * 60 * 24 * $max_snapshots) {
+                if (unlink($file)) {
+                    echo "\t\t\tDeleted snapshot $file\n";
+                }
+            }
+        }
+    }
+}
+
 
 // Check height, consensus and syncing on Main node
 function getNodeAPIData($node)
