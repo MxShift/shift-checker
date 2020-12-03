@@ -122,7 +122,7 @@ if (!$nodeIsForking && $heightIsFine && $createsnapshot === true) {
         $bad_snapshot = $db_data["corrupt_snapshot"] === true && 
                         $db_data["synchronized_after_corrupt_snapshot"] === true;
 
-        // if we don't have a snapshot for today of the last snapshot is corrupt
+        // if we don't have a snapshot for today or the last snapshot is corrupt
         if (empty($snapshots) || $bad_snapshot) {
 
             echo "\n\t\t\tNo good snapshot exists for today, I'll create one for you now!\n";
@@ -140,7 +140,6 @@ if (!$nodeIsForking && $heightIsFine && $createsnapshot === true) {
 
                 $db_data["recovery_from_snapshot"] = true;
                 $db_data["corrupt_snapshot"] = false;
-                $db_data["recovery_from_snapshot"] = true;
                 $db_data["synchronized_after_corrupt_snapshot"] = false;
                 saveToJSONFile($db_data, $database);
             }
