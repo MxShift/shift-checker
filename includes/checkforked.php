@@ -146,17 +146,7 @@ if (!$nodeIsForking && $heightIsFine && $createsnapshot === true) {
 
             echo "\t\t\tGoing to remove snapshots older than $max_snapshots days...\n";
 
-            $files = glob($snapshotDir.'shift_db_*.sql.gz');
-            
-            foreach ($files as $file) {
-                if (is_file($file)) {
-                    if (time() - filemtime($file) >= 60 * 60 * 24 * $max_snapshots) {
-                        if (unlink($file)) {
-                            echo "\t\t\tDeleted snapshot $file\n";
-                        }
-                    }
-                }
-            }
+            removeOldSnapshots();
 
             echo "\t\t\tDone!\n\n";
         }
