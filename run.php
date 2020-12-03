@@ -8,6 +8,10 @@ ____________________ */
   echo "___________________________________________________\n";
   echo $date."\n";
 
+/* INITIALIZATION
+____________________ */
+// include dirname(__FILE__).'/includes/init.php';
+
 /* LOCK FILE
 ____________________ */
   include dirname(__FILE__).'/includes/lockfile.php';
