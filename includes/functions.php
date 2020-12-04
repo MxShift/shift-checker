@@ -223,18 +223,18 @@ function enableForging($server, $secret)
 // Send Telegram message
 function sendMessage($message, $sync=false)
 {
-    global $telegramAll, $SyncingMessage, $telegramApiKey, $telegramId;
-    if ($telegramAll === true && $sync === false) {
+    global $debugMessages, $recoveryMessages, $telegramApiKey, $telegramId;
+    if ($debugMessages === true && $sync === false) {
         $telegramUrl = "https://api.telegram.org/bot".($telegramApiKey)."/sendMessage";
         passthru("curl -s -d 'chat_id=$telegramId&parse_mode=Markdown&text=$message' $telegramUrl >/dev/null");
     }
 
-    if ($SyncingMessage === true && $sync === true && $telegramAll === true) {
+    if ($recoveryMessages === true && $sync === true && $debugMessages === true) {
         $telegramUrl = "https://api.telegram.org/bot".($telegramApiKey)."/sendMessage";
         passthru("curl -s -d 'chat_id=$telegramId&parse_mode=Markdown&text=$message' $telegramUrl >/dev/null");
     }
 
-    if ($SyncingMessage === true && $sync === true && $telegramAll === false) {
+    if ($recoveryMessages === true && $sync === true && $debugMessages === false) {
         $telegramUrl = "https://api.telegram.org/bot".($telegramApiKey)."/sendMessage";
         passthru("curl -s -d 'chat_id=$telegramId&parse_mode=Markdown&text=$message' $telegramUrl >/dev/null");
     }
