@@ -21,10 +21,10 @@ __________________________ */
     $max_snapshots      = 1;                       // How many snapshots to preserve? (in days)
 
 // Telegram Bot
-    $telegramAll        = false;                   // Change it to false to disable all messages exept recovery messages from Telegram bot
-    $SyncingMessage     = true;                    // Change it to true if you want to recieve messagese of your recovery status
+    $recoveryMessages   = true;                    // Change it to true if you want to recieve messagese of your recovery status
     $telegramId         = "here";                  // Your Telegram ID
     $telegramApiKey     = "here";                  // Your Telegram API key
+    $debugMessages      = false;                   // Change it to false to disable all messages exept recovery messages from Telegram bot
 
 
 /*  GENERAL CONFIG
