@@ -62,7 +62,7 @@ if ($switchingEnabled === true && !empty($secret)) {
 
             // Check consensus on Main node
             // If consensus is the same as or lower than the set threshold. Going to restart Shift on Main
-            if ($consensusMain <= $threshold && $syncingMain == "false") {
+            if ($consensusMain <= $threshold && $syncingMain === false) {
                 echo "\t\t\t" . $Tmsg . "\n";
 
                 $Tmsg = $nodeName . ": Threshold on Main node reached! Going to check the Backup node and restart Shift on Main.";
@@ -70,7 +70,7 @@ if ($switchingEnabled === true && !empty($secret)) {
 
                 // Check consensus on Backup node
                 // If consensus on the Backup is below threshold as well, send a telegram message and restart Shift!
-                if ($consensusBackup <= $threshold && $syncingBackup == "false") {
+                if ($consensusBackup <= $threshold && $syncingBackup === false) {
                     $Tmsg = $nodeName . ": Threshold on Backup node reached too! No healthy server online.";
                     echo "\t\t\t" . $Tmsg . "\n";
                     sendMessage($Tmsg);
@@ -85,7 +85,7 @@ if ($switchingEnabled === true && !empty($secret)) {
 
                         echo "\t\t\tDisabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
                         disableForging($mainnode, $secret);
-                        $forgingMain = false;
+                        $forgingMain = "false";
                     }
                 }
 
@@ -102,7 +102,7 @@ if ($switchingEnabled === true && !empty($secret)) {
 
                     echo "\t\t\tDisabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
                     disableForging($mainnode, $secret);
-                    $forgingMain = false;
+                    $forgingMain = "false";
 
                     echo "\t\t\tRestarting Shift on Main\n";
                     shiftManager("reload");
@@ -131,7 +131,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                     echo "\t\t\tChecking consensus, height and syncing on Main node..\n";
 
                     // If consensus is the same as or lower than the set threshold..
-                    if ($consensusMain <= $threshold && $syncingMain == "false") {
+                    if ($consensusMain <= $threshold && $syncingMain === false) {
                         echo "\t\t\tThreshold on Main node reached as well! Restarting Shift..\n";
 
                         if (!$recoveryEnabled) {
@@ -160,7 +160,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                                 echo "\t\t\tMain node is synced!\n";
                                 echo "\t\t\tEnabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
                                 enableForging($mainnode, $secret);
-                                $forgingMain = true;
+                                $forgingMain = "true";
                             }
                         }
                     }
@@ -180,13 +180,14 @@ if ($switchingEnabled === true && !empty($secret)) {
 
                 echo "\t\t\tLet's compare consensus and enable forging on best node\n";
 
-                if ($consensusMain >= $consensusBackup && $heightMain >= ($heightBackup - 3)) {
+                $mainIsGoodNode = ($consensusMain >= ($consensusBackup - $threshold) && $heightMain >= ($heightBackup - 3));
+
+                if ($mainIsGoodNode) {
                     echo "\t\t\tEnabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
                     enableForging($mainnode, $secret);
-                    $forgingMain = true;
+                    $forgingMain = "true";
                 } else {
                     echo "\t\t\tNeed to enable forging on Backup\n\n";
-                    // enableForging($backupnode, $secret);
                 } // end: compare consensus
             } // end: backup forging is false
         } // end: main forging is false
@@ -217,7 +218,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                     echo "\n\t\t\tMain forging: true!\n";
                     echo "\n\t\t\tDisabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
                     disableForging($backupnode, $secret);
-                    $forgingBackup = false;
+                    $forgingBackup = "false";
                 }
 
                 echo "\n\n\t\t\tEverything seems okay.\n\n";
@@ -240,7 +241,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                     echo "true\n";
                     echo "\t\t\tEnabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
                     enableForging($backupnode, $secret);
-                    $forgingBackup = true;
+                    $forgingBackup = "true";
                 } else {
                     // Main syncing:
                     echo "false";
@@ -248,18 +249,22 @@ if ($switchingEnabled === true && !empty($secret)) {
                     // Let's check if Main is okay to forge if not start forging on Backup
                     if ($forgingMain == "false") {
 
-                        if ($consensusMain <= $threshold && $syncingMain == "false") {
+                        $mainNodeIsStuck = ($consensusMain <= $threshold && $syncingMain === false);
+
+                        if ($consensusMain <= $threshold && $syncingMain === false) {
                             echo "\n\t\t\tThreshold on Main node reached!\n";
                             echo "\t\t\tEnabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
                             enableForging($backupnode, $secret);
-                            $forgingBackup = true;
+                            $forgingBackup = "true";
                         }
 
-                        if ($consensusMain < $consensusBackup && $heightMain < ($heightBackup - 3)) {
+                        $mainIsGoodNode = ($consensusMain >= ($consensusBackup - $threshold) && $heightMain >= ($heightBackup - 3));
+
+                        if ($mainIsGoodNode === false) {
                             echo "\n\t\t\tThreshold on Main node reached!\n";
                             echo "\t\t\tEnabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
                             enableForging($backupnode, $secret);
-                            $forgingBackup = true;
+                            $forgingBackup = "true";
                         }
                     }
 
@@ -282,7 +287,7 @@ if ($switchingEnabled === true && !empty($secret)) {
 
                             echo "\t\t\tEnabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
                             enableForging($backupnode, $secret);
-                            $forgingBackup = true;
+                            $forgingBackup = "true";
                         } else {
 
                             echo "\n\t\t\t" . $db_data["script_disabled_counter"] . " script cycles to start forging on the backup node.";
@@ -303,7 +308,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                 echo "true!\n\n";
 
                 // If consensus on the Backup is below threshold divided by two (because of "Main is offline") as well, restart Shift!
-                if ($consensusBackup <= ($threshold / 2) && $syncingBackup == "false") {
+                if ($consensusBackup <= ($threshold / 2) && $syncingBackup === false) {
                     $Tmsg = $nodeName . ": Threshold on Backup node reached! No healthy server online.";
                     echo "\t\t\t" . $Tmsg . "\n";
                     sendMessage($Tmsg);
@@ -322,7 +327,7 @@ if ($switchingEnabled === true && !empty($secret)) {
 
                         echo "\t\t\tDisabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
                         disableForging($backupnode, $secret);
-                        $forgingBackup = false;
+                        $forgingBackup = "false";
 
                         echo "\t\t\tRestarting Shift on Backup\n\n";
                         shiftManager("reload");
@@ -344,7 +349,7 @@ if ($switchingEnabled === true && !empty($secret)) {
 
                 echo "\t\t\tEnabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
                 enableForging($backupnode, $secret);
-                $forgingBackup = true;
+                $forgingBackup = "true";
             }
         }
     }
