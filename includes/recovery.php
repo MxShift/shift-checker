@@ -142,7 +142,7 @@ if ($recoveryEnabled === true) {
                         shiftManager("rebuild");
 
                         // Pause to wait for start node sync.
-                        pauseToWaitNodeAPI(60);
+                        pauseToWaitNodeAPI(120);
                     }
                 }
             } 
@@ -176,7 +176,7 @@ if ($recoveryEnabled === true) {
         if ($syncingLocal === false && $db_data["corrupt_snapshot"] == true) {
 
             echo "\t\t\tLet's wait for syncing status\n\n";
-            pauseToWaitNodeAPI(60);
+            pauseToWaitNodeAPI(120);
 
             // Check syncing status one more time
             $statusLocal = @file_get_contents($localNode."/api/loader/status/sync");
@@ -234,7 +234,7 @@ if ($recoveryEnabled === true) {
                     saveToJSONFile($db_data, $database);
     
                     // Pause to wait for start node sync.
-                    pauseToWaitNodeAPI(60);
+                    pauseToWaitNodeAPI(120);
     
                 } else {
                     $db_data["recovery_from_snapshot"] = false;
@@ -264,7 +264,7 @@ if ($recoveryEnabled === true) {
                 saveToJSONFile($db_data, $database);
 
                 // Pause to wait for start node sync.
-                pauseToWaitNodeAPI(60);
+                pauseToWaitNodeAPI(120);
 
             }
         }
