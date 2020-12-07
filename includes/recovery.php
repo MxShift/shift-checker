@@ -236,9 +236,8 @@ if ($recoveryEnabled === true) {
                     $db_data["rebuild_message_counter"] += 1;
                     saveToJSONFile($db_data, $database);
     
-                    // Set pause for waiting node online
-                    echo "\t\t\tPause: 120 sec. for start node sync.\n\n";
-                    sleep(120);
+                    // Pause to wait for start node sync.
+                    pauseToWaitNodeAPI(20);
     
                 } else {
                     $db_data["recovery_from_snapshot"] = false;
