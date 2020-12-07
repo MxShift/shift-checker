@@ -103,7 +103,7 @@ if ($recoveryEnabled === true) {
                     echo "\t\t\tRestore from the last snapshot: \n";
                     shiftManager("stop");
                     sleep(3);
-                    $restored = system ("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash shift-snapshot.sh restore");
+                    $restored = shiftSnapshot("restore");
                     shiftManager("start");
 
                     echo "\n\n\t\t\tRestored: $restored";
@@ -221,7 +221,7 @@ if ($recoveryEnabled === true) {
                 echo "\t\t\tRestore from the last snapshot: \n";
                 shiftManager("stop");
                 sleep(3);
-                $restored = system ("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash shift-snapshot.sh restore");
+                $restored = shiftSnapshot("restore");
                 shiftManager("start");
     
                 echo "\n\n\t\t\tRestored: $restored";
