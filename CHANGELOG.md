@@ -1,9 +1,11 @@
 # Changelog
 
-## 2.1.8 (2020-12-04)
+## 2.1.8 (2020-12-07)
 
 - Fix removing of old snapshots
+- Fix recovery from a local snapshot
 - Rename "main" and "backup" nodes to "local" and "remote"
+- A lot of code refactor
 
 ## 2.1.7 (2020-12-02)
 
@@ -109,8 +111,7 @@ reload, rebuild, stop, start, update_manager, update_client, update_wallet, crea
 
 - Update screenshots
 
-- В конфиге, вместо мейн и бекап, сделать локал и ремоут ноды, чтобы удобно было переключаться, да и вообще, меньше заморочек
-
++ В конфиге, вместо мейн и бекап, сделать локал и ремоут ноды, чтобы удобно было переключаться, да и вообще, меньше заморочек
 + Заренеймить checkdelegate.php в run.php
 + Пофиксить вывод размера снапшота
 + Отправлять размер созданного снапшота в телеграм
