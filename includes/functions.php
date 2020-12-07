@@ -292,7 +292,9 @@ function shiftSnapshot($command)
         return ['output' => $output, 'size' => $fileSize, 'height' => $blockHeight];
     }
 
-    system ("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash snap.sh $command");
+    $output = system ("cd $snapshotDir && SHIFT_DIRECTORY=\"$pathtoapp\" bash snap.sh $command");
+
+    return $output;
 }
 
 // Shift snapshot name
