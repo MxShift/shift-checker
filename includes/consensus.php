@@ -61,7 +61,7 @@ if ($switchingEnabled === true && !empty($secret)) {
 
             // Check consensus on Main node
             // If consensus is the same as or lower than the set threshold. Going to restart Shift on Main
-            if ($consensusMain <= $threshold && $syncingMain === false) {
+            if ($consensusMain <= $threshold && $syncingMain == "false") {
                 echo "\t\t\t" . $Tmsg . "\n";
 
                 $Tmsg = $nodeName . ": Threshold on Main node reached! Going to check the Backup node and restart Shift on Main.";
@@ -69,7 +69,7 @@ if ($switchingEnabled === true && !empty($secret)) {
 
                 // Check consensus on Backup node
                 // If consensus on the Backup is below threshold as well, send a telegram message and restart Shift!
-                if ($consensusBackup <= $threshold && $syncingBackup === false) {
+                if ($consensusBackup <= $threshold && $syncingBackup == "false") {
                     $Tmsg = $nodeName . ": Threshold on Backup node reached too! No healthy server online.";
                     echo "\t\t\t" . $Tmsg . "\n";
                     sendMessage($Tmsg);
@@ -130,7 +130,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                     echo "\t\t\tChecking consensus, height and syncing on Main node..\n";
 
                     // If consensus is the same as or lower than the set threshold..
-                    if ($consensusMain <= $threshold && $syncingMain === false) {
+                    if ($consensusMain <= $threshold && $syncingMain == "false") {
                         echo "\t\t\tThreshold on Main node reached as well! Restarting Shift..\n";
 
                         if (!$recoveryEnabled) {
@@ -247,7 +247,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                     // Let's check if Main is okay to forge if not start forging on Backup
                     if ($forgingMain == "false") {
 
-                        if ($consensusMain <= $threshold && $syncingMain === false) {
+                        if ($consensusMain <= $threshold && $syncingMain == "false") {
                             echo "\n\t\t\tThreshold on Main node reached!\n";
                             echo "\t\t\tEnabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
                             enableForging($backupnode, $secret);
@@ -263,7 +263,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                     }
 
                     // Main is synced. Let's check if shift-checker is working on Main node.
-                    if ($forgingMain == "false" && !$forgingBackup) {
+                    if ($forgingMain == "false" && $forgingBackup == "false") {
                         echo "\n\n\t\t\tBoth nodes are not forging!";
                         echo "\n\t\t\tLet's check if shift-checker is run on the main node.";
 
@@ -284,7 +284,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                             $forgingBackup = true;
                         } else {
 
-                            echo "\n\t\t\t" . $db_data["script_disabled_counter"] . " minutes to start forging on the backup node.";
+                            echo "\n\t\t\t" . $db_data["script_disabled_counter"] . " script cycles to start forging on the backup node.";
                         }
                     }
 
@@ -302,7 +302,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                 echo "true!\n\n";
 
                 // If consensus on the Backup is below threshold divided by two (because of "Main is offline") as well, restart Shift!
-                if ($consensusBackup <= ($threshold / 2) && $syncingBackup === false) {
+                if ($consensusBackup <= ($threshold / 2) && $syncingBackup == "false") {
                     $Tmsg = $nodeName . ": Threshold on Backup node reached! No healthy server online.";
                     echo "\t\t\t" . $Tmsg . "\n";
                     sendMessage($Tmsg);
