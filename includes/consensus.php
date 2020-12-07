@@ -50,6 +50,15 @@ if ($switchingEnabled === true && !empty($secret)) {
         if ($forgingMain == "true") {
             echo "\t\t\tMain forging: true\n\n";
 
+            if ($forgingBackup == "true") {
+                echo "\t\t\tBackup forging: true!\n\n";
+                $Tmsg = $nodeName . ":\n\nBoth nodes are forging! Probably shift-checker script is disabled on the backup node";
+                sendMessage($Tmsg);
+
+                // add counter here
+                // stop forging on main after 3 times if Backup is still forging
+            }
+
             // Check consensus on Main node
             // If consensus is the same as or lower than the set threshold. Going to restart Shift on Main
             if ($consensusMain <= $threshold && $syncingMain === false) {
@@ -335,12 +344,12 @@ if ($switchingEnabled === true && !empty($secret)) {
         }
     }
     // DEBUG
-    if ($forgingBackup && $forgingMain) {
+    if ($forgingBackup == "true" && $forgingMain == "true") {
         $Tmsg = "Both nodes are forging";
         sendMessage($Tmsg);
     }
 
-    if (!$forgingBackup && !$forgingMain) {
+    if ($forgingBackup == "false" && !$forgingMain == "false") {
         $Tmsg = "Both nodes are not forging";
         sendMessage($Tmsg);
     }
