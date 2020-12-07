@@ -385,5 +385,5 @@ function printTwoNodesData(
     echo "\t\t\tSyncing Backup: " . json_encode($syncingBackup) . "\n";
 
     echo "\t\t\tForging Main: " . $forgingMain;
-    echo ("\t\t\tForging Backup: " . $forgingBackup . "\n\n");
+    echo "\t\t\tForging Backup: " . $forgingBackup . "\n\n";
 }
