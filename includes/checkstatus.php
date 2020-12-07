@@ -27,6 +27,9 @@ if (strpos($check_output, $okayMsg) === false || $apiIsDown) {
     shiftManager("reload");
     pauseToWaitNodeAPI(20);
 
+    // get public again
+    $public = checkPublic($localNode, $secret);
+
 // If status is OK
 } else {
     echo "YES\n";
