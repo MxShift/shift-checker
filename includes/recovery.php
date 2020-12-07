@@ -9,7 +9,7 @@ if ($recoveryEnabled === true) {
     echo "enabled\n\n";
 
     // Let's define and show variables
-    if ($consensusEnable === false) {
+    if ($switchingEnabled === false) {
 
         // Check height on Trusted node
         ['height' => $blockchain] = getNodeAPIData($trustedNode);
@@ -20,9 +20,9 @@ if ($recoveryEnabled === true) {
         ['height' => $heightLocal,
         'consensus' => $consensusLocal,
         'syncing' => $syncingLocal] 
-        = getNodeAPIData($mainnode);
+        = getNodeAPIData($localNode);
 
-        $forgingLocal = checkForging($mainnode, $public);
+        $forgingLocal = checkForging($localNode, $public);
 
         printNodeData("Local", $blockchain, $heightLocal, $consensusLocal, $syncingLocal, $forgingLocal);
 
@@ -37,7 +37,7 @@ if ($recoveryEnabled === true) {
     } else {
 
         // Consensus is enabled, variables are defined and shown from the CONSENSUS block
-        if ($main === true) {
+        if ($thisMain === true) {
             $heightLocal = $heightMain;
             $syncingLocal = $syncingMain;
             $consensusLocal = $consensusMain;
@@ -213,7 +213,7 @@ if ($recoveryEnabled === true) {
 
             if ($db_data["recovery_from_snapshot"]) {
 
-                $Tmsg = "*".$nodeName."*: height threshold is reached and not syncing.\n\t\t\tGoing to restore from snapshot.";
+                $Tmsg = "*".$nodeName."*:\n\n$stopEmoji Height threshold is reached and not syncing\n$recoveryEmoji Going to restore from a local snapshot";
                 echo "\t\t\t".$Tmsg."\n\n";
                 sendMessage($Tmsg, $recoveryEnabled);
                 sendMessage($dataTmsg, $recoveryEnabled);
