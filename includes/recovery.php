@@ -48,7 +48,6 @@ if ($recoveryEnabled === true) {
 
             } else {
                 $heightBlockchain = $heightBackup;
-
             }
 
         } else {
@@ -143,9 +142,7 @@ if ($recoveryEnabled === true) {
                         shiftManager("rebuild");
 
                         // Pause to wait for start node sync.
-                        echo "\t\t\tPause: 120 sec.\n\n";
-                        sleep(120);                        
-
+                        pauseToWaitNodeAPI(60);
                     }
                 }
             } 
@@ -178,8 +175,8 @@ if ($recoveryEnabled === true) {
         // Let's wait for 60 sec for restore syncing status then turn rebuild
         if ($syncingLocal === false && $db_data["corrupt_snapshot"] == true) {
 
-            echo "\t\t\tPause: 60 sec. to wait for syncing status\n\n";
-            sleep(60); 
+            echo "\t\t\tLet's wait for syncing status\n\n";
+            pauseToWaitNodeAPI(60);
 
             // Check syncing status one more time
             $statusLocal = @file_get_contents($localNode."/api/loader/status/sync");
@@ -237,7 +234,7 @@ if ($recoveryEnabled === true) {
                     saveToJSONFile($db_data, $database);
     
                     // Pause to wait for start node sync.
-                    pauseToWaitNodeAPI(20);
+                    pauseToWaitNodeAPI(60);
     
                 } else {
                     $db_data["recovery_from_snapshot"] = false;
@@ -266,9 +263,8 @@ if ($recoveryEnabled === true) {
                 $db_data["corrupt_snapshot"] = true;
                 saveToJSONFile($db_data, $database);
 
-                // Pause to wait for start node sync
-                echo "\t\t\tPause: 120 sec.\n\n";
-                sleep(120);
+                // Pause to wait for start node sync.
+                pauseToWaitNodeAPI(60);
 
             }
         }
@@ -297,7 +293,6 @@ if ($recoveryEnabled === true) {
 
             $db_data["rebuild_message_counter"] = 0;
             $db_data["syncing_message_sent"] = false;
-
 
             saveToJSONFile($db_data, $database);
 
