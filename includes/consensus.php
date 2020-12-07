@@ -5,10 +5,10 @@ echo "\n[ CONSENSUS ]\n\n";
 echo "\t\t\tConsensus: ";
 
 // We check if the script should work at all.
-if ($consensusEnable === true && !empty($secret)) {
+if ($switchingEnabled === true && !empty($secret)) {
     echo "enabled\n\n";
 
-    if ($main === true) {
+    if ($thisMain === true) {
         $mainnode = $localNode;
         $backupnode = $remoteNode;
     } else {
@@ -42,7 +42,7 @@ if ($consensusEnable === true && !empty($secret)) {
 
     // THE MAIN LOGIC STARTS HERE
     // LOGIC FOR MAIN NODE
-    if ($main === true) {
+    if ($thisMain === true) {
 
         echo "\t\t\tMain: true\n";
 
@@ -195,7 +195,7 @@ if ($consensusEnable === true && !empty($secret)) {
     } // end: we are the main
 
     // LOGIC FOR THE BACKUP NODE
-    if ($main === false) {
+    if ($thisMain === false) {
         // If we land here, we are the Backup
         echo "\t\t\tBackup: true\n";
 
