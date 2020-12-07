@@ -104,6 +104,7 @@ if (!$nodeIsForking && $heightIsFine && $createSnapshots === true) {
                 $db_data["recovery_from_snapshot"] = true;
                 $db_data["corrupt_snapshot"] = false;
                 $db_data["synchronized_after_corrupt_snapshot"] = false;
+                $db_data["fork_counter"] = 0;
                 saveToJSONFile($db_data, $database);
             }
 
