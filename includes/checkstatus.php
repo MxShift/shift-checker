@@ -15,7 +15,7 @@ ob_end_clean();
 if (strpos($check_output, $okayMsg) === false) {
     
     // Echo something to our log file
-    $Tmsg = "Delegate ".$nodeName." not running. Restarting Shift";
+    $Tmsg = "Node ".$nodeName." not running. Restarting Shift";
     sendMessage($Tmsg);
 
     echo "\n\t\t\t".$Tmsg."\n";
