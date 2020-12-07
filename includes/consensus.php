@@ -84,6 +84,7 @@ if ($switchingEnabled === true && !empty($secret)) {
 
                         echo "\t\t\tDisabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
                         disableForging($mainnode, $secret);
+                        $forgingMain = false;
                     }
                 }
 
@@ -100,6 +101,7 @@ if ($switchingEnabled === true && !empty($secret)) {
 
                     echo "\t\t\tDisabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
                     disableForging($mainnode, $secret);
+                    $forgingMain = false;
 
                     echo "\t\t\tRestarting Shift on Main\n";
                     shiftManager("reload");
@@ -211,9 +213,10 @@ if ($switchingEnabled === true && !empty($secret)) {
 
                 if ($forgingMain == "true") {
                     
-                    echo "\t\t\tMain forging: true!\n";
+                    echo "\n\t\t\tMain forging: true!\n";
                     echo "\n\t\t\tDisabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
                     disableForging($backupnode, $secret);
+                    $forgingBackup = false;
                 }
 
                 echo "\n\n\t\t\tEverything seems okay.\n\n";
@@ -318,6 +321,7 @@ if ($switchingEnabled === true && !empty($secret)) {
 
                         echo "\t\t\tDisabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
                         disableForging($backupnode, $secret);
+                        $forgingBackup = false;
 
                         echo "\t\t\tRestarting Shift on Backup\n\n";
                         shiftManager("reload");
