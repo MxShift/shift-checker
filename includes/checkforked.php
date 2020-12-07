@@ -19,7 +19,7 @@ $nodeIsForking = ($fork_counter + $counted_now) >= $max_count;
 if ($nodeIsForking) {
 
     // If shift-snapshot directory exists and restore from snapshot is enabled
-    if (file_exists($snapshotDir) && $createsnapshot) {
+    if (file_exists($snapshotDir) && $createSnapshots) {
         $Tmsg = $nodeName.":\n\n$forkEmoji Node probably is *forking*.\n$recoveryEmoji Going to restore from a local snapshot.";
         echo "\t\t\t".$Tmsg."\n";
         sendMessage($Tmsg, $recoveryEnabled);
@@ -57,7 +57,7 @@ if ($nodeIsForking === false) {
 
 // SNAPSHOT CREATION LOGIC
 // Check snapshot setting
-if ($createsnapshot === false) {
+if ($createSnapshots === false) {
 
     echo "\t\t\tSnapshot setting is disabled.\n";
 }
@@ -68,7 +68,7 @@ if ($createsnapshot === false) {
 $heightIsFine = ($heightLocal + 3) >= $heightBlockchain;
 
 // Check if it's safe to create a daily snapshot and the setting is enabled
-if (!$nodeIsForking && $heightIsFine && $createsnapshot === true) {
+if (!$nodeIsForking && $heightIsFine && $createSnapshots === true) {
 
     echo "\t\t\tDo we have a new snapshot for today?.. ";
     // Let's check if a snapshot was already created today...
@@ -107,7 +107,7 @@ if (!$nodeIsForking && $heightIsFine && $createsnapshot === true) {
                 saveToJSONFile($db_data, $database);
             }
 
-            echo "\t\t\tGoing to remove snapshots older than $max_snapshots days...\n";
+            echo "\t\t\tGoing to remove snapshots older than $maxSnapshots days...\n";
 
             removeOldSnapshots();
 
