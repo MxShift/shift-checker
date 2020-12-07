@@ -1,9 +1,15 @@
 # Changelog
 
+## 2.1.9 (2020-12-08)
+
+- Security Update: script no longer send the passphrase over the network
+- Now the script enables and disables forging only on its local nodes
+
 ## 2.1.8 (2020-12-07)
 
 - Fix removing of old snapshots
 - Fix recovery from a local snapshot
+- Fix sending a message with just a local node data
 - Rename "main" and "backup" nodes to "local" and "remote"
 - A lot of code refactor
 
@@ -85,7 +91,6 @@
 ! Не дисаблить форджинг на бекапе просто так
 
 --
-Разделить проверку на форк и создание снапшотов.
 Добавить в бд строку форк = фалс
 --
 сделать команды для shift-checker
@@ -95,7 +100,9 @@ reload, rebuild, stop, start, update_manager, update_client, update_wallet, crea
 сразу не триггериться, подождать следующей проверки
 --
 
-- Посмотреть почему $dataTmsg не присылается в ТГ, если выключен свитчинг
+- Забьютифаить все сообщения для ТГ
+
+- Попробовать сделать псевдо-таблицу при отправке сообщения с данными нод в ТГ
 
 - При форке проверять на коррупт снапшот и рестор фром снапшот
 
@@ -111,6 +118,8 @@ reload, rebuild, stop, start, update_manager, update_client, update_wallet, crea
 
 - Update screenshots
 
++ Посмотреть почему $dataTmsg не присылается в ТГ, если выключен свитчинг
++ Разделить проверку на форк и создание снапшотов.
 + В конфиге, вместо мейн и бекап, сделать локал и ремоут ноды, чтобы удобно было переключаться, да и вообще, меньше заморочек
 + Заренеймить checkdelegate.php в run.php
 + Пофиксить вывод размера снапшота
