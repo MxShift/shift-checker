@@ -29,10 +29,10 @@ if ($recoveryEnabled === true) {
         // a message for Telegram notifications
         $dataTmsg = "*".$nodeName."*:
         ```\n\nHeight Blockchain: ".$heightBlockchain.""
-        ."\nHeight Node:     ".$heightLocal."```"
+        ."\nHeight Node:     ".$heightLocal.""
         ."\nConsensus Node:  ".$consensusLocal."%"
         ."\nSyncing Node:    ".json_encode($syncingLocal).""
-        ."\Forging Node:     ".$forgingLocal."```";
+        ."\nForging Node:     ".$forgingLocal."```";
 
     } else {
 
@@ -79,7 +79,7 @@ if ($recoveryEnabled === true) {
         ."\nForging Backup:    ".$forgingBackup."```";
     }
 
-
+    // MAIN LOGIC HERE
     // We are going to check a Local node => $localNode = "http://127.0.0.1:netPort"
     if ($heightLocal < ($heightBlockchain - 10)) {
 
