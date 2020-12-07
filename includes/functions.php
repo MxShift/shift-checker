@@ -310,13 +310,13 @@ function snapshotPath($date)
 // Shift remove old snapshot files
 function removeOldSnapshots()
 {
-    global $snapshotDir, $max_snapshots;
+    global $snapshotDir, $maxSnapshots;
 
     $files = glob($snapshotDir.'shift_db_*.sql.gz');
             
     foreach ($files as $file) {
         if (is_file($file)) {
-            if (time() - filemtime($file) >= 60 * 60 * 24 * $max_snapshots) {
+            if (time() - filemtime($file) >= 60 * 60 * 24 * $maxSnapshots) {
                 if (unlink($file)) {
                     echo "\t\t\tDeleted snapshot $file\n";
                 }
