@@ -3,22 +3,22 @@
 /*  USER CONFIG
 __________________________ */
 
-    $nodeName           = "Your Node Name"." on ".gethostname();    // Name of this node delegate for Telegram messages.
 
-// Consensus settings
-    $consensusEnable    = true;                       // Set true for enable consensus check. Be sure to add nodes addresses first
-    $main               = true;                       // 'true' if this is your main node, 'false' if it's your backup node
-    $localNode          = "http://127.0.0.1:9305";    // Local node IP address. Use http://127.0.0.1:PORT
+// Local node settings
+    $nodeName           = "Your Node Name"." on ".gethostname();    // Name of this node delegate for Telegram messages.
+    $localNode          = "http://127.0.0.1:9305";                  // Local node IP address. Use http://127.0.0.1:PORT
+
+// Сluster settings
+    $switchingEnabled   = false;                      // Set true for enable switching betwin your main and backup nodes. Be sure to add a remote node address
+    $thisMain           = true;                       // 'true' if this local node is your main node, 'false' if it's your backup node
     $remoteNode         = "http://NODE_IP:9305";      // Remote node IP address. Use node IP address:port
     $secret             = "passphrase";               // Your twelve word passphrase is placed here. Required for consensus check
 
 // Recovery settings
-    $recoveryEnabled    = true;
-    $trustedNode        = "https://wallet.shiftnrg.org";          // Used for checking blockchain height. Replace it to mainnet or testnet trusted node
-
-// Snapshot settings
-    $createsnapshot     = true;                    // Do you want to create snapshots with shift-snapshot?
-    $max_snapshots      = 1;                       // How many snapshots to preserve? (in days)
+    $recoveryEnabled    = true;                             // Set 'true' to repair your node on fail-down with shift_manager or shift-snapshot
+    $createSnapshots    = true;                             // Do you want to create snapshots with shift-snapshot?
+    $maxSnapshots       = 1;                                // How many snapshots to preserve? (in days)
+    $trustedNode        = "https://wallet.shiftnrg.org";    // Used for checking blockchain height. Replace it to mainnet or testnet trusted node
 
 // Telegram Bot
     $recoveryMessages   = true;                    // Change it to true if you want to recieve messagese of your recovery status
