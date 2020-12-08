@@ -40,6 +40,10 @@ if ($switchingEnabled === true && !empty($secret)) {
         $forgingMain, $forgingBackup
     );
 
+    // some logic situations based on consensus percentage
+    $mainIsGoodNode = ($consensusMain >= ($consensusBackup - $threshold) && $heightMain >= ($heightBackup - 1));
+    $mainNodeIsStuck = ($consensusMain <= $threshold && $syncingMain === false);
+
     // THE MAIN LOGIC STARTS HERE
     // LOGIC FOR MAIN NODE
     if ($thisMain === true) {
@@ -180,8 +184,6 @@ if ($switchingEnabled === true && !empty($secret)) {
 
                 echo "\t\t\tLet's compare consensus and enable forging on best node\n";
 
-                $mainIsGoodNode = ($consensusMain >= ($consensusBackup - $threshold) && $heightMain >= ($heightBackup - 3));
-
                 if ($mainIsGoodNode) {
                     echo "\t\t\tEnabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
                     enableForging($mainnode, $secret);
@@ -249,16 +251,12 @@ if ($switchingEnabled === true && !empty($secret)) {
                     // Let's check if Main is okay to forge if not start forging on Backup
                     if ($forgingMain == "false") {
 
-                        $mainNodeIsStuck = ($consensusMain <= $threshold && $syncingMain === false);
-
-                        if ($consensusMain <= $threshold && $syncingMain === false) {
+                        if ($mainNodeIsStuck) {
                             echo "\n\t\t\tThreshold on Main node reached!\n";
                             echo "\t\t\tEnabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
                             enableForging($backupnode, $secret);
                             $forgingBackup = "true";
                         }
-
-                        $mainIsGoodNode = ($consensusMain >= ($consensusBackup - $threshold) && $heightMain >= ($heightBackup - 3));
 
                         if ($mainIsGoodNode === false) {
                             echo "\n\t\t\tThreshold on Main node reached!\n";
