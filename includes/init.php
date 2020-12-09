@@ -58,7 +58,7 @@ if (file_exists($database)) {
     $db_data["recovery_from_snapshot"] = true;
     $db_data["rebuild_message_counter"] = 0;
     $db_data["syncing_message_sent"] = false;
-    $db_data["script_disabled_counter"] = 3;
+    $db_data["script_disabled_countdown"] = 3;
     $db_data["switch_to_remote"] = false;
 }
 
