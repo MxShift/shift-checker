@@ -268,6 +268,14 @@ function shiftManager($command)
 
         system("cd $pathtoapp && echo y | bash shift_manager.bash $command");
 
+    } else if ($command == "status") {
+        // Use PHP's ob_ function to create an output buffer
+        ob_start();
+        $check_status = passthru("cd $pathtoapp && bash shift_manager.bash status | cut -z -b1-3");
+        $output = ob_get_contents();
+        ob_end_clean();
+
+        return $output;
     } else {
         system("cd $pathtoapp && bash shift_manager.bash $command");
     }
