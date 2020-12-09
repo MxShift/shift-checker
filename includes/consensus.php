@@ -34,14 +34,6 @@ if ($switchingEnabled === true && !empty($secret)) {
     $forgingBackup = checkForging($backupnode, $public);
     $forgingMain = checkForging($mainnode, $public);
 
-            // TEST
-            // $heightMain = $heightMain - 2;
-            // $heightBackup = $heightBackup - 2;
-            // $consensusMain = 50;
-            // $consensusBackup = 50;
-            // $syncingBackup = true;
-            // END TEST
-
     printTwoNodesData(
         $blockchain, $heightMain, $heightBackup, 
         $consensusMain, $consensusBackup,  $syncingMain, $syncingBackup,
@@ -70,8 +62,28 @@ if ($switchingEnabled === true && !empty($secret)) {
                 echo "\t\t\t" . $Tmsg . "\n"; 
                 sendMessage($Tmsg);
 
-                // add counter here
                 // stop forging on main after 3 times if Backup is still forging
+                $db_data["script_disabled_counter"] -= 1;
+                saveToJSONFile($db_data, $database);
+
+                if ($db_data["script_disabled_counter"] == 0) {
+
+                    // Add force disabling forging on Backup node if SSL is enabled
+                    // Check for https
+
+                    $Tmsg = $nodeName.": Looks like shift-checker is disabled on the backup node, but its forging as well as the main node.
+                    \n\t\t\tDisable forging on the main node.\n\n";
+                    echo "\n\t\t\t" . $Tmsg . "\n";
+                    sendMessage($Tmsg, true);
+
+                    echo "\t\t\tDisabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
+                    disableForging($mainnode, $secret);
+                    $forgingMain = "false";
+                    $db_data["script_disabled_counter"] = 3;
+                    saveToJSONFile($db_data, $database);
+                } else {
+                    echo "\n\t\t\t" . $db_data["script_disabled_counter"] . " script cycles to stop forging on the main node.";
+                }
             }
 
             // Check consensus on Main node
@@ -93,11 +105,14 @@ if ($switchingEnabled === true && !empty($secret)) {
                         echo "\t\t\t" . $Tmsg . "\n\n";
                         sendMessage($Tmsg);
                     } else {
+
                         echo "\t\t\tConsensus on Backup is sufficient enough to switch to\n";
 
                         echo "\t\t\tDisabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
                         disableForging($mainnode, $secret);
                         $forgingMain = "false";
+                        $db_data["script_disabled_counter"] = 3;
+                        saveToJSONFile($db_data, $database);
                     }
                 }
 
@@ -116,6 +131,8 @@ if ($switchingEnabled === true && !empty($secret)) {
                     echo "\t\t\tDisabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
                     disableForging($mainnode, $secret);
                     $forgingMain = "false";
+                    $db_data["script_disabled_counter"] = 3;
+                    saveToJSONFile($db_data, $database);
 
                     echo "\t\t\tRestarting Shift on Main\n";
                     shiftManager("reload");
@@ -174,6 +191,8 @@ if ($switchingEnabled === true && !empty($secret)) {
                                 echo "\t\t\tEnabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
                                 enableForging($mainnode, $secret);
                                 $forgingMain = "true";
+                                $db_data["switch_to_remote"] = false;
+                                saveToJSONFile($db_data, $database);
                             }
                         }
                     }
@@ -198,8 +217,41 @@ if ($switchingEnabled === true && !empty($secret)) {
                     echo "\t\t\tEnabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
                     enableForging($mainnode, $secret);
                     $forgingMain = "true";
+                    $db_data["switch_to_remote"] = false;
+                    saveToJSONFile($db_data, $database);
                 } else {
                     echo "\t\t\tNeed to enable forging on Backup\n\n";
+
+                    if ($db_data["switch_to_remote"] && $forgingBackup == "false") {
+
+                        // start forging on Main after 3 times if Backup is still not forging
+                        $db_data["script_disabled_counter"] -= 1;
+                        saveToJSONFile($db_data, $database);
+
+                        if ($db_data["script_disabled_counter"] == 0) {
+
+                            $db_data["script_disabled_counter"] = 3;
+                            saveToJSONFile($db_data, $database);
+
+                            // Add force enabling forging on Backup node if SSL is enabled
+                            // Check for https
+
+                            $Tmsg = $nodeName.": Looks like shift-checker is disabled on the backup node!
+                            \n\t\t\tEnable forging on the main node.\n\n";
+                            echo "\n\t\t\t" . $Tmsg . "\n";
+                            sendMessage($Tmsg, true);
+
+                            echo "\t\t\tEnabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
+                            enableForging($mainnode, $secret);
+                            $forgingMain = "true";
+                        } else {
+                            echo "\n\t\t\t" . $db_data["script_disabled_counter"] . " script cycles to start forging on the main node.\n\n";
+                        }
+                    }
+
+                    $db_data["switch_to_remote"] = true;
+                    saveToJSONFile($db_data, $database);
+
                 } // end: compare consensus
             } // end: backup forging is false
         } // end: main forging is false
@@ -231,8 +283,10 @@ if ($switchingEnabled === true && !empty($secret)) {
                     echo "\n\t\t\tDisabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
                     disableForging($backupnode, $secret);
                     $forgingBackup = "false";
+                    $db_data["script_disabled_counter"] = 3;
+                    saveToJSONFile($db_data, $database);
                 } else {
-                    
+
                     echo "\n\n\t\t\tEverything seems okay.\n\n";
                 }
 
@@ -262,14 +316,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                     // Let's check if Main is okay to forge if not start forging on Backup
                     if ($forgingMain == "false") {
 
-                        if ($mainNodeIsStuck) {
-                            echo "\n\t\t\tThreshold on Main node reached!\n";
-                            echo "\t\t\tEnabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
-                            enableForging($backupnode, $secret);
-                            $forgingBackup = "true";
-                        }
-
-                        if ($mainIsGoodNode === false) {
+                        if ($mainNodeIsStuck || $mainIsGoodNode === false) {
                             echo "\n\t\t\tThreshold on Main node reached!\n";
                             echo "\t\t\tEnabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
                             enableForging($backupnode, $secret);
@@ -363,17 +410,6 @@ if ($switchingEnabled === true && !empty($secret)) {
             }
         }
     }
-    // DEBUG
-    if ($forgingBackup == "true" && $forgingMain == "true") {
-        $Tmsg = "Both nodes are forging";
-        sendMessage($Tmsg);
-    }
-
-    if ($forgingBackup == "false" && !$forgingMain == "false") {
-        $Tmsg = "Both nodes are not forging";
-        sendMessage($Tmsg);
-    }
-    // END DEBUG
 
 } else {
     echo "disabled or no secret\n\n";
