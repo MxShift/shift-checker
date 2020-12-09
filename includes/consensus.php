@@ -117,7 +117,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                 }
 
                 // Restart Shift node
-                if (!$recoveryEnabled) {
+                if (!$recoveryEnabled && $mainNodeIsStuck) {
                     echo "\t\t\tReloading Shift on Main\n";
                     shiftManager("reload");
                 }
