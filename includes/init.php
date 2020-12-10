@@ -22,7 +22,7 @@ $max_count          = 3;                                  // How may times $msg 
 $okayMsg            = "√";                                // 'Okay' message from shift_manager.bash
 
 // Consensus settings
-$threshold          = 20;                                 // Percentage of consensus threshold.
+$threshold          = 30;                                 // Percentage of consensus threshold.
 
 // Recovery settings       
 $snapThreshold      = 3200;                               // Threshold in blocks. Use 3200 for daily snapshots and 133 for hourly
