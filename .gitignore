@@ -5,6 +5,6 @@
 *tar
 config.php
 run.lock
-test.php
+t.php
 .vscode/
 .init
