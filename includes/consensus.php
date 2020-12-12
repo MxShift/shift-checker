@@ -197,7 +197,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                         }
                     }
                 } else {
-                    echo "\t\t\tConsensus on Backup is sufficient. Doing nothing\n\n";
+                    echo "\t\t\tConsensus on Backup is sufficient.\n\n";
                 }
             } else {
                 if ($forgingBackup == "error") {
