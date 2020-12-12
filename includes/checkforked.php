@@ -15,14 +15,19 @@ $fork_counter = $db_data["fork_counter"];
 
 $nodeIsForking = ($fork_counter + $counted_now) >= $max_count;
 
+$goodSnapshot = (file_exists($snapshotDir) && $createSnapshots && $db_data["corrupt_snapshot"] === false);
+
 // If fork_counter + current count is greater than $max_count, take action
 if ($nodeIsForking) {
 
-    // If shift-snapshot directory exists and restore from snapshot is enabled
-    if (file_exists($snapshotDir) && $createSnapshots) {
+    // If shift-snapshot directory exists and restore from snapshot is enabled and snapshot is not corrupt
+    if ($goodSnapshot) {
         $Tmsg = $nodeName.":\n\n$forkEmoji Node probably is *forking*.\n$recoveryEmoji Going to restore from a local snapshot.";
         echo "\t\t\t".$Tmsg."\n";
         sendMessage($Tmsg, $recoveryEnabled);
+
+        // update shift-lisk client just in case
+        shiftManager("update_client");
 
         // Perform snapshot restore
         shiftManager("stop");
@@ -40,9 +45,15 @@ if ($nodeIsForking) {
         pauseToWaitNodeAPI(20);
 
     } else {
-        echo "\t\t\tWe hit max_count and want to restore from snapshot.\n
-            \t\t\tHowever, restore from snapshot is not enabled or\n
-            \t\t\tpath to snapshot directory ($snapshotDir) does not seem to exist.\n";
+        echo "\t\t\tWe hit max_count and want to restore from snapshot.\n".
+            "\t\t\tHowever, restore from snapshot is not enabled or\n".
+            "\t\t\tpath to snapshot directory ($snapshotDir) does not seem to exist or\n".
+            "\t\t\tthe last snapshot is corrupt.\n";
+
+            // update shift-lisk client just in case
+            shiftManager("update_client");
+
+            // add here an alternate way for snapshot dilivery
     }
 } 
 
