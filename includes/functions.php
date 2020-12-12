@@ -254,7 +254,7 @@ function saveToJSONFile($arr, $file_path)
 function pauseToWaitNodeAPI($seconds)
 {
     // Pause to wait for start node sync. Use 120
-    echo "\t\t\tPause: $seconds sec.\n\n";
+    echo "\n\t\t\tPause: $seconds sec.\n\n";
     sleep($seconds);
 
 }
