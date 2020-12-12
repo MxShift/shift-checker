@@ -8,3 +8,5 @@ run.lock
 t.php
 .vscode/
 .init
+tt.php
+t.sh
