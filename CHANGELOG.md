@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.0 (2020-12-13)
+
+- Add test for a config. To check the settings before the first run of the script
+- Add shift-lisk client update on fork
+
 ## 2.1.9 (2020-12-09)
 
 - Security Update: script no longer send the passphrase over the network
@@ -89,8 +94,13 @@
 
 
 <!-- TODO
---
-Добавить в бд строку форк = фалс
+
+- ! Пофиксить пинг, если ссылка без порта
+
+- Add async for creating snapshots. Now the script does not block its work indefinitely when creating snapshots 
+
+- Сделать оповещение в модуле "рекавери", о том, что трастед нода отстаёт от локальной, при отставании в 10 блоков
+
 --
 сделать команды для shift-checker
 reload, rebuild, stop, start, update_manager, update_client, update_wallet, create_snapshot, restore_snapshot
@@ -102,9 +112,8 @@ reload, rebuild, stop, start, update_manager, update_client, update_wallet, crea
 
 - Попробовать сделать псевдо-таблицу при отправке сообщения с данными нод в ТГ
 
-- При форке проверять на коррупт снапшот и рестор фром снапшот
-
-- При форке делать апдейт клиента через ./shift_manager.bash update_client
+- При форке проверять на рестор фром снапшот. Добавить возможность ребилда через менеджер
+- Добавить в бд строку форк = фалс
 
 - Разобраться с необходимостью приписывать http://
 
@@ -115,6 +124,8 @@ reload, rebuild, stop, start, update_manager, update_client, update_wallet, crea
 - Update screenshots
 
 
++ При форке делать апдейт клиента через ./shift_manager.bash update_client
++ При форке проверять на коррупт снапшот
 + Проверять на мейне, запущен ли скрипт на бекапе
 + ! Не дисаблить форджинг на бекапе просто так
 + Посмотреть почему $dataTmsg не присылается в ТГ, если выключен свитчинг
