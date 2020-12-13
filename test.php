@@ -44,8 +44,7 @@ if ($recoveryEnabled || $createSnapshots || $switchingEnabled) {
 
     $trustedNode = $trustedNode; // add check
     ['height' => $trustedHeight] = getNodeAPIData($trustedNode);
-    // $trustedAPI = ((ping($trustedNode)) ? "AVAIBLE" : "INACCESSIBLE");
-    $trustedAPI = "AVAIBLE";
+    $trustedAPI = ((ping($trustedNode)) ? "AVAIBLE" : "INACCESSIBLE");
 }
 
 if ($switchingEnabled) {

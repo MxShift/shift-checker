@@ -1,13 +1,29 @@
 <?php
 
 // PING function..
-function ping($node, $timeout=3)
+function ping($url, $timeout=3)
 {
     // check for an extra slash
-    $node = rtrim($node, '/');
+    $url = rtrim($url, '/');
 
     $find = array("http://", "https://");
-    $node = explode(":", str_replace($find, "", $node));
+    $node = explode(":", str_replace($find, "", $url));
+
+    // if no port in a url
+    if (count($node) === 1) {
+        ob_start();
+        $output = passthru("curl -Is $url | grep HTTP | cut -d ' ' -f2");
+        $output = mb_substr(trim(ob_get_contents()), 0, 3); // getting a HTTP status code
+        ob_end_clean();
+    
+        if ($output == "200") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // if url has a port
     $host = $node[0];
     $port = $node[1];
 
