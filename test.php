@@ -9,13 +9,6 @@ require(dirname(__FILE__).'/config.php');
 require(dirname(__FILE__).'/includes/functions.php');
 require(dirname(__FILE__).'/includes/init.php');
 
-$endStyle = "\033[0m";
-$green = "\e[32m";
-$red = "\e[31m";
-$bold = "\e[1m";
-$uline = "\e[4m";
-$dim = "\e[2m";
-
 $trustedNodeRequired = ($recoveryEnabled || $createSnapshots || $switchingEnabled);
 
 
