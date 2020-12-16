@@ -437,16 +437,50 @@ function lockScript()
     }
 }
 
+function waitDoAndExit($command, $pause=20, $stop=false) {
 
-function doAndExit($command, $pause=20, $stop=false)
+    global $lockfile;
+
+    $wait = true;
+
+    if (file_exists($lockfile)) {
+        echo "Waiting for the end of a previous script launch\n";
+    }
+
+    do {
+        if (!file_exists($lockfile)) {
+            echo "\n";
+            doAndExit($command, $pause, $stop);
+            $wait = false;
+        }
+        echo "~";
+        // echo "\033[0G";
+        sleep(1);
+    } while ($wait);
+}
+
+
+function doAndExit($command, $pause, $stop)
 {
-    global $db_data, $database;
+    global $db_data, $database, $bold, $endStyle, $red, $green;
+
+    lockScript();
     
     if ($command == "update") {
+
         shiftManager("update_manager");
         shiftManager("update_client");
         shiftManager("update_wallet");
+
+    } else if ($command == "status") {
+
+        shiftManager("status");
+        echo $bold."shift-checker manually stopped:".$endStyle." " . (($db_data["manual_stop"]) ? $red."true".$endStyle : $green."false".$endStyle) . "\n";
+        releaseScript();
+        exit();
+
     } else {
+
         shiftManager($command);
     }
     

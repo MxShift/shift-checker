@@ -27,6 +27,7 @@ $shiftlog           = $pathtoapp."logs/shift.log";        // Needs to be a FULL 
 $linestoread        = 30;                                 // How many lines to read from the end of $shiftlog
 $max_count          = 3;                                  // How may times $msg may occur
 $okayMsg            = "√";                                // 'Okay' message from shift_manager.bash
+$lockfile           = $baseDir."run.lock";                // Name of our lock file
 
 // Consensus settings
 $threshold          = 30;                                 // Percentage of consensus threshold.
@@ -80,42 +81,39 @@ if ($argc > 1) {
         switch ($argv[$i]) {
             
             case "stop":
-                doAndExit("stop", 0, true);
+                waitDoAndExit("stop", 0, true);
                 break;
 
             case "start":
-                doAndExit("start");
+                waitDoAndExit("start");
                 break;
 
             case "reload":
-                doAndExit("reload");
+                waitDoAndExit("reload");
                 break;
 
             case "update":
-                doAndExit("update");
+                waitDoAndExit("update");
                 break;
 
             case "update_manager":
-                doAndExit("update_manager");
+                waitDoAndExit("update_manager");
                 break;
 
             case "update_client":
-                doAndExit("update_client");
+                waitDoAndExit("update_client");
                 break;
 
             case "update_wallet":
-                doAndExit("update_wallet");
+                waitDoAndExit("update_wallet");
                 break;
 
             case "rebuild":
-                doAndExit("rebuild");
+                waitDoAndExit("rebuild");
                 break;
 
             case "status":
-                shiftManager("status");
-                echo $bold."shift-checker manually stopped:".$endStyle." " . (($db_data["manual_stop"]) ? $red."true".$endStyle : $green."false".$endStyle) . "\n";
-                releaseScript();
-                exit();
+                waitDoAndExit("status");
                 break;
 
             default:
@@ -130,6 +128,5 @@ if ($argc > 1) {
 
 // if shift-lisk was stopped manually, do not continue the script
 if ($db_data["manual_stop"]) {
-    releaseScript();
     exit("shift-lisk stopped manually to run it again please use 'php run.php start'\n");
 }
