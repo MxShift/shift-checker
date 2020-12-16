@@ -22,24 +22,72 @@ $trustedNodeRequired = ($recoveryEnabled || $createSnapshots || $switchingEnable
 echo "\t\t$uline$bold  TEST STARTED  $endStyle\n\n";
 
 
+// getting arguments
+if ($argc > 1) {
+
+    for ($i = 1; $i < $argc; $i++) {
+        
+        switch ($argv[$i]) {
+            
+            case "-m":
+                if ($i === 1) {
+                    $inputRole = "m";
+                    break;
+                }
+                if ($i === 2) {
+                    $inputNetwork = "m";
+                    break;
+                }
+
+            case "--main":
+                $inputRole = "m";
+                break;
+
+            case "-b":
+            case "--backup":
+                $inputRole = "b";
+                break;
+
+            case "--mainnet":
+                $inputNetwork = "m";
+                break;
+
+            case "-t":
+            case "--testnet":
+                $inputNetwork = "t";
+                break;
+
+            default:
+                if (substr($argv[$i], 1, 1) == '-') {
+                    echo "Unknown option: {$argv[$i]}\n";
+                }
+                
+                break;
+        }
+    }
+}
+
+
 // user input
-$stdin = fopen("php://stdin", "r");
+if (!isset($inputRole) || !isset($inputNetwork)) {
+    $stdin = fopen("php://stdin", "r");
 
-echo "Is this your ".$uline."Main node".$endStyle." (".$bold."m".$endStyle.") or your ".$uline."Backup node".$endStyle." (".$bold."b".$endStyle.")? ".$dim."(m/b)".$endStyle.": ";
-$inputRole = trim(fgets($stdin));
+    echo "Is this your ".$uline."Main node".$endStyle." (".$bold."m".$endStyle.") or your ".$uline."Backup node".$endStyle." (".$bold."b".$endStyle.")? ".$dim."(m/b)".$endStyle.": ";
+    $inputRole = trim(fgets($stdin));
 
-echo "".$uline."Mainnet".$endStyle." (".$bold."m".$endStyle.") or ".$uline."Testnet".$endStyle." (".$bold."t".$endStyle.")? ".$dim."(m/t)".$endStyle.": ";
-$inputNetwork = trim(fgets($stdin));
+    echo "".$uline."Mainnet".$endStyle." (".$bold."m".$endStyle.") or ".$uline."Testnet".$endStyle." (".$bold."t".$endStyle.")? ".$dim."(m/t)".$endStyle.": ";
+    $inputNetwork = trim(fgets($stdin));
 
-fclose($stdin);
+    fclose($stdin);
+}
 
-$inputRole = (($inputRole == "m") ? "MAIN   " : "BACKUP");
+$inputRole = (($inputRole == "m") ? "MAIN   " : "BACKUP  ");
 $inputNetwork = (($inputNetwork == "m") ? "MAINNET" : "TESTNET");
 
 
 // get data
 $shiftDir = $pathtoapp;
-$localRole = (($thisMain) ? "MAIN   " : "BACKUP");
+$localRole = (($thisMain) ? "MAIN   " : "BACKUP  ");
 $localNetwork = ((strpos($localNode, "9305")) ? "MAINNET" : "TESTNET");
 $localAPI = ((ping($localNode)) ? "AVAIBLE" : "INACCESSIBLE");
 $localForgingAPI = ((checkForging($localNode, $public) == "true" || (checkForging($localNode, $public) == "false")) ? "AVAIBLE" : (((checkForging($localNode, $public) == "error") ? "INACCESSIBLE" : "NO SECRET")));
