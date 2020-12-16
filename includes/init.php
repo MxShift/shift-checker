@@ -114,7 +114,7 @@ if ($argc > 1) {
             case "status":
                 shiftManager("status");
                 echo $bold."shift-checker manually stopped:".$endStyle." " . (($db_data["manual_stop"]) ? $red."true".$endStyle : $green."false".$endStyle) . "\n";
-                unlockScript();
+                releaseScript();
                 exit();
                 break;
 
@@ -130,6 +130,6 @@ if ($argc > 1) {
 
 // if shift-lisk was stopped manually, do not continue the script
 if ($db_data["manual_stop"]) {
-    unlockScript();
+    releaseScript();
     exit("shift-lisk stopped manually to run it again please use 'php run.php start'\n");
 }
