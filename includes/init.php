@@ -11,9 +11,16 @@ $forkEmoji = "%F0%9F%94%80";
 $recoveryEmoji = "%F0%9F%94%84";
 $stopEmoji = "%E2%9B%94%EF%B8%8F";
 
+// markdown
+$endStyle = "\033[0m";
+$green = "\e[32m";
+$red = "\e[31m";
+$bold = "\e[1m";
+$uline = "\e[4m";
+$dim = "\e[2m";
+
 
 // CONFIG
-$lockfile           = $baseDir."run.lock";                // Name of our lock file
 $database           = $baseDir."db.json";                 // Database name to use
 $msg                = "\"cause\":3";                      // Message that is printed when forked
 $shiftlog           = $pathtoapp."logs/shift.log";        // Needs to be a FULL path, so not ~/shift
@@ -34,7 +41,7 @@ $createdMsg         = "OK snapshot created successfully";	    // 'Okay' message 
 
 // Log file rotation
 $logfile            = $baseDir."logs/run.log";                   // The location of your log file (see section crontab on Github)
-$max_logfiles       = 10;                                        // How many log files to preserve? (in days)  
+$max_logfiles       = 5;                                        // How many log files to preserve? (in days)  
 $logsize            = 524288;                                    // Max file size, default is 0.5 MB
 
 
@@ -60,6 +67,69 @@ if (file_exists($database)) {
     $db_data["syncing_message_sent"] = false;
     $db_data["script_disabled_countdown"] = 3;
     $db_data["switch_to_remote"] = false;
+    $db_data["manual_stop"] = false;
+}
+saveToJSONFile($db_data, $database);
+
+// COMMAND LINE OPTIONS
+
+if ($argc > 1) {
+
+    for ($i = 1; $i < $argc; $i++) {
+        
+        switch ($argv[$i]) {
+            
+            case "stop":
+                doAndExit("stop", 0, true);
+                break;
+
+            case "start":
+                doAndExit("start");
+                break;
+
+            case "reload":
+                doAndExit("reload");
+                break;
+
+            case "update":
+                doAndExit("update");
+                break;
+
+            case "update_manager":
+                doAndExit("update_manager");
+                break;
+
+            case "update_client":
+                doAndExit("update_client");
+                break;
+
+            case "update_wallet":
+                doAndExit("update_wallet");
+                break;
+
+            case "rebuild":
+                doAndExit("rebuild");
+                break;
+
+            case "status":
+                shiftManager("status");
+                echo $bold."shift-checker manually stopped:".$endStyle." " . (($db_data["manual_stop"]) ? $red."true".$endStyle : $green."false".$endStyle) . "\n";
+                unlockScript();
+                exit();
+                break;
+
+            default:
+                if (substr($argv[$i], 1, 1) == '-') {
+                    echo "Unknown option: {$argv[$i]}\n";
+                }
+                
+                break;
+        }
+    }
 }
 
-// END INITIALIZATION
+// if shift-lisk was stopped manually, do not continue the script
+if ($db_data["manual_stop"]) {
+    unlockScript();
+    exit("shift-lisk stopped manually to run it again please use 'php run.php start'\n");
+}
