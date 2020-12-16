@@ -4,7 +4,7 @@ echo "\n[ STATUS ]\n\n";
 echo "\t\t\tLet's check if our node is still running: ";
 
 // Check status with shift_manager.bash
-$output = shiftManager("status");
+$output = shiftManager("status_output");
 
 // Somewhere here we need to add a check for manual rebuild by the user
 
