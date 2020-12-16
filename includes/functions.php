@@ -284,10 +284,10 @@ function shiftManager($command)
 
         system("cd $pathtoapp && echo y | bash shift_manager.bash $command");
 
-    } else if ($command == "status") {
+    } else if ($command == "status_output") {
         // Use PHP's ob_ function to create an output buffer
         ob_start();
-        $check_status = passthru("cd $pathtoapp && bash shift_manager.bash status | cut -z -b1-3");
+        passthru("cd $pathtoapp && bash shift_manager.bash status | cut -z -b1-3");
         $output = ob_get_contents();
         ob_end_clean();
 
@@ -410,4 +410,35 @@ function printTwoNodesData(
 
     echo "\t\t\tForging Main: " . $forgingMain;
     echo "\t\t\tForging Backup: " . $forgingBackup . "\n\n";
+}
+
+
+// Remove lock file
+function unlockScript()
+{
+    global $lockfile;
+    
+    if (!unlink($lockfile)) {
+        echo "[ LOCKFILE ] Unable to remove lock file!\n";
+    }
+}
+
+
+function doAndExit($command, $pause=20, $stop=false)
+{
+    global $db_data, $database;
+    
+    if ($command == "update") {
+        shiftManager("update_manager");
+        shiftManager("update_client");
+        shiftManager("update_wallet");
+    } else {
+        shiftManager($command);
+    }
+    
+    $db_data["manual_stop"] = $stop;
+    saveToJSONFile($db_data, $database);
+    pauseToWaitNodeAPI($pause);
+    unlockScript();
+    exit();
 }
