@@ -1,7 +1,5 @@
 <?php
 
-$lockfile = $baseDir."run.lock";  // Name of our lock file
-
 // Check if lock file exists
 if (file_exists($lockfile)) {
 

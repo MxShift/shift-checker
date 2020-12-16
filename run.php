@@ -8,13 +8,13 @@ ____________________ */
   echo "___________________________________________________\n";
   echo $date."\n";
 
-/* LOCK FILE
-____________________ */
-  include dirname(__FILE__).'/includes/lockfile.php';
-
 /* INITIALIZATION
 ____________________ */
 include dirname(__FILE__).'/includes/init.php';
+
+/* LOCK FILE
+____________________ */
+include dirname(__FILE__).'/includes/lockfile.php';
 
 /* CHECK STATUS
 ____________________ */
