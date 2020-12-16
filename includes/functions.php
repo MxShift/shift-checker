@@ -414,12 +414,26 @@ function printTwoNodesData(
 
 
 // Remove lock file
-function unlockScript()
+function releaseScript()
 {
     global $lockfile;
     
-    if (!unlink($lockfile)) {
+    $lf_removed = unlink($lockfile);
+
+    if (!$lf_removed) {
         echo "[ LOCKFILE ] Unable to remove lock file!\n";
+    }
+}
+
+// Create lock file
+function lockScript()
+{
+    global $lockfile;
+    
+    $lf_created = touch($lockfile);
+
+    if (!$lf_created) {
+        exit("[ LOCKFILE ] Error touching $lockfile\n");
     }
 }
 
@@ -439,6 +453,6 @@ function doAndExit($command, $pause=20, $stop=false)
     $db_data["manual_stop"] = $stop;
     saveToJSONFile($db_data, $database);
     pauseToWaitNodeAPI($pause);
-    unlockScript();
+    releaseScript();
     exit();
 }
