@@ -12,7 +12,7 @@ require(dirname(__FILE__).'/includes/init.php');
 $trustedNodeRequired = ($recoveryEnabled || $createSnapshots || $switchingEnabled);
 
 
-echo "\t\t$uline$bold  TEST STARTED  $endStyle\n\n";
+echo "\n\t\t$uline$bold  CONFIG TEST STARTED  $endStyle\n\n";
 
 
 // getting arguments
@@ -54,7 +54,6 @@ if ($argc > 1) {
                 if (substr($argv[$i], 1, 1) == '-') {
                     echo "Unknown option: {$argv[$i]}\n";
                 }
-                
                 break;
         }
     }
