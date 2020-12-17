@@ -12,6 +12,10 @@ ____________________ */
 ____________________ */
 include dirname(__FILE__).'/includes/init.php';
 
+/* COMMAND LINE OPTIONS
+____________________ */
+include dirname(__FILE__).'/includes/commands.php';
+
 /* LOCK FILE
 ____________________ */
 include dirname(__FILE__).'/includes/lockfile.php';
