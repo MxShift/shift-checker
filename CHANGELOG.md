@@ -1,9 +1,10 @@
 # Changelog
 
-## 2.2.0 (2020-12-13)
+## 2.2.0 (2020-12-17)
 
-- Add test for a config. To check the settings before the first run of the script
+- Add test for a config to check the settings before the first run of the script
 - Add shift-lisk client update on fork
+- Add command line options to manage shift-lisk node
 
 ## 2.1.9 (2020-12-09)
 
@@ -95,35 +96,24 @@
 
 <!-- TODO
 
-- ! Пофиксить пинг, если ссылка без порта
-
 - Add async for creating snapshots. Now the script does not block its work indefinitely when creating snapshots 
 
 - Сделать оповещение в модуле "рекавери", о том, что трастед нода отстаёт от локальной, при отставании в 10 блоков
 
---
-сделать команды для shift-checker
-reload, rebuild, stop, start, update_manager, update_client, update_wallet, create_snapshot, restore_snapshot
---
-
-- Сохранять паблик кей в базу данных, проверять заново только при смене парольной фразы
+- сделать команды для shift-checker: create_snapshot, restore_snapshot
 
 - Забьютифаить все сообщения для ТГ
-
 - Попробовать сделать псевдо-таблицу при отправке сообщения с данными нод в ТГ
 
 - При форке проверять на рестор фром снапшот. Добавить возможность ребилда через менеджер
 - Добавить в бд строку форк = фалс
 
-- Разобраться с необходимостью приписывать http://
-
-- При сломаном снапшоте, добавить проверку на другие снапшоты
-
 - Add installation guide
-
 - Update screenshots
 
 
++ сделать команды для shift-checker: reload, rebuild, stop, start, update_manager, update_client, update_wallet
++ ! Пофиксить пинг, если ссылка без порта
 + При форке делать апдейт клиента через ./shift_manager.bash update_client
 + При форке проверять на коррупт снапшот
 + Проверять на мейне, запущен ли скрипт на бекапе
