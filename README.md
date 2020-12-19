@@ -12,6 +12,7 @@ This script:
 - Checks if a node is forked
 - Recovers a node from a snapshot or with shift_manager if something went wrong
 - Switches the forging between your main and backup nodes, improving the reliability of your delegate
+- Manages shift-lisk node via [command line options](#command-line-options)
 - Notifies in Telegram if something goes wrong
 
 ### How to update to v 2.2.0
@@ -34,9 +35,33 @@ Then change settings inside **config.example.php** and rename it to **config.php
 
 Also delete an old **db.json** file.
 
+To check if all settings are correct run:
+
+```
+php test.php
+```
+
+
 ## Installation
 
 ### :page_with_curl: [Instalation Guide](https://github.com/MxShift/shift-checker/blob/master/INSTALL.md)
+
+## Command line options
+
+You could manage your shift-lisk node with shift-checker:
+
+```
+cd shift-checker
+php run.php status
+php run.php stop
+php run.php start
+php run.php reload
+php run.php rebuild
+php run.php update
+php run.php update_manager
+php run.php update_client
+php run.php update_wallet
+```
 
 ## In the next updates:
 - [ ] Requesting status of nodes from Telegram bot;
@@ -53,10 +78,6 @@ Thank you :tada:
 * Discord: [Mx](https://discordapp.com/invite/fgzxABX)
 
 ## Contributors
-[Jan](https://t.me/@jeeweevee) - first version of the script (BTC:1GbAWBiGyuybXJcjtyTvtH6hB5iezXNVdP)
-
+[Jan](https://t.me/@jeeweevee) - first version of the script `BTC:1GbAWBiGyuybXJcjtyTvtH6hB5iezXNVdP`
 [Seatrips](https://twitter.com/seatrips) - helps to Jan
-
 [Mrgr](https://github.com/mrgrshift) - first version of shift-snapshot
-
-
