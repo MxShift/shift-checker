@@ -10,6 +10,7 @@ require(dirname(__FILE__).'/includes/functions.php');
 require(dirname(__FILE__).'/includes/init.php');
 
 $trustedNodeRequired = ($recoveryEnabled || $createSnapshots || $switchingEnabled);
+$telegramEnabled = ($recoveryMessages || $debugMessages);
 
 
 echo "\n\t\t$uline$bold  CONFIG TEST STARTED  $endStyle\n\n";
@@ -101,6 +102,15 @@ if ($switchingEnabled) {
     ['height' => $remoteHeight] = getNodeAPIData($remoteNode);
 }
 
+if ($telegramEnabled) {
+    $Tmsg = $checkmarkEmoji . " Hello from *shift-checker*" . $wavehandEmoji . $robotEmoji;
+    
+    $telegramResponse = sendMessage($Tmsg, true);
+    $telegramResponse = json_decode($telegramResponse, true);
+    echo $telegramResponse;
+    $telegramResponse = (($telegramResponse['ok'] == "true") ? "SENT   " : "FAIL   ");
+}
+
 
 // echo with tests
 echo "\n\n";
@@ -129,6 +139,9 @@ if ($trustedNodeRequired) {
     myEcho("Local node height:", "ok", "ok");
 }
 
+echo "\n";
+(($telegramEnabled) ? myEcho("Telegram notification:", $telegramResponse, "SENT   ") : "" );
+echo "\n";
 
 // functions
 function myEcho($string, $value, $compare=false, $h=false) {
