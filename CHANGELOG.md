@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.1 (2020-12-19)
+
+- Rewrite **shift-snapsot** module code from bash to php
+
 ## 2.2.0 (2020-12-17)
 
 - Add test for a config to check the settings before the first run of the script
