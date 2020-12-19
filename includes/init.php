@@ -10,6 +10,9 @@ $storageEmoji = "%F0%9F%97%84";
 $forkEmoji = "%F0%9F%94%80";
 $recoveryEmoji = "%F0%9F%94%84";
 $stopEmoji = "%E2%9B%94%EF%B8%8F";
+$checkmarkEmoji = "%E2%9C%85";
+$robotEmoji = "%F0%9F%A4%96";
+$wavehandEmoji = "%F0%9F%91%8B";
 
 // markdown
 $endStyle = "\033[0m";
