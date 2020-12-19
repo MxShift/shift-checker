@@ -24,7 +24,7 @@ if ($nodeIsForking) {
     if ($goodSnapshot) {
         $Tmsg = $nodeName.":\n\n$forkEmoji Node probably is *forking*.\n$recoveryEmoji Going to restore from a local snapshot.";
         echo "\t\t\t".$Tmsg."\n";
-        sendMessage($Tmsg, $recoveryEnabled);
+        sendMessage($Tmsg, $recoveryMessages);
 
         // update shift-lisk client just in case
         shiftManager("update_client");
@@ -110,7 +110,7 @@ if (!$nodeIsForking && $heightIsFine && $createSnapshots === true) {
             if (strpos($create_output, $createdMsg) !== false) {
                 $Tmsg = $nodeName.":\n\n$floppyEmoji _created daily snapshot_\n\n$chainEmoji Block: *".$blockHeight."*\n$storageEmoji Size: *".$fileSize."*";
                 echo "\t\t\t".$Tmsg."\n";
-                sendMessage($Tmsg, $recoveryEnabled);
+                sendMessage($Tmsg, $recoveryMessages);
 
                 $db_data["recovery_from_snapshot"] = true;
                 $db_data["corrupt_snapshot"] = false;

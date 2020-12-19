@@ -107,7 +107,6 @@ if ($telegramEnabled) {
     
     $telegramResponse = sendMessage($Tmsg, true);
     $telegramResponse = json_decode($telegramResponse, true);
-    echo $telegramResponse;
     $telegramResponse = (($telegramResponse['ok'] == "true") ? "SENT   " : "FAIL   ");
 }
 

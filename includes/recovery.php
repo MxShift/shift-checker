@@ -96,8 +96,8 @@ if ($recoveryEnabled === true) {
                     echo "\t\t\t".$Tmsg."\n";
 
                     // Second parameter $recoveryEnabled must be true for sending syncing messages to telegram
-                    sendMessage($Tmsg, $recoveryEnabled);
-                    sendMessage($dataTmsg, $recoveryEnabled);
+                    sendMessage($Tmsg, $recoveryMessages);
+                    sendMessage($dataTmsg, $recoveryMessages);
 
                     echo "\t\t\tRestore from the last snapshot: \n";
                     shiftManager("stop");
@@ -118,8 +118,8 @@ if ($recoveryEnabled === true) {
                         saveToJSONFile($db_data, $database);
 
                         $Tmsg = "*".$nodeName."*: blockchain is restored from the last snapshot!";
-                        sendMessage($Tmsg, $recoveryEnabled);
-                        sendMessage($dataTmsg, $recoveryEnabled);
+                        sendMessage($Tmsg, $recoveryMessages);
+                        sendMessage($dataTmsg, $recoveryMessages);
 
                     // Restorind blockchain from a local snapshot is failed.
                     // Try to rebuild from the last official snapshot
@@ -134,8 +134,8 @@ if ($recoveryEnabled === true) {
                         saveToJSONFile($db_data, $database);
 
                         $Tmsg = "*".$nodeName."*: error! Going to rebuild with shift-manager.";
-                        sendMessage($Tmsg, $recoveryEnabled);
-                        sendMessage($dataTmsg, $recoveryEnabled);
+                        sendMessage($Tmsg, $recoveryMessages);
+                        sendMessage($dataTmsg, $recoveryMessages);
                         echo "\n\t\t\t".$Tmsg."\n\n";
 
                         // Going to rebuild
@@ -155,8 +155,8 @@ if ($recoveryEnabled === true) {
 
                 $Tmsg = "*".$nodeName."*: node is syncing.\n\t\t\tAll we need to do is wait... *(~‾▿‾)~*";
                 echo "\t\t\t".$Tmsg."\n\n";
-                sendMessage($Tmsg, $recoveryEnabled);
-                sendMessage($dataTmsg, $recoveryEnabled);
+                sendMessage($Tmsg, $recoveryMessages);
+                sendMessage($dataTmsg, $recoveryMessages);
 
                 $db_data["syncing_message_sent"] = true;
                 saveToJSONFile($db_data, $database);
@@ -212,8 +212,8 @@ if ($recoveryEnabled === true) {
 
                 $Tmsg = "*".$nodeName."*:\n\n$stopEmoji Height threshold is reached and not syncing\n$recoveryEmoji Going to restore from a local snapshot";
                 echo "\t\t\t".$Tmsg."\n\n";
-                sendMessage($Tmsg, $recoveryEnabled);
-                sendMessage($dataTmsg, $recoveryEnabled);
+                sendMessage($Tmsg, $recoveryMessages);
+                sendMessage($dataTmsg, $recoveryMessages);
     
                 echo "\t\t\tRestore from the last snapshot: \n";
                 shiftManager("stop");
@@ -253,7 +253,7 @@ if ($recoveryEnabled === true) {
 
                 // Going to rebuild
                 $Tmsg = "*".$nodeName."*: height threshold is reached and not syncing. The last snapshot is corrupt! Going to rebuild with shift-manager.";
-                sendMessage($Tmsg, $recoveryEnabled);
+                sendMessage($Tmsg, $recoveryMessages);
                 echo "\n\t\t\t".$Tmsg."\n\n";
 
                 shiftManager("rebuild");
@@ -277,8 +277,8 @@ if ($recoveryEnabled === true) {
         if ($db_data["rebuild_message_counter"] > 0) {
 
             $Tmsg = "*".$nodeName."*: height is fine now.";
-            sendMessage($dataTmsg, $recoveryEnabled);
-            sendMessage($Tmsg, $recoveryEnabled);
+            sendMessage($dataTmsg, $recoveryMessages);
+            sendMessage($Tmsg, $recoveryMessages);
 
             // Lets reset counters in the database
             // If snapshot is corrupt recovery from snapshot wiil be set true after creation of a new snapshot

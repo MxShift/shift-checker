@@ -17,7 +17,7 @@ if (strpos($output, $okayMsg) === false || $apiIsDown) {
     
     // Echo something to our log file
     $Tmsg = "Node ".$nodeName." not running. Restarting Shift";
-    sendMessage($Tmsg);
+    sendMessage($Tmsg, $debugMessages);
 
     echo "\n\t\t\t".$Tmsg."\n";
     //Restarting Shift

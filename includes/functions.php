@@ -237,27 +237,12 @@ function enableForging($server, $secret)
 }
 
 // Send Telegram message
-function sendMessage($message, $force=false)
+function sendMessage($message, $send=false)
 {
-    global $debugMessages, $recoveryMessages, $telegramApiKey, $telegramId;
+    global $telegramApiKey, $telegramId;
 
-    // if ($debugMessages || $recoveryMessages || $force) {
+    if ($send) {
 
-    //     $telegramUrl = "https://api.telegram.org/bot".($telegramApiKey)."/sendMessage";
-    //     return exec("curl -s -d 'chat_id=$telegramId&parse_mode=Markdown&text=$message' $telegramUrl");
-    // }
-
-    if ($debugMessages === true && $force === false) {
-        $telegramUrl = "https://api.telegram.org/bot".($telegramApiKey)."/sendMessage";
-        return exec("curl -s -d 'chat_id=$telegramId&parse_mode=Markdown&text=$message' $telegramUrl");
-    }
-
-    if ($recoveryMessages === true && $force === true && $debugMessages === true) {
-        $telegramUrl = "https://api.telegram.org/bot".($telegramApiKey)."/sendMessage";
-        return exec("curl -s -d 'chat_id=$telegramId&parse_mode=Markdown&text=$message' $telegramUrl");
-    }
-
-    if ($recoveryMessages === true && $force === true && $debugMessages === false) {
         $telegramUrl = "https://api.telegram.org/bot".($telegramApiKey)."/sendMessage";
         return exec("curl -s -d 'chat_id=$telegramId&parse_mode=Markdown&text=$message' $telegramUrl");
     }

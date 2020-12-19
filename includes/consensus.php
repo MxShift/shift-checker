@@ -60,7 +60,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                 echo "\t\t\tBackup forging: true!\n\n";
                 $Tmsg = $nodeName . ":\n\nBoth nodes are forging! Probably shift-checker script is disabled on the backup node";
                 echo "\t\t\t" . $Tmsg . "\n"; 
-                sendMessage($Tmsg);
+                sendMessage($Tmsg, $debugMessages);
 
                 // stop forging on main after 3 times if Backup is still forging
                 $db_data["script_disabled_countdown"] -= 1;
@@ -91,19 +91,19 @@ if ($switchingEnabled === true && !empty($secret)) {
             if ($mainNodeIsStuck || $mainIsGoodNode === false) {
                 $Tmsg = $nodeName . ": Threshold on Main node reached! Going to check the Backup node and restart Shift on Main.";
                 echo "\t\t\t" . $Tmsg . "\n";
-                sendMessage($Tmsg);
+                sendMessage($Tmsg, $debugMessages);
 
                 // Check consensus on Backup node
                 if ($backupNodeIsStuck || $backupIsGoodNode === false) {
                     $Tmsg = $nodeName . ": Threshold on Backup node reached too! No healthy server online.";
                     echo "\t\t\t" . $Tmsg . "\n";
-                    sendMessage($Tmsg);
+                    sendMessage($Tmsg, $debugMessages);
                 } else {
 
                     if ($syncingBackup === true) {
                         $Tmsg = $nodeName . ": Threshold reached on Main node, but Backup is syncing. No healthy server online.";
                         echo "\t\t\t" . $Tmsg . "\n\n";
-                        sendMessage($Tmsg);
+                        sendMessage($Tmsg, $debugMessages);
                     } else {
 
                         echo "\t\t\tConsensus on Backup is sufficient enough to switch to\n";
@@ -126,7 +126,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                 if ($syncingMain === true) {
                     $Tmsg = $nodeName . ": Main node is forging and syncing. Looks like a bug! Enabling forging on Backup node";
                     echo "\t\t\t" . $Tmsg . "\n";
-                    sendMessage($Tmsg);
+                    sendMessage($Tmsg, $debugMessages);
 
                     echo "\t\t\tDisabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
                     disableForging($mainnode, $secret);
@@ -175,7 +175,7 @@ if ($switchingEnabled === true && !empty($secret)) {
 
                             $Tmsg = $nodeName . ": Warning! Consensus Backup reached the threshold, but Main node is syncing. No healthy servers online!";
                             echo "\t\t\t" . $Tmsg . "\n";
-                            sendMessage($Tmsg);
+                            sendMessage($Tmsg, $debugMessages);
                         } else {
                             // Consensus is sufficient on Main. Going to check syncing of Mainnode with good consensus
                             echo "\t\t\tConsensus on Main is sufficient.\n";
@@ -185,7 +185,7 @@ if ($switchingEnabled === true && !empty($secret)) {
 
                                 $Tmsg = $nodeName . ": Warning! Consensus Backup reached the threshold, but seems Main node is syncing. No healthy servers online!";
                                 echo "\t\t\t" . $Tmsg . "\n";
-                                sendMessage($Tmsg);
+                                sendMessage($Tmsg, $debugMessages);
                             } else {
                                 echo "\t\t\tMain node is synced!\n";
                                 echo "\t\t\tEnabling forging on Main for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
@@ -209,7 +209,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                 // Backup is also not forging! Compare consensus on both nodes and enable forging on node with highest consensus an height
                 $Tmsg = $nodeName . ": Main and Backup are both not forging! Going to enable forging on the best node.";
                 echo "\t\t\t" . $Tmsg . "\n";
-                sendMessage($Tmsg);
+                sendMessage($Tmsg, $debugMessages);
 
                 echo "\t\t\tLet's compare consensus and enable forging on best node\n";
 
@@ -367,7 +367,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                 if ($consensusBackup <= ($threshold / 2) && $syncingBackup === false) {
                     $Tmsg = $nodeName . ": Threshold on Backup node reached! No healthy server online.";
                     echo "\t\t\t" . $Tmsg . "\n";
-                    sendMessage($Tmsg);
+                    sendMessage($Tmsg, $debugMessages);
 
                     // Restart Shift on Backup if restoring is disabled
                     if (!$recoveryEnabled) {
@@ -379,7 +379,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                     if ($syncingBackup === true) {
                         $Tmsg = $nodeName . ": Backup node is forging and syncing. Looks like a bug! Disabling forging on Backup node.";
                         echo "\t\t" . $Tmsg . "\n";
-                        sendMessage($Tmsg);
+                        sendMessage($Tmsg, $debugMessages);
 
                         echo "\t\t\tDisabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n";
                         disableForging($backupnode, $secret);
@@ -402,7 +402,7 @@ if ($switchingEnabled === true && !empty($secret)) {
 
                 $Tmsg = $nodeName . ": Main node seems offline. Backup starts forging now";
                 echo "\t\t\t" . $Tmsg . "\n";
-                sendMessage($Tmsg);
+                sendMessage($Tmsg, $debugMessages);
 
                 echo "\t\t\tEnabling forging on Backup for secret: " . current($sec_array) . " - " . end($sec_array) . "\n\n";
                 enableForging($backupnode, $secret);
