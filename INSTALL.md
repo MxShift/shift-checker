@@ -86,12 +86,13 @@ $telegramApiKey     = "your Telegram API key";  // see Telegram section below
 ```
 
 If you setting up a main node add a backup node URL here:
+
 And opposite, if you setting up a backup node add a main node URL here:
 ```
 $remoteNode         = "URL to a node wallet";
 ```
 
-Usually it looks like `http://your-node-IP-address:9305` or `9405` port for testnet.
+Usually it looks like `http://your-node-IP-address:9305` or with `9405` port for testnet.
 To check it just open your URL in a web browser. The API is disabled by default, so we'll need to enable it:
 
 ```
@@ -99,7 +100,7 @@ cd shift-lisk
 nano config.json
 ```
 
-or open `config.json` with your FTP manager.
+or open `config.json` with your FTP manager
 
 Then find and set both *true*:
 ```
@@ -118,7 +119,7 @@ Find your secret and remove it from `config.json`:
         "secret": [],
 ```
 
-Also, you have to give access to the forging API calls on both nodes. Add your nodes IP to whitelist like this:
+Also, you have to give access to the forging API calls on both nodes for forging check. Add your nodes IP to whitelist like this:
 ```
     "forging": {
         "force": false,
@@ -190,7 +191,7 @@ To start script running open your crontabs:
 crontab -e
 ```
 
-and add this lines to run script every minute:
+add this lines to run script every minute:
 
 ```
 # mainnet shift-checker 
