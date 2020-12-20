@@ -28,11 +28,11 @@ if ($recoveryEnabled === true) {
 
         // a message for Telegram notifications
         $dataTmsg = "*".$nodeName."*:
-        ```\n\nHeight Blockchain: ".$heightBlockchain.""
-        ."\nHeight Node:     ".$heightLocal.""
-        ."\nConsensus Node:  ".$consensusLocal."%"
-        ."\nSyncing Node:    ".json_encode($syncingLocal).""
-        ."\nForging Node:     ".$forgingLocal."```";
+        ```\n\nHeight Blockchain:   ".$heightBlockchain.""
+        ."\nHeight Node:         ".$heightLocal.""
+        ."\nConsensus Node:      ".$consensusLocal."%"
+        ."\nSyncing Node:        ".json_encode($syncingLocal).""
+        ."\nForging Node:        ".$forgingLocal."```";
 
     } else {
 
@@ -68,15 +68,15 @@ if ($recoveryEnabled === true) {
 
         // a message for Telegram notifications
         $dataTmsg = "*".$nodeName."*:
-        ```\n\nHeight Blockhain:  ".$blockchain.""
-        ."\n\nConsensus Main: ".$consensusMain."%"
-        ."\nHeight Main:    ".$heightMain.""
-        ."\nSyncing Main:   ".json_encode($syncingMain).""
-        ."\nForging Main:   ".$forgingMain.""
-        ."\n\nConsensus Backup:  ".$consensusBackup."%"
-        ."\nHeight Backup:     ".$heightBackup.""
-        ."\nSyncing Backup:    ".json_encode($syncingBackup).""
-        ."\nForging Backup:    ".$forgingBackup."```";
+        ```\n\nHeight Blockhain:    ".$blockchain.""
+        ."\n\nConsensus Main:      ".$consensusMain."%"
+        ."\nHeight Main:         ".$heightMain.""
+        ."\nSyncing Main:        ".json_encode($syncingMain).""
+        ."\nForging Main:        ".$forgingMain.""
+        ."\n\nConsensus Backup:    ".$consensusBackup."%"
+        ."\nHeight Backup:       ".$heightBackup.""
+        ."\nSyncing Backup:      ".json_encode($syncingBackup).""
+        ."\nForging Backup:      ".$forgingBackup."```";
     }
 
     // MAIN LOGIC HERE
@@ -92,7 +92,7 @@ if ($recoveryEnabled === true) {
                 // Checking if we don't have failed recoveries from a local snapshot
                 if ($db_data["recovery_from_snapshot"]) {
 
-                    $Tmsg = "*".$nodeName."*: node is syncing, but reached a threshold.\n\t\t\tGoing to restore from snapshot.";
+                    $Tmsg = "*".$nodeName."*:\n\n$signalEmoji Node is syncing, but height is under the threshold\n$recoveryEmoji Going to restore from a local snapshot";
                     echo "\t\t\t".$Tmsg."\n";
 
                     // Second parameter $recoveryEnabled must be true for sending syncing messages to telegram
@@ -117,7 +117,7 @@ if ($recoveryEnabled === true) {
                         $db_data["rebuild_message_counter"] += 1;
                         saveToJSONFile($db_data, $database);
 
-                        $Tmsg = "*".$nodeName."*: blockchain is restored from the last snapshot!";
+                        $Tmsg = "*".$nodeName."*:\n\n$checkmarkEmoji Blockchain is restored from the last snapshot";
                         sendMessage($Tmsg, $recoveryMessages);
                         sendMessage($dataTmsg, $recoveryMessages);
 
@@ -133,7 +133,7 @@ if ($recoveryEnabled === true) {
                         $db_data["rebuild_message_counter"] += 1;
                         saveToJSONFile($db_data, $database);
 
-                        $Tmsg = "*".$nodeName."*: error! Going to rebuild with shift-manager.";
+                        $Tmsg = "*".$nodeName."*:\n\n$exclamationEmoji Error!\n$recoveryEmoji Going to rebuild with *shift_manager*";
                         sendMessage($Tmsg, $recoveryMessages);
                         sendMessage($dataTmsg, $recoveryMessages);
                         echo "\n\t\t\t".$Tmsg."\n\n";
@@ -153,7 +153,7 @@ if ($recoveryEnabled === true) {
             // Sending a message in the first time and then every 10 minutes
             if (!$db_data["syncing_message_sent"] || $db_data["rebuild_message_counter"] % 10 === 0) {
 
-                $Tmsg = "*".$nodeName."*: node is syncing.\n\t\t\tAll we need to do is wait... *(~‾▿‾)~*";
+                $Tmsg = "*".$nodeName."*:\n\n$signalEmoji Node is syncing\n$notesEmoji All we need to do is wait... *(~‾▿‾)~*";
                 echo "\t\t\t".$Tmsg."\n\n";
                 sendMessage($Tmsg, $recoveryMessages);
                 sendMessage($dataTmsg, $recoveryMessages);
@@ -252,7 +252,7 @@ if ($recoveryEnabled === true) {
                 // HERE
 
                 // Going to rebuild
-                $Tmsg = "*".$nodeName."*: height threshold is reached and not syncing. The last snapshot is corrupt! Going to rebuild with shift-manager.";
+                $Tmsg = "*".$nodeName."*:\n\n$stopEmoji Height threshold is reached and not syncing\n$xEmoji The last snapshot is corrupt!\n$recoveryEmoji Going to rebuild with *shift_manager*";
                 sendMessage($Tmsg, $recoveryMessages);
                 echo "\n\t\t\t".$Tmsg."\n\n";
 
@@ -276,7 +276,7 @@ if ($recoveryEnabled === true) {
         // If we have bad messages send a good one
         if ($db_data["rebuild_message_counter"] > 0) {
 
-            $Tmsg = "*".$nodeName."*: height is fine now.";
+            $Tmsg = "*".$nodeName."*:\n\n$checkmarkEmoji Height is fine now.";
             sendMessage($dataTmsg, $recoveryMessages);
             sendMessage($Tmsg, $recoveryMessages);
 

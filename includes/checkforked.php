@@ -25,7 +25,7 @@ if ($nodeIsForking) {
 
     // If shift-snapshot directory exists and restore from snapshot is enabled and snapshot is not corrupt
     if ($goodSnapshot) {
-        $Tmsg = $nodeName.":\n\n$forkEmoji Node probably is *forking*.\n$recoveryEmoji Going to restore from a local snapshot.";
+        $Tmsg = "*".$nodeName."*:\n\n$forkEmoji Node probably is *forking*\n$recoveryEmoji Going to restore from a local snapshot";
         echo "\t\t\t".$Tmsg."\n";
         sendMessage($Tmsg, $recoveryMessages);
 

@@ -79,7 +79,7 @@ function create_snapshot() {
         $fileSize = exec("du -h ". $snapshotLocation . " | cut -f1");
         echo "OK snapshot created successfully at block" . $blockHeight[0] . " " . $fileSize."B \n";
 
-        $Tmsg = $nodeName.":\n\n$floppyEmoji _created daily snapshot_\n\n$chainEmoji Block: *".$blockHeight[0]."*\n$storageEmoji Size: *".$fileSize."*";
+        $Tmsg = "*".$nodeName."*:\n\n$floppyEmoji _created daily snapshot_\n\n$chainEmoji Block: *".$blockHeight[0]."*\n$storageEmoji Size: *".$fileSize."*";
         sendMessage($Tmsg, $recoveryMessages);
 
         $db_data["recovery_from_snapshot"] = true;

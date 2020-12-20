@@ -13,6 +13,14 @@ $stopEmoji = "%E2%9B%94%EF%B8%8F";
 $checkmarkEmoji = "%E2%9C%85";
 $robotEmoji = "%F0%9F%A4%96";
 $wavehandEmoji = "%F0%9F%91%8B";
+$signalEmoji = "%F0%9F%93%B6";
+$exclamationEmoji = "%E2%9D%97%EF%B8%8F";
+$notesEmoji = "%F0%9F%8E%B6";
+$xEmoji = "%E2%9D%8C";
+$qexclamationEmoji = "%E2%80%BD";
+$qeuestionEmoji = "%E2%9D%93";
+$greenballEmoji = "%F0%9F%9F%A2";
+
 
 // markdown
 $endStyle = "\033[0m";

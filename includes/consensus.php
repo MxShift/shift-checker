@@ -71,8 +71,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                     // Add force disabling forging on Backup node if SSL is enabled
                     // Check for https
 
-                    $Tmsg = $nodeName.": Looks like shift-checker is disabled on the backup node, but its forging as well as the main node.
-                    \n\t\t\tDisable forging on the main node.\n\n";
+                    $Tmsg = "*".$nodeName."*:\n\n$qeuestionEmoji Looks like shift-checker is *disabled* on the backup node\n$exclamationEmoji But its forging as well as the main node\n$greenballEmoji Disabling forging on the main node";
                     echo "\n\t\t\t" . $Tmsg . "\n";
                     sendMessage($Tmsg, true);
 
@@ -236,8 +235,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                             // Add force enabling forging on Backup node if SSL is enabled
                             // Check for https
 
-                            $Tmsg = $nodeName.": Looks like shift-checker is disabled on the backup node!
-                            \n\t\t\tEnable forging on the main node.\n\n";
+                            $Tmsg = "*".$nodeName."*:\n\n$qeuestionEmoji Looks like shift-checker is *disabled* on the backup node\n$greenballEmoji Enabling forging on the main node";
                             echo "\n\t\t\t" . $Tmsg . "\n";
                             sendMessage($Tmsg, true);
 
@@ -337,7 +335,7 @@ if ($switchingEnabled === true && !empty($secret)) {
                             $db_data["script_disabled_countdown"] = 3;
                             saveToJSONFile($db_data, $database);
 
-                            $Tmsg = $nodeName . ": Looks like shift-checker is disabled on the main node.\n\t\t\tStart forging on the backup node.\n\n";
+                            $Tmsg = "*".$nodeName."*:\n\n$qeuestionEmoji Looks like shift-checker is *disabled* on the main node\n$greenballEmoji Enabling forging on the backup node";
                             echo "\n\t\t\t" . $Tmsg . "\n";
                             sendMessage($Tmsg, true);
 
