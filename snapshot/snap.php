@@ -23,6 +23,8 @@ $dbName = $config_data['db']['database'];
 $dbUser = $config_data['db']['user'];
 $dbPass = $config_data['db']['password'];
 
+$sendDBPass = "export PGPASSWORD=${dbPass} && ";
+
 // first run
 // next move it to init.php module
 if (file_exists($snapshotInit) === false) {
@@ -61,24 +63,42 @@ if ($argc > 1) {
 
 function create_snapshot() {
 
-    global $now, $snapshotLocation, $dbName, $dbUser, $dbPass;
+    global $snapshotLocation, $dbName, $dbUser, $sendDBPass, $nodeName, $floppyEmoji, $chainEmoji, $storageEmoji, $recoveryMessages, $database, $db_data, $maxSnapshots;
 
     echo " + Creating snapshot\n";
     echo "--------------------------------------------------\n\n";
     // create the dump
-    exec("export PGPASSWORD=$dbPass && sudo su postgres -c 'pg_dump -Fp -Z 1 $dbName > $snapshotLocation' 2>&1", $output);
+    exec($sendDBPass . "sudo su postgres -c 'pg_dump -Fp -Z 1 $dbName > $snapshotLocation' 2>&1", $output);
     // get height from db
-    exec('export PGPASSWORD=' . $dbPass . ' && psql -d ' . $dbName . ' -U ' . $dbUser . ' -h localhost -p 5432 -t -c "select height from blocks order by height desc limit 1;"', $blockHeight);
+    exec($sendDBPass . 'psql -d ' . $dbName . ' -U ' . $dbUser . ' -h localhost -p 5432 -t -c "select height from blocks order by height desc limit 1;"', $blockHeight);
 
     $created = empty($output);  // if output is not empty means here is a some error message
 
     if ($created) {
 
-        $fileSize=exec("du -h ". $snapshotLocation . " | cut -f1");
-        echo "$now -- OK snapshot created successfully at block" . $blockHeight[0] . " " . $fileSize."B \n";
+        $fileSize = exec("du -h ". $snapshotLocation . " | cut -f1");
+        echo "OK snapshot created successfully at block" . $blockHeight[0] . " " . $fileSize."B \n";
+
+        $Tmsg = $nodeName.":\n\n$floppyEmoji _created daily snapshot_\n\n$chainEmoji Block: *".$blockHeight[0]."*\n$storageEmoji Size: *".$fileSize."*";
+        sendMessage($Tmsg, $recoveryMessages);
+
+        $db_data["recovery_from_snapshot"] = true;
+        $db_data["corrupt_snapshot"] = false;
+        $db_data["synchronized_after_corrupt_snapshot"] = false;
+        $db_data["fork_counter"] = 0;
+        $db_data["snapshot_creation_started"] = false;
+        saveToJSONFile($db_data, $database);
+
+        echo "\nGoing to remove snapshots older than $maxSnapshots days: ";
+
+        removeOldSnapshots();
+
+        echo "Done!\n\n";
     } else {
 
         system("sudo rm -f $snapshotLocation");
+        $db_data["snapshot_creation_started"] = false;
+        saveToJSONFile($db_data, $database);
         exit("X Failed to create snapshot.\n");
     }
 }
@@ -86,7 +106,7 @@ function create_snapshot() {
 
 function restore_snapshot() {
 
-    global $now, $snapDir, $dbName, $dbUser, $dbPass;
+    global $snapDir, $dbName, $dbUser, $sendDBPass;
 
     echo " + Restoring snapshot\n";
     echo "--------------------------------------------------\n\n";
@@ -113,7 +133,7 @@ function restore_snapshot() {
     }
 
     // restore dump
-    exec('export PGPASSWORD=' . $dbPass . ' && gunzip -fcq "' . $snapshotFile . '" | psql -d ' . $dbName . ' -U ' . $dbUser . ' -h localhost -q 2> /dev/null', $output);
+    exec($sendDBPass . 'gunzip -fcq "' . $snapshotFile . '" | psql -d ' . $dbName . ' -U ' . $dbUser . ' -h localhost -q 2> /dev/null', $output);
 
     $restored = !empty($output);  // if output is empty means restoration is failed
 
