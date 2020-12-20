@@ -5,7 +5,7 @@ __________________________ */
 
 
 // Local node settings
-    $nodeName           = "Your Node Name"." on ".gethostname();    // Name of this node delegate for Telegram messages.
+    $nodeName           = "Your Node Name"." on ".gethostname();    // Name of this node delegate for Telegram messages
     $localNode          = "http://127.0.0.1:9305";                  // Local node IP address. Use http://127.0.0.1:PORT
 
 // Сluster settings
@@ -15,13 +15,13 @@ __________________________ */
     $secret             = "passphrase";               // Your twelve word passphrase is placed here. Required for consensus check
 
 // Recovery settings
-    $recoveryEnabled    = true;                             // Set 'true' to repair your node on fail-down with shift_manager or shift-snapshot
-    $createSnapshots    = true;                             // Do you want to create snapshots with shift-snapshot?
+    $recoveryEnabled    = true;                             // Set 'true' to repair your node on fail-down with snapshot or shift_manager
+    $createSnapshots    = true;                             // Do you want to create snapshots?
     $maxSnapshots       = 1;                                // How many snapshots to preserve? (in days)
     $trustedNode        = "https://wallet.shiftnrg.org";    // Used for checking blockchain height. Replace it to mainnet or testnet trusted node
 
 // Telegram Bot
-    $recoveryMessages   = true;                    // Change it to true if you want to recieve messagese of your recovery status
+    $recoveryMessages   = false;                   // Change it to true if you want to recieve messagese of your recovery status
     $telegramId         = "here";                  // Your Telegram ID
     $telegramApiKey     = "here";                  // Your Telegram API key
     $debugMessages      = false;                   // Change it to false to disable all messages exept recovery messages from Telegram bot
