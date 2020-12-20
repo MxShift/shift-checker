@@ -44,9 +44,10 @@ $restoredMsg        = "OK snapshot restored successfully.";	    // 'Okay' messag
 $createdMsg         = "OK snapshot created successfully";	    // 'Okay' message from shift-snapshot	
 
 // Log file rotation
-$logfile            = $baseDir."logs/run.log";                   // The location of your log file (see section crontab on Github)
+$logfile            = $baseDir."logs/run.log";                  // The location of your log file (see section crontab on Github)
+$snaplogfile        = $baseDir."logs/snap.log";
 $max_logfiles       = 5;                                        // How many log files to preserve? (in days)  
-$logsize            = 524288;                                    // Max file size, default is 0.5 MB
+$logsize            = 524288;                                   // Max file size, default is 0.5 MB
 
 
 // Get publicKey of the secret to use it in forging checks
@@ -72,5 +73,6 @@ if (file_exists($database)) {
     $db_data["script_disabled_countdown"] = 3;
     $db_data["switch_to_remote"] = false;
     $db_data["manual_stop"] = false;
+    $db_data["snapshot_creation_started"] = false;
 }
 saveToJSONFile($db_data, $database);
