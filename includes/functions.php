@@ -292,25 +292,17 @@ function shiftManager($command)
 // Shift snapshot
 function shiftSnapshot($command)
 {
-    global $pathtoapp, $snapshotDir;
+    global $snapshotDir, $snaplogfile;
 
     if ($command === "create") {
-        ob_start();
-        passthru("cd $snapshotDir && php snap.php $command");
-        $output = ob_get_contents();
-        ob_end_clean();
 
-        $output_array = explode(" ", $output);
+        exec("cd $snapshotDir && nohup php snap.php $command >> $snaplogfile &");
 
-        $blockHeight = $output_array[11];
-        $fileSize = $output_array[12];
+    } else {
 
-        return ['output' => $output, 'size' => $fileSize, 'height' => $blockHeight];
+        $output = system("cd $snapshotDir && php snap.php $command");
+        return $output;
     }
-
-    $output = system("cd $snapshotDir && php snap.php $command");
-
-    return $output;
 }
 
 // Shift snapshot name
