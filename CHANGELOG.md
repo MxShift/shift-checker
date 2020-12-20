@@ -1,8 +1,9 @@
 # Changelog
 
-## 2.2.1 (2020-12-19)
+## 2.2.1 (2020-12-20)
 
 - Rewrite **shift-snapsot** module code from bash to php
+- Add async for creating snapshots. Now the script does not block its work indefinitely when creating snapshots
 
 ## 2.2.0 (2020-12-17)
 
@@ -99,8 +100,6 @@
 
 
 <!-- TODO
-
-- Add async for creating snapshots. Now the script does not block its work indefinitely when creating snapshots 
 
 - Сделать оповещение в модуле "рекавери", о том, что трастед нода отстаёт от локальной, при отставании в 10 блоков
 
