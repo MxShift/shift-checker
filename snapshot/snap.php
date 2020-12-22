@@ -134,6 +134,7 @@ function restore_snapshot() {
         exit("X Failed to create Postgresql database.\n");
     }
 
+    echo "Restoring the snapshot now.\n";
     // restore dump
     exec($sendDBPass . 'gunzip -fcq "' . $snapshotFile . '" | psql -d ' . $dbName . ' -U ' . $dbUser . ' -h localhost -q 2> /dev/null', $output);
 
