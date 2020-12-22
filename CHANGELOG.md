@@ -1,9 +1,10 @@
 # Changelog
 
-## 2.2.1 (2020-12-20)
+## 2.2.1 (2020-12-23)
 
 - Rewrite **shift-snapsot** module code from bash to php
 - Add async for creating snapshots. Now the script does not block its work indefinitely when creating snapshots
+- Beautify Telegram messages
 
 ## 2.2.0 (2020-12-17)
 
@@ -101,20 +102,22 @@
 
 <!-- TODO
 
+- Снова использовать SQLite базу данных. 
+- На данный момент происходят коллизии записи в файл db.json если обращаться к нему из разных скриптов: run.php и snap.php
+
 - Сделать оповещение в модуле "рекавери", о том, что трастед нода отстаёт от локальной, при отставании в 10 блоков
 
 - сделать команды для shift-checker: create_snapshot, restore_snapshot
 
-- Забьютифаить все сообщения для ТГ
-- Попробовать сделать псевдо-таблицу при отправке сообщения с данными нод в ТГ
-
 - При форке проверять на рестор фром снапшот. Добавить возможность ребилда через менеджер
 - Добавить в бд строку форк = фалс
 
-- Add installation guide
 - Update screenshots
 
 
++ Add installation guide
++ Попробовать сделать псевдо-таблицу при отправке сообщения с данными нод в ТГ
++ Забьютифаить сообщения для ТГ
 + сделать команды для shift-checker: reload, rebuild, stop, start, update_manager, update_client, update_wallet
 + ! Пофиксить пинг, если ссылка без порта
 + При форке делать апдейт клиента через ./shift_manager.bash update_client
