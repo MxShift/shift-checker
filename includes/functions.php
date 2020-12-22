@@ -326,7 +326,7 @@ function removeOldSnapshots()
         if (is_file($file)) {
             if (time() - filemtime($file) >= 60 * 60 * 23 * $maxSnapshots) {
                 if (unlink($file)) {
-                    echo "\t\t\tDeleted snapshot $file\n";
+                    echo "Deleted snapshot $file\n";
                 }
             }
         }
