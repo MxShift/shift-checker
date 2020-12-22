@@ -68,7 +68,7 @@ function create_snapshot() {
     echo " + Creating snapshot\n";
     echo "--------------------------------------------------\n\n";
     // create the dump
-    exec($sendDBPass . "sudo su postgres -c 'pg_dump -Fp -Z 1 $dbName > $snapshotLocation' 2>&1", $output);
+    exec($sendDBPass . "sudo su postgres -c 'pg_dump -Fp -Z 9 $dbName > $snapshotLocation' 2>&1", $output);
     // get height from db
     exec($sendDBPass . 'psql -d ' . $dbName . ' -U ' . $dbUser . ' -h localhost -p 5432 -t -c "select height from blocks order by height desc limit 1;"', $blockHeight);
 
@@ -82,14 +82,15 @@ function create_snapshot() {
         $Tmsg = "*".$nodeName."*:\n\n$floppyEmoji _created daily snapshot_\n\n$chainEmoji Block: *".$blockHeight[0]."*\n$storageEmoji Size: *".$fileSize."*";
         sendMessage($Tmsg, $recoveryMessages);
 
-        $db_data["recovery_from_snapshot"] = true;
-        $db_data["corrupt_snapshot"] = false;
-        $db_data["synchronized_after_corrupt_snapshot"] = false;
-        $db_data["fork_counter"] = 0;
-        $db_data["snapshot_creation_started"] = false;
-        saveToJSONFile($db_data, $database);
+        // replace DB back to SQLite
+        // $db_data["recovery_from_snapshot"] = true;
+        // $db_data["corrupt_snapshot"] = false;
+        // $db_data["synchronized_after_corrupt_snapshot"] = false;
+        // $db_data["fork_counter"] = 0;
+        // $db_data["snapshot_creation_started"] = false;
+        // saveToJSONFile($db_data, $database);
 
-        echo "\nGoing to remove snapshots older than $maxSnapshots days: ";
+        echo "\nGoing to remove snapshots older than $maxSnapshots days:\n";
 
         removeOldSnapshots();
 
@@ -97,8 +98,9 @@ function create_snapshot() {
     } else {
 
         system("sudo rm -f $snapshotLocation");
-        $db_data["snapshot_creation_started"] = false;
-        saveToJSONFile($db_data, $database);
+        // replace DB back to SQLite
+        // $db_data["snapshot_creation_started"] = false;
+        // saveToJSONFile($db_data, $database);
         exit("X Failed to create snapshot.\n");
     }
 }

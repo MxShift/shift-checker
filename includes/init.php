@@ -81,6 +81,6 @@ if (file_exists($database)) {
     $db_data["script_disabled_countdown"] = 3;
     $db_data["switch_to_remote"] = false;
     $db_data["manual_stop"] = false;
-    $db_data["snapshot_creation_started"] = false;
+    // $db_data["snapshot_creation_started"] = false;
 }
 saveToJSONFile($db_data, $database);

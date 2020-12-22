@@ -86,28 +86,30 @@ if (!$nodeIsForking && $heightIsFine && $createSnapshots) {
 
     echo "\t\t\tDo we have a new snapshot for today?.. ";
 
-    if ($db_data["snapshot_creation_started"] === false) {
+    // replace DB back to SQLite
+    // if ($db_data["snapshot_creation_started"] === false) {
 
-        // Let's check if a snapshot was already created today...
-        $snapshots = snapshotPath(date("d-m-Y"));
-    
-        if (!empty($snapshots)) {
-    
-            echo "YES!\n";
-        } 
-    
-        // if we don't have a snapshot for today or the last snapshot is corrupt
-        if (empty($snapshots) || $bad_snapshot) {
-    
-            echo "\n\t\t\tNo good snapshot exists for today, I'll create one for you now!\n";
-            
-            $db_data["snapshot_creation_started"] = true;
-            $db_data["recovery_from_snapshot"] = false;
-            saveToJSONFile($db_data, $database);
-            shiftSnapshot("create");
-        }
-    } else {
-        echo "\n\t\t\tThe snapshot is now being created.";
+    // } else {
+    //     echo "\n\t\t\tThe snapshot is now being created.";
+    // }
+
+    // Let's check if a snapshot was already created today...
+    $snapshots = snapshotPath(date("d-m-Y"));
+
+    if (!empty($snapshots)) {
+
+        echo "YES!\n";
+    } 
+
+    // if we don't have a snapshot for today or the last snapshot is corrupt
+    if (empty($snapshots) || $bad_snapshot) {
+
+        echo "\n\t\t\tNo good snapshot exists for today, I'll create one for you now!\n";
+        
+        $db_data["snapshot_creation_started"] = true;
+        $db_data["recovery_from_snapshot"] = false;
+        saveToJSONFile($db_data, $database);
+        shiftSnapshot("create");
     }
 
 
