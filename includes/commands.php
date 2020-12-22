@@ -37,11 +37,19 @@ if ($argc > 1) {
                 break;
 
             case "rebuild":
-                waitDoAndExit("rebuild");
+                waitDoAndExit("rebuild", 120);
                 break;
 
             case "status":
                 waitDoAndExit("status");
+                break;
+
+            case "create":
+                waitDoAndExit("create");
+                break;
+
+            case "restore":
+                waitDoAndExit("restore", 120);
                 break;
 
             default:

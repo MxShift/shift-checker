@@ -463,6 +463,19 @@ function doAndExit($command, $pause, $stop)
         releaseScript();
         exit();
 
+    } else if ($command == "create") {
+
+        shiftSnapshot($command);
+        echo "Snapshot creation has started. Check /logs/snap.log\n\n";
+        releaseScript();
+        exit();
+
+    } else if ($command == "restore") {
+
+        shiftManager("stop");
+        sleep(3);
+        shiftSnapshot($command);
+        shiftManager("start");
     } else {
 
         shiftManager($command);
