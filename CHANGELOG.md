@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.2 (2020-12-24)
+
+- Add command line options to create and restore a snapshot
+
 ## 2.2.1 (2020-12-23)
 
 - Rewrite **shift-snapsot** module code from bash to php
