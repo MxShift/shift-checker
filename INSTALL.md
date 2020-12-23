@@ -1,4 +1,4 @@
-# Instalation Guide
+# Installation Guide
 
 
 ## Prerequisites
@@ -21,9 +21,22 @@ Usually it's located simply in the home folder:
 ```
 git clone https://github.com/MxShift/shift-checker.git
 ```
-* Rename `config.example.php` file to `config.php`
+* Rename `config.example.php` file to `config.php` using your FTP client or with commands:
+```
+cd shift-checker
+mv config.example.php config.php
+```
 * Open `config.php` file and rename your node with `$nodeName` row inside double brackets
+```
+nano config.php
+```
 * Choose settings for a [single node](#single-node-settings) or for a [cluster](#cluster-settings) below
+* To save modified data with `nano`, press:
+```
+Ctrl+X
+Y
+Enter
+```
 
 
 ## Single node settings
@@ -40,19 +53,6 @@ $trustedNode        = "link to a trusted node wallet";
 $recoveryMessages   = true;
 $telegramId         = "your Telegram ID";  // see Telegram section below
 $telegramApiKey     = "your Telegram API key";  // see Telegram section below
-```
-
-Check your node API, it should be enabled:
-
-```
-cd shift-lisk
-nano config.json
-```
-
-Find and set it *true*:
-```
-    "api": {
-        "enabled": true,
 ```
 
 To check if all settings are correct:
@@ -100,7 +100,7 @@ cd shift-lisk
 nano config.json
 ```
 
-or open `config.json` with your FTP manager
+or open `config.json` with your FTP client
 
 Then find and set both *true*:
 ```
@@ -130,6 +130,10 @@ Also, you have to give access to the forging API calls on both nodes for forging
             ]
         }
     },
+```
+To apply the changes made in the `config.json`, make sure to always reload shift-lisk:
+```
+./shift_manager.bash reload
 ```
 
 To check if all settings are correct run on both nodes:
