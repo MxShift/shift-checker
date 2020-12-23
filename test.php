@@ -103,7 +103,7 @@ if ($switchingEnabled) {
 }
 
 if ($telegramEnabled) {
-    $Tmsg = $checkmarkEmoji . " Hello from *shift-checker*" . $wavehandEmoji . $robotEmoji;
+    $Tmsg = "*".$nodeName."*:\n\n" . $checkmarkEmoji . " Hello from *shift-checker*" . $wavehandEmoji . $robotEmoji;
     
     $telegramResponse = sendMessage($Tmsg, true);
     $telegramResponse = json_decode($telegramResponse, true);
@@ -133,7 +133,7 @@ if ($trustedNodeRequired) {
     echo "\n";
     myEcho("Trusted node height:", $trustedHeight, $localHeight, "height"); // must be same as local height
     myEcho("Local node height:", $localHeight, $trustedHeight, "height"); // must be same as trusted height
-    myEcho("Remote node height:", $remoteHeight, $trustedHeight, "height"); // must be same as trusted height
+    (($switchingEnabled) ? myEcho("Remote node height:", $remoteHeight, $trustedHeight, "height") : ""); // must be same as trusted height
 } else {
     myEcho("Local node height:", "ok", "ok");
 }
