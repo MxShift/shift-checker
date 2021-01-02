@@ -106,9 +106,18 @@ if (!$nodeIsForking && $heightIsFine && $createSnapshots) {
 
         echo "\n\t\t\tNo good snapshot exists for today, I'll create one for you now!\n";
         
-        $db_data["snapshot_creation_started"] = true;
-        $db_data["recovery_from_snapshot"] = false;
+        // $db_data["snapshot_creation_started"] = true;
+        // $db_data["recovery_from_snapshot"] = false;
+
+        // should be in snap.php
+        $db_data["recovery_from_snapshot"] = true;
+        $db_data["corrupt_snapshot"] = false;
+        $db_data["synchronized_after_corrupt_snapshot"] = false;
+        $db_data["fork_counter"] = 0;
+        // should be in snap.php
+        
         saveToJSONFile($db_data, $database);
+
         shiftSnapshot("create");
     }
 
